@@ -26,9 +26,7 @@ import {
   ExecutiveTotals,
   CCSortOrder,
 } from "../types";
-import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 
 interface CommandCenterViewProps {
@@ -49,7 +47,7 @@ export function CommandCenterView({
 
   // Filters & Controls
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedDiscipline, setSelectedDiscipline] = useState<string>("");
+  const [selectedDiscipline, setSelectedDiscipline] = useState<string>("ALL");
   const [sortOrder, setSortOrder] = useState<CCSortOrder>("critical_first");
   const [showCharts, setShowCharts] = useState(true);
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
@@ -88,7 +86,6 @@ export function CommandCenterView({
   const filteredProjects = useMemo(() => {
     let result = projects;
 
-    // Search query
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       result = result.filter(
@@ -99,8 +96,7 @@ export function CommandCenterView({
       );
     }
 
-    // Discipline filter
-    if (selectedDiscipline) {
+    if (selectedDiscipline && selectedDiscipline !== "ALL") {
       if (selectedDiscipline === "MRIR") {
         result = result.filter((p) => (p.totalMRIR || 0) > 0);
       } else {
@@ -120,7 +116,6 @@ export function CommandCenterView({
       }
     }
 
-    // Sort order
     const sorted = [...result].sort((a, b) => {
       if (sortOrder === "critical_first") {
         const healthRank: Record<string, number> = { red: 0, yellow: 1, green: 2 };
@@ -146,7 +141,6 @@ export function CommandCenterView({
     return sorted;
   }, [projects, searchQuery, selectedDiscipline, sortOrder]);
 
-  // Sync Action
   const handleSync = async () => {
     setIsSyncing(true);
     setIsLoading(true);
@@ -161,7 +155,6 @@ export function CommandCenterView({
     }
   };
 
-  // CSV Export
   const handleExportCSV = () => {
     if (!totals || projects.length === 0) {
       showToast?.("Tidak ada data untuk diekspor", "info");
@@ -171,7 +164,6 @@ export function CommandCenterView({
     showToast?.("Data Command Center berhasil diekspor ke CSV", "success");
   };
 
-  // Toggle card details
   const toggleCard = (code: string) => {
     setExpandedCards((prev) => ({
       ...prev,
@@ -179,13 +171,11 @@ export function CommandCenterView({
     }));
   };
 
-  // Overall Global Completion
   const globalProgress = useMemo(() => {
     if (!totals || totals.total === 0) return 0;
     return Math.round((totals.closed / totals.total) * 100);
   }, [totals]);
 
-  // Max Aging Project
   const maxAgingInfo = useMemo(() => {
     let maxDays = 0;
     let projCode = "";
@@ -199,264 +189,208 @@ export function CommandCenterView({
   }, [projects]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* ═══ HEADER ═══ */}
-      <div className="border-b border-[#1e293b] pb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="bg-white p-4 sm:p-5 rounded-[8px] border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2.5">
-            <span className="w-8 h-8 rounded-[6px] bg-[#163d78]/30 border border-[#163d78]/60 flex items-center justify-center text-[#163d78]">
-              <Target className="w-4 h-4 text-slate-100" strokeWidth={2} />
-            </span>
-            <h1 className="text-lg font-bold tracking-wide text-slate-100 uppercase">
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold tracking-tight text-slate-900">
               QA/QC Command Center
             </h1>
+            <span className="text-[11px] font-mono px-2 py-0.5 rounded-[3px] bg-slate-100 text-slate-600 font-semibold border border-slate-200">
+              {filteredProjects.length} Proyek Aktif
+            </span>
           </div>
-          <p className="text-xs text-slate-400 font-mono mt-1">
+          <p className="text-xs text-slate-500 font-mono mt-0.5">
             Monitor seluruh portofolio proyek dalam 1 layar — terhubung langsung ke Master Hub & ITR
           </p>
         </div>
 
         {/* Global Action Tools */}
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
             onClick={() => setShowCharts(!showCharts)}
             className={cn(
-              "text-xs font-mono gap-1.5",
-              showCharts && "bg-[#1e293b] text-slate-100 border-slate-600"
+              "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] text-xs font-semibold border transition-colors cursor-pointer",
+              showCharts
+                ? "bg-slate-100 text-[#163d78] border-slate-300"
+                : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
             )}
           >
             <BarChart2 className="w-3.5 h-3.5" />
-            <span>Grafik Presentasi</span>
-          </Button>
+            <span>Grafik</span>
+          </button>
 
-          <Button
-            variant="outline"
-            size="sm"
+          <button
             onClick={handleExportCSV}
-            className="text-xs font-mono gap-1.5"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 rounded-[6px] text-xs font-semibold transition-colors cursor-pointer"
           >
-            <Download className="w-3.5 h-3.5" />
+            <Download className="w-3.5 h-3.5 text-emerald-700" />
             <span>CSV</span>
-          </Button>
+          </button>
 
-          <Button
-            variant="primary"
-            size="sm"
+          <button
             onClick={handleSync}
             disabled={isSyncing}
-            className="text-xs font-mono gap-1.5 bg-[#163d78] hover:bg-[#1a4a91]"
+            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-[6px] bg-[#163d78] hover:bg-[#1a4a91] text-white font-semibold text-xs tracking-wide shadow-sm transition-all cursor-pointer disabled:opacity-50"
           >
-            <RefreshCw
-              className={cn("w-3.5 h-3.5", isSyncing && "animate-spin")}
-            />
+            <RefreshCw className={cn("w-3.5 h-3.5", isSyncing && "animate-spin")} />
             <span>{isSyncing ? "Menyinkronkan..." : "Sync Data"}</span>
-          </Button>
+          </button>
         </div>
       </div>
 
-      {/* ═══ EXECUTIVE 2-ZONE TOOLBAR ═══ */}
-      <div className="bg-[#0f172a] border border-[#1e293b] rounded-[8px] p-3 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-        {/* Left Zone: Search & Filters */}
-        <div className="flex flex-wrap items-center gap-2.5 flex-1">
-          {/* Search Box */}
+      {/* ═══ FILTER BAR ═══ */}
+      <div className="bg-white p-3 rounded-[8px] border border-slate-200/90 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-2.5">
+        <div className="flex flex-wrap items-center gap-2 flex-1">
           <div className="relative min-w-[240px] max-w-sm flex-1">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+            <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
               type="text"
               placeholder="Cari proyek, kode, atau PIC..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#0a0f1d] border border-[#1e293b] focus:border-[#163d78] rounded-[6px] pl-9 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 outline-none"
+              className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-[6px] focus:outline-none focus:border-[#163d78] focus:bg-white text-slate-900 transition-colors"
             />
           </div>
 
-          {/* Discipline Select */}
-          <div className="flex items-center gap-1.5 bg-[#0a0f1d] border border-[#1e293b] rounded-[6px] px-2.5 py-1">
-            <Filter className="w-3.5 h-3.5 text-slate-400" />
-            <select
-              value={selectedDiscipline}
-              onChange={(e) => setSelectedDiscipline(e.target.value)}
-              className="bg-transparent text-xs text-slate-300 outline-none cursor-pointer pr-2"
-            >
-              <option value="" className="bg-[#0f172a]">
-                Semua Disiplin
+          <select
+            value={selectedDiscipline}
+            onChange={(e) => setSelectedDiscipline(e.target.value)}
+            className="px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-[6px] text-slate-700 font-medium focus:outline-none focus:border-[#163d78] cursor-pointer"
+          >
+            <option value="ALL">Semua Disiplin</option>
+            {disciplines.map((d) => (
+              <option key={d} value={d}>
+                {d}
               </option>
-              {disciplines.map((d) => (
-                <option key={d} value={d} className="bg-[#0f172a]">
-                  {d}
-                </option>
-              ))}
-              <option value="MRIR" className="bg-[#0f172a]">
-                MRIR (Material Receiving)
-              </option>
-            </select>
-          </div>
+            ))}
+            <option value="MRIR">MRIR (Material Receiving)</option>
+          </select>
 
-          {/* Sort Order Select */}
-          <div className="flex items-center gap-1.5 bg-[#0a0f1d] border border-[#1e293b] rounded-[6px] px-2.5 py-1">
-            <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400" />
-            <select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value as CCSortOrder)}
-              className="bg-transparent text-xs text-slate-300 outline-none cursor-pointer pr-2"
-            >
-              <option value="critical_first" className="bg-[#0f172a]">
-                Prioritas: Kritis Dulu
-              </option>
-              <option value="progress_asc" className="bg-[#0f172a]">
-                Progres: Terendah Dulu
-              </option>
-              <option value="total_desc" className="bg-[#0f172a]">
-                Volume: Terbanyak Dulu
-              </option>
-              <option value="code_asc" className="bg-[#0f172a]">
-                Kode Proyek: A - Z
-              </option>
-            </select>
-          </div>
+          <select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value as CCSortOrder)}
+            className="px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-[6px] text-slate-700 font-medium focus:outline-none focus:border-[#163d78] cursor-pointer"
+          >
+            <option value="critical_first">Prioritas: Kritis Dulu</option>
+            <option value="progress_asc">Progres: Terendah Dulu</option>
+            <option value="total_desc">Volume: Terbanyak Dulu</option>
+            <option value="code_asc">Kode Proyek: A - Z</option>
+          </select>
 
-          {/* Reset button if filtered */}
-          {(searchQuery || selectedDiscipline) && (
+          {(searchQuery || selectedDiscipline !== "ALL") && (
             <button
               onClick={() => {
                 setSearchQuery("");
-                setSelectedDiscipline("");
+                setSelectedDiscipline("ALL");
               }}
-              className="text-[11px] font-mono text-slate-400 hover:text-slate-200 underline px-1"
+              className="text-xs font-mono text-rose-600 hover:text-rose-800 underline px-1 cursor-pointer"
             >
-              Reset Filter
+              Reset
             </button>
           )}
         </div>
 
-        {/* Right Zone: Status Indicator */}
-        <div className="flex items-center gap-2 text-right justify-end shrink-0">
-          <span className="text-[11px] font-mono text-slate-400 tabular-nums">
-            {lastUpdate
-              ? `Update: ${new Date(lastUpdate).toLocaleTimeString("id-ID")}`
-              : "Menunggu sinkronisasi..."}
-          </span>
+        <div className="text-[11px] font-mono text-slate-500 tabular-nums self-end lg:self-auto">
+          {lastUpdate
+            ? `Update: ${new Date(lastUpdate).toLocaleTimeString("id-ID")}`
+            : "Menunggu sinkronisasi..."}
         </div>
       </div>
 
-      {/* ═══ 1. TOP EXECUTIVE 3-COLUMN GLASS DECK ═══ */}
+      {/* ═══ 1. TOP EXECUTIVE 3-COLUMN METRICS ═══ */}
       {totals && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {/* Column 1: Volume Dokumen Mutu */}
-          <Card className="p-4 bg-[#0f172a] border border-[#1e293b] flex flex-col justify-between">
+          <div className="bg-white p-4 rounded-[8px] border border-slate-200/90 shadow-sm flex flex-col justify-between border-l-4 border-l-[#163d78]">
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <FileText className="w-4 h-4 text-[#2563eb]" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono">
+                <FileText className="w-4 h-4 text-[#163d78]" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
                   Volume Dokumen Mutu
                 </h3>
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center justify-between p-2 rounded-[6px] bg-[#0a0f1d] border-l-2 border-[#2563eb]">
-                  <span className="text-xs text-slate-300 flex items-center gap-1.5">
-                    <FileText className="w-3.5 h-3.5 text-[#2563eb]" />
+                <div className="flex items-center justify-between p-2 rounded-[6px] bg-slate-50 border-l-2 border-[#163d78]">
+                  <span className="text-xs text-slate-700 flex items-center gap-1.5">
+                    <FileText className="w-3.5 h-3.5 text-[#163d78]" />
                     NFI Unik
                   </span>
-                  <span className="text-sm font-bold font-mono text-slate-100 tabular-nums">
+                  <span className="text-sm font-bold font-mono text-slate-900 tabular-nums">
                     {(totals.totalNFI || 0).toLocaleString("id-ID")}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between p-2 rounded-[6px] bg-[#0a0f1d] border-l-2 border-slate-400">
-                  <span className="text-xs text-slate-300 flex items-center gap-1.5">
-                    <ClipboardCheck className="w-3.5 h-3.5 text-slate-400" />
+                <div className="flex items-center justify-between p-2 rounded-[6px] bg-slate-50 border-l-2 border-slate-400">
+                  <span className="text-xs text-slate-700 flex items-center gap-1.5">
+                    <ClipboardCheck className="w-3.5 h-3.5 text-slate-500" />
                     ITR Terverifikasi
                   </span>
-                  <span className="text-sm font-bold font-mono text-slate-100 tabular-nums">
+                  <span className="text-sm font-bold font-mono text-slate-900 tabular-nums">
                     {(totals.totalITR || 0).toLocaleString("id-ID")}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between p-2 rounded-[6px] bg-[#0a0f1d] border-l-2 border-[#d97706]">
-                  <span className="text-xs text-[#d97706] flex items-center gap-1.5">
-                    <PackageCheck className="w-3.5 h-3.5 text-[#d97706]" />
+                <div className="flex items-center justify-between p-2 rounded-[6px] bg-slate-50 border-l-2 border-amber-500">
+                  <span className="text-xs text-amber-800 flex items-center gap-1.5">
+                    <PackageCheck className="w-3.5 h-3.5 text-amber-600" />
                     MRIR Material
                   </span>
-                  <span className="text-sm font-bold font-mono text-[#d97706] tabular-nums">
+                  <span className="text-sm font-bold font-mono text-amber-700 tabular-nums">
                     {(totals.totalMRIR || 0).toLocaleString("id-ID")}
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-[#1e293b] flex items-center justify-between text-[11px] font-mono text-slate-400">
-              <span>
-                Total:{" "}
-                <strong className="text-slate-200 tabular-nums">
-                  {totals.total.toLocaleString("id-ID")}
-                </strong>{" "}
-                records
-              </span>
-              <span>
-                <strong className="text-slate-200 tabular-nums">
-                  {totals.projectsActive}
-                </strong>{" "}
-                Proyek Aktif
-              </span>
+            <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+              <span>Total: <strong className="text-slate-800 tabular-nums">{totals.total.toLocaleString("id-ID")}</strong> records</span>
+              <span><strong className="text-slate-800 tabular-nums">{totals.projectsActive}</strong> Proyek Aktif</span>
             </div>
-          </Card>
+          </div>
 
           {/* Column 2: Klasifikasi Disiplin (ITR & MRIR) */}
-          <Card className="p-4 bg-[#0f172a] border border-[#1e293b] flex flex-col justify-between">
+          <div className="bg-white p-4 rounded-[8px] border border-slate-200/90 shadow-sm flex flex-col justify-between border-l-4 border-l-sky-600">
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <ClipboardCheck className="w-4 h-4 text-slate-300" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono">
+                <ClipboardCheck className="w-4 h-4 text-sky-600" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
                   Klasifikasi Disiplin (ITR & MRIR)
                 </h3>
               </div>
 
               <div className="grid grid-cols-2 gap-1.5 max-h-[148px] overflow-y-auto pr-1">
-                {Object.entries(totals.itrByDiscipline || {}).map(
-                  ([disc, count]) => {
-                    const isSelected = selectedDiscipline === disc.replace("ITR ", "");
-                    return (
-                      <button
-                        key={disc}
-                        onClick={() =>
-                          setSelectedDiscipline(
-                            isSelected ? "" : disc.replace("ITR ", "")
-                          )
-                        }
-                        className={cn(
-                          "flex items-center justify-between p-1.5 rounded-[4px] border text-left transition-colors",
-                          isSelected
-                            ? "bg-[#163d78] border-[#163d78] text-white"
-                            : "bg-[#0a0f1d] border-[#1e293b] text-slate-300 hover:border-slate-600"
-                        )}
-                        title={`Filter proyek ${disc}`}
-                      >
-                        <span className="text-[11px] truncate">{disc}</span>
-                        <span className="text-[11px] font-mono font-bold ml-1 tabular-nums">
-                          {count.toLocaleString("id-ID")}
-                        </span>
-                      </button>
-                    );
-                  }
-                )}
+                {Object.entries(totals.itrByDiscipline || {}).map(([disc, count]) => {
+                  const isSelected = selectedDiscipline === disc.replace("ITR ", "");
+                  return (
+                    <button
+                      key={disc}
+                      onClick={() => setSelectedDiscipline(isSelected ? "ALL" : disc.replace("ITR ", ""))}
+                      className={cn(
+                        "flex items-center justify-between p-1.5 rounded-[4px] border text-left transition-colors cursor-pointer",
+                        isSelected
+                          ? "bg-[#163d78] border-[#163d78] text-white"
+                          : "bg-slate-50 border-slate-200 text-slate-700 hover:border-slate-300"
+                      )}
+                    >
+                      <span className="text-[11px] truncate">{disc}</span>
+                      <span className="text-[11px] font-mono font-bold ml-1 tabular-nums">
+                        {count.toLocaleString("id-ID")}
+                      </span>
+                    </button>
+                  );
+                })}
 
-                {/* MRIR Badge */}
                 <button
-                  onClick={() =>
-                    setSelectedDiscipline(
-                      selectedDiscipline === "MRIR" ? "" : "MRIR"
-                    )
-                  }
+                  onClick={() => setSelectedDiscipline(selectedDiscipline === "MRIR" ? "ALL" : "MRIR")}
                   className={cn(
-                    "col-span-2 flex items-center justify-between p-1.5 rounded-[4px] border text-left transition-colors",
+                    "col-span-2 flex items-center justify-between p-1.5 rounded-[4px] border text-left transition-colors cursor-pointer",
                     selectedDiscipline === "MRIR"
-                      ? "bg-[#d97706]/30 border-[#d97706] text-[#f59e0b]"
-                      : "bg-[#0a0f1d] border-[#d97706]/30 text-[#d97706] hover:bg-[#d97706]/10"
+                      ? "bg-amber-600 text-white border-amber-600"
+                      : "bg-amber-50 border-amber-300 text-amber-800 hover:bg-amber-100"
                   )}
-                  title="Filter proyek dokumen MRIR"
                 >
                   <span className="text-[11px] font-semibold flex items-center gap-1.5">
                     <PackageCheck className="w-3.5 h-3.5" />
@@ -469,87 +403,77 @@ export function CommandCenterView({
               </div>
             </div>
 
-            <div className="mt-3 pt-2 text-[10.5px] font-mono text-slate-400">
+            <div className="mt-3 pt-2 text-[10.5px] font-mono text-slate-500">
               {totals.itrEmpty > 0 ? (
-                <span className="text-[#ed2e35]">
-                  {totals.itrEmpty} data belum terklasifikasi nomor ITR
-                </span>
+                <span className="text-[#ed2e35]">{totals.itrEmpty} data belum terklasifikasi</span>
               ) : (
-                "Seluruh data ITR terklasifikasi rapi — klik kartu untuk filter."
+                "Seluruh data ITR terklasifikasi rapi."
               )}
             </div>
-          </Card>
+          </div>
 
           {/* Column 3: Status Pelaksanaan Global */}
-          <Card className="p-4 bg-[#0f172a] border border-[#1e293b] flex flex-col justify-between">
+          <div className="bg-white p-4 rounded-[8px] border border-slate-200/90 shadow-sm flex flex-col justify-between border-l-4 border-l-emerald-600">
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <CheckCircle2 className="w-4 h-4 text-[#16a34a]" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
                   Status Pelaksanaan Global
                 </h3>
               </div>
 
               <div className="flex items-center gap-4 my-2">
-                {/* Progress Dial */}
-                <div className="w-16 h-16 rounded-[4px] bg-[#0a0f1d] border border-[#1e293b] flex flex-col items-center justify-center shrink-0">
-                  <span className="text-lg font-bold font-mono text-[#16a34a] tabular-nums">
+                <div className="w-16 h-16 rounded-[6px] bg-emerald-50 border border-emerald-200 flex flex-col items-center justify-center shrink-0">
+                  <span className="text-lg font-bold font-mono text-emerald-700 tabular-nums">
                     {globalProgress}%
                   </span>
-                  <span className="text-[9px] uppercase font-mono text-slate-400">
-                    Selesai
-                  </span>
+                  <span className="text-[9px] uppercase font-mono text-emerald-600">Selesai</span>
                 </div>
 
                 <div className="space-y-0.5">
-                  <div className="text-sm font-bold font-mono text-[#16a34a] tabular-nums">
+                  <div className="text-sm font-bold font-mono text-emerald-700 tabular-nums">
                     {totals.closed.toLocaleString("id-ID")} Closed
                   </div>
-                  <div className="text-xs font-bold font-mono text-[#ed2e35] tabular-nums">
+                  <div className="text-xs font-bold font-mono text-rose-700 tabular-nums">
                     {totals.open.toLocaleString("id-ID")} Open Aktif
                   </div>
-                  <div className="text-[11px] font-mono text-slate-400 tabular-nums">
-                    {(totals.canceled + totals.other).toLocaleString("id-ID")}{" "}
-                    Canceled / Lain
+                  <div className="text-[11px] font-mono text-slate-500 tabular-nums">
+                    {(totals.canceled + totals.other).toLocaleString("id-ID")} Canceled / Lain
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Schedule Status Banner */}
-            <div className="mt-3 pt-2 border-t border-[#1e293b]">
+            <div className="mt-3 pt-2 border-t border-slate-100">
               {maxAgingInfo.maxDays > 30 ? (
-                <div className="p-2 rounded-[4px] bg-[#ed2e35]/10 border border-[#ed2e35]/30 flex items-center gap-2 text-xs text-[#ed2e35] font-mono">
-                  <AlertTriangle className="w-4 h-4 shrink-0" />
-                  <span>
-                    Aging Terlama: <strong>{maxAgingInfo.maxDays} hari</strong>{" "}
-                    (Proyek {maxAgingInfo.projCode})
-                  </span>
+                <div className="p-2 rounded-[4px] bg-rose-50 border border-rose-200 flex items-center gap-2 text-xs text-rose-800 font-mono">
+                  <AlertTriangle className="w-4 h-4 shrink-0 text-rose-600" />
+                  <span>Aging Terlama: <strong>{maxAgingInfo.maxDays} hari</strong> (Proyek {maxAgingInfo.projCode})</span>
                 </div>
               ) : (
-                <div className="p-2 rounded-[4px] bg-[#16a34a]/10 border border-[#16a34a]/30 flex items-center gap-2 text-xs text-[#16a34a] font-mono">
-                  <CheckCircle2 className="w-4 h-4 shrink-0" />
+                <div className="p-2 rounded-[4px] bg-emerald-50 border border-emerald-200 flex items-center gap-2 text-xs text-emerald-800 font-mono">
+                  <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
                   <span>Seluruh Proyek Berjalan Sesuai Jadwal</span>
                 </div>
               )}
             </div>
-          </Card>
+          </div>
         </div>
       )}
 
       {/* ═══ PRESENTATION CHARTS DECK ═══ */}
       {showCharts && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Chart 1: Project Comparison Bar Chart */}
-          <Card className="p-4 bg-[#0f172a] border border-[#1e293b]">
-            <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#1e293b]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          {/* Chart 1: Project Comparison */}
+          <div className="bg-white p-4 rounded-[8px] border border-slate-200/90 shadow-sm">
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
               <div className="flex items-center gap-2">
-                <BarChart2 className="w-4 h-4 text-slate-300" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono">
+                <BarChart2 className="w-4 h-4 text-slate-600" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
                   Komparasi Status Dokumen per Proyek
                 </h3>
               </div>
-              <span className="text-[11px] font-mono text-slate-400 tabular-nums">
+              <span className="text-[11px] font-mono text-slate-500 tabular-nums">
                 {filteredProjects.length} Proyek
               </span>
             </div>
@@ -565,300 +489,208 @@ export function CommandCenterView({
                   <div key={p.code} className="space-y-1">
                     <div className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-slate-200">
-                          {p.code}
-                        </span>
-                        <span className="text-slate-400 truncate max-w-[160px] hidden sm:inline">
-                          {p.name}
-                        </span>
+                        <span className="font-mono font-bold text-[#163d78]">{p.code}</span>
+                        <span className="text-slate-600 truncate max-w-[160px] hidden sm:inline">{p.name}</span>
                       </div>
                       <div className="flex items-center gap-3 text-[11px] font-mono tabular-nums">
-                        <span className="text-[#16a34a]">{p.closed} Cls</span>
-                        <span className="text-[#ed2e35]">{p.open} Opn</span>
-                        {mrirCount > 0 && (
-                          <span className="text-[#d97706]">{mrirCount} MRIR</span>
-                        )}
+                        <span className="text-emerald-700">{p.closed} Cls</span>
+                        <span className="text-rose-700">{p.open} Opn</span>
+                        {mrirCount > 0 && <span className="text-amber-700">{mrirCount} MRIR</span>}
                       </div>
                     </div>
 
-                    {/* Technical Multi-bar */}
-                    <div className="h-2 w-full bg-[#0a0f1d] rounded-[2px] overflow-hidden flex">
-                      <div
-                        style={{ width: `${closedPct}%` }}
-                        className="bg-[#16a34a] h-full"
-                        title={`Closed: ${p.closed}`}
-                      />
-                      <div
-                        style={{ width: `${openPct}%` }}
-                        className="bg-[#ed2e35] h-full"
-                        title={`Open: ${p.open}`}
-                      />
+                    <div className="h-2 w-full bg-slate-100 rounded-[2px] overflow-hidden flex">
+                      <div style={{ width: `${closedPct}%` }} className="bg-emerald-600 h-full" />
+                      <div style={{ width: `${openPct}%` }} className="bg-rose-600 h-full" />
                     </div>
                   </div>
                 );
               })}
             </div>
 
-            <div className="mt-4 pt-2 border-t border-[#1e293b] flex items-center justify-center gap-6 text-[11px] font-mono text-slate-400">
-              <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-[1px] bg-[#16a34a]" />
-                Closed
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-[1px] bg-[#ed2e35]" />
-                Open Aktif
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-[1px] bg-[#d97706]" />
-                MRIR Material
-              </span>
+            <div className="mt-4 pt-2 border-t border-slate-100 flex items-center justify-center gap-6 text-[11px] font-mono text-slate-500">
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-[1px] bg-emerald-600" />Closed</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-[1px] bg-rose-600" />Open Aktif</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-[1px] bg-amber-600" />MRIR Material</span>
             </div>
-          </Card>
+          </div>
 
           {/* Chart 2: Discipline & Material Distribution */}
-          <Card className="p-4 bg-[#0f172a] border border-[#1e293b]">
-            <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#1e293b]">
+          <div className="bg-white p-4 rounded-[8px] border border-slate-200/90 shadow-sm">
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
               <div className="flex items-center gap-2">
-                <Target className="w-4 h-4 text-slate-300" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200 font-mono">
+                <Target className="w-4 h-4 text-slate-600" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
                   Distribusi Disiplin Mutu Portofolio
                 </h3>
               </div>
-              <span className="text-[11px] font-mono text-slate-400">
-                ITR & MRIR
-              </span>
+              <span className="text-[11px] font-mono text-slate-500">ITR & MRIR</span>
             </div>
 
             {totals && (
               <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
-                {Object.entries(totals.itrByDiscipline || {}).map(
-                  ([disc, count]) => {
-                    const pct =
-                      totals.totalITR > 0
-                        ? Math.round((count / totals.totalITR) * 100)
-                        : 0;
-
-                    return (
-                      <div key={disc} className="space-y-1">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-slate-300 font-mono">
-                            {disc}
-                          </span>
-                          <span className="font-mono text-slate-400 tabular-nums">
-                            {count} dok ({pct}%)
-                          </span>
-                        </div>
-                        <div className="h-2 w-full bg-[#0a0f1d] rounded-[2px] overflow-hidden">
-                          <div
-                            style={{ width: `${pct}%` }}
-                            className="bg-[#163d78] h-full"
-                          />
-                        </div>
+                {Object.entries(totals.itrByDiscipline || {}).map(([disc, count]) => {
+                  const pct = totals.totalITR > 0 ? Math.round((count / totals.totalITR) * 100) : 0;
+                  return (
+                    <div key={disc} className="space-y-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-slate-700 font-mono">{disc}</span>
+                        <span className="font-mono text-slate-500 tabular-nums">{count} dok ({pct}%)</span>
                       </div>
-                    );
-                  }
-                )}
+                      <div className="h-2 w-full bg-slate-100 rounded-[2px] overflow-hidden">
+                        <div style={{ width: `${pct}%` }} className="bg-[#163d78] h-full" />
+                      </div>
+                    </div>
+                  );
+                })}
 
-                {/* MRIR Distribution Bar */}
                 <div className="space-y-1 pt-1">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-[#d97706] font-mono font-semibold flex items-center gap-1.5">
+                    <span className="text-amber-800 font-mono font-semibold flex items-center gap-1.5">
                       <PackageCheck className="w-3.5 h-3.5" />
                       Material Receiving (MRIR)
                     </span>
-                    <span className="font-mono text-[#d97706] tabular-nums">
-                      {totals.totalMRIR || 0} dok
-                    </span>
+                    <span className="font-mono text-amber-700 tabular-nums">{totals.totalMRIR || 0} dok</span>
                   </div>
-                  <div className="h-2 w-full bg-[#0a0f1d] rounded-[2px] overflow-hidden">
+                  <div className="h-2 w-full bg-slate-100 rounded-[2px] overflow-hidden">
                     <div
                       style={{
-                        width: `${
-                          totals.total > 0
-                            ? Math.round(
-                                ((totals.totalMRIR || 0) / totals.total) * 100
-                              )
-                            : 0
-                        }%`,
+                        width: `${totals.total > 0 ? Math.round(((totals.totalMRIR || 0) / totals.total) * 100) : 0}%`,
                       }}
-                      className="bg-[#d97706] h-full"
+                      className="bg-amber-600 h-full"
                     />
                   </div>
                 </div>
               </div>
             )}
-          </Card>
+          </div>
         </div>
       )}
 
       {/* ═══ 2. ACTIVE PROJECTS GRID ═══ */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-300 font-mono">
-            Portofolio Proyek Aktif ({filteredProjects.length})
-          </h2>
-        </div>
+        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800 font-mono">
+          Portofolio Proyek Aktif ({filteredProjects.length})
+        </h2>
 
         {isLoading ? (
-          <div className="p-8 text-center bg-[#0f172a] border border-[#1e293b] rounded-[8px]">
+          <div className="p-8 text-center bg-white border border-slate-200 rounded-[8px]">
             <RefreshCw className="w-6 h-6 animate-spin mx-auto text-slate-400 mb-2" />
-            <p className="text-xs text-slate-400 font-mono">
-              Memuat portofolio proyek...
-            </p>
+            <p className="text-xs text-slate-500 font-mono">Memuat portofolio proyek...</p>
           </div>
         ) : filteredProjects.length === 0 ? (
-          <div className="p-8 text-center bg-[#0f172a] border border-[#1e293b] rounded-[8px]">
-            <Search className="w-6 h-6 mx-auto text-slate-500 mb-2" />
-            <p className="text-xs text-slate-400 font-mono">
-              Tidak ada proyek yang sesuai dengan kriteria filter.
-            </p>
+          <div className="p-8 text-center bg-white border border-slate-200 rounded-[8px]">
+            <Search className="w-6 h-6 mx-auto text-slate-400 mb-2" />
+            <p className="text-xs text-slate-500 font-mono">Tidak ada proyek yang sesuai dengan kriteria filter.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {filteredProjects.map((p) => {
               const pct = p.total > 0 ? Math.round((p.closed / p.total) * 100) : 0;
               const isExpanded = !!expandedCards[p.code];
               const mrirCount = p.totalMRIR || 0;
 
               return (
-                <Card
+                <div
                   key={p.code}
                   className={cn(
-                    "p-4 bg-[#0f172a] border transition-colors flex flex-col justify-between",
+                    "p-4 bg-white border rounded-[8px] shadow-sm transition-colors flex flex-col justify-between",
                     p.health === "red"
-                      ? "border-[#ed2e35]/50 hover:border-[#ed2e35]"
+                      ? "border-rose-300 border-l-4 border-l-rose-600"
                       : p.health === "yellow"
-                      ? "border-[#d97706]/50 hover:border-[#d97706]"
-                      : "border-[#1e293b] hover:border-slate-500"
+                      ? "border-amber-300 border-l-4 border-l-amber-500"
+                      : "border-slate-200 border-l-4 border-l-emerald-600"
                   )}
                 >
                   <div>
-                    {/* Header: Code & Health Badge */}
+                    {/* Header */}
                     <div className="flex items-center justify-between gap-2 mb-2">
-                      <span className="font-mono font-bold text-sm text-[#163d78] bg-[#163d78]/10 px-2 py-0.5 rounded-[3px] border border-[#163d78]/30">
+                      <span className="font-mono font-bold text-xs text-[#163d78] bg-blue-50 px-2 py-0.5 rounded-[3px] border border-blue-200">
                         {p.code}
                       </span>
                       {p.health === "red" ? (
-                        <Badge variant="rejected" className="rounded-[3px] font-mono">
-                          Kritis
-                        </Badge>
+                        <Badge variant="rejected" className="rounded-[3px] font-mono">Kritis</Badge>
                       ) : p.health === "yellow" ? (
-                        <Badge variant="pending" className="rounded-[3px] font-mono">
-                          Waspada
-                        </Badge>
+                        <Badge variant="pending" className="rounded-[3px] font-mono">Waspada</Badge>
                       ) : (
-                        <Badge variant="approved" className="rounded-[3px] font-mono">
-                          Lancar
-                        </Badge>
+                        <Badge variant="approved" className="rounded-[3px] font-mono">Lancar</Badge>
                       )}
                     </div>
 
-                    {/* Project Name */}
-                    <h3
-                      className="text-sm font-bold text-slate-100 line-clamp-1 mb-3"
-                      title={p.name}
-                    >
+                    <h3 className="text-sm font-bold text-slate-900 line-clamp-1 mb-3" title={p.name}>
                       {p.name}
                     </h3>
 
                     {/* Mini Metric Grid */}
-                    <div className="grid grid-cols-5 gap-1 text-center bg-[#0a0f1d] p-2 rounded-[6px] border border-[#1e293b] mb-3">
+                    <div className="grid grid-cols-5 gap-1 text-center bg-slate-50 p-2 rounded-[6px] border border-slate-200 mb-3">
                       <div>
-                        <div className="text-xs font-mono font-bold text-slate-100 tabular-nums">
-                          {p.totalNFI || 0}
-                        </div>
-                        <div className="text-[9px] font-mono text-slate-400">NFI</div>
+                        <div className="text-xs font-mono font-bold text-slate-900 tabular-nums">{p.totalNFI || 0}</div>
+                        <div className="text-[9px] font-mono text-slate-500">NFI</div>
                       </div>
                       <div>
-                        <div className="text-xs font-mono font-bold text-slate-100 tabular-nums">
-                          {p.totalITR || 0}
-                        </div>
-                        <div className="text-[9px] font-mono text-slate-400">ITR</div>
+                        <div className="text-xs font-mono font-bold text-slate-900 tabular-nums">{p.totalITR || 0}</div>
+                        <div className="text-[9px] font-mono text-slate-500">ITR</div>
                       </div>
                       <div>
-                        <div className="text-xs font-mono font-bold text-[#d97706] tabular-nums">
-                          {mrirCount}
-                        </div>
-                        <div className="text-[9px] font-mono text-[#d97706]">MRIR</div>
+                        <div className="text-xs font-mono font-bold text-amber-700 tabular-nums">{mrirCount}</div>
+                        <div className="text-[9px] font-mono text-amber-700">MRIR</div>
                       </div>
                       <div>
-                        <div className="text-xs font-mono font-bold text-[#ed2e35] tabular-nums">
-                          {p.open || 0}
-                        </div>
-                        <div className="text-[9px] font-mono text-[#ed2e35]">Open</div>
+                        <div className="text-xs font-mono font-bold text-rose-700 tabular-nums">{p.open || 0}</div>
+                        <div className="text-[9px] font-mono text-rose-700">Open</div>
                       </div>
                       <div>
-                        <div className="text-xs font-mono font-bold text-[#16a34a] tabular-nums">
-                          {p.closed || 0}
-                        </div>
-                        <div className="text-[9px] font-mono text-[#16a34a]">Clsd</div>
+                        <div className="text-xs font-mono font-bold text-emerald-700 tabular-nums">{p.closed || 0}</div>
+                        <div className="text-[9px] font-mono text-emerald-700">Clsd</div>
                       </div>
                     </div>
 
                     {/* Progress Bar */}
                     <div className="space-y-1 mb-3">
-                      <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
+                      <div className="flex items-center justify-between text-[11px] font-mono text-slate-500">
                         <span>Penyelesaian Dokumen</span>
-                        <span className="font-bold text-slate-200 tabular-nums">
-                          {pct}%
-                        </span>
+                        <span className="font-bold text-slate-800 tabular-nums">{pct}%</span>
                       </div>
-                      <div className="h-1.5 w-full bg-[#0a0f1d] rounded-[2px] overflow-hidden">
-                        <div
-                          style={{ width: `${pct}%` }}
-                          className="bg-[#16a34a] h-full transition-all duration-300"
-                        />
+                      <div className="h-1.5 w-full bg-slate-100 rounded-[2px] overflow-hidden">
+                        <div style={{ width: `${pct}%` }} className="bg-emerald-600 h-full transition-all duration-300" />
                       </div>
                     </div>
                   </div>
 
-                  {/* Card Footer: PIC & Aging */}
+                  {/* Card Footer */}
                   <div>
-                    <div className="pt-2 border-t border-[#1e293b] flex items-center justify-between text-xs text-slate-400 font-mono">
-                      <div
-                        className="flex items-center gap-1.5 truncate max-w-[180px]"
-                        title={`PIC: ${p.pic || "Belum ditentukan"}`}
-                      >
+                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-mono">
+                      <div className="flex items-center gap-1.5 truncate max-w-[180px]" title={`PIC: ${p.pic || "Belum ditentukan"}`}>
                         <User className="w-3.5 h-3.5 shrink-0 text-slate-400" />
                         <span className="truncate">{p.pic || "—"}</span>
                       </div>
 
                       {p.oldestOpenDays && p.oldestOpenDays > 0 && p.open > 0 ? (
-                        <span
-                          className={cn(
-                            "flex items-center gap-1 font-bold tabular-nums",
-                            p.oldestOpenDays > 30 ? "text-[#ed2e35]" : "text-[#d97706]"
-                          )}
-                        >
+                        <span className={cn("flex items-center gap-1 font-bold tabular-nums", p.oldestOpenDays > 30 ? "text-rose-700" : "text-amber-700")}>
                           <Clock className="w-3.5 h-3.5" />
                           {p.oldestOpenDays} hari
                         </span>
                       ) : (
-                        <span className="text-[#16a34a] flex items-center gap-1">
+                        <span className="text-emerald-700 flex items-center gap-1">
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           On Schedule
                         </span>
                       )}
                     </div>
 
-                    {/* Detail Actions & Expansion Drawer */}
                     <div className="mt-3 flex items-center justify-between gap-2">
                       <button
                         onClick={() => toggleCard(p.code)}
-                        className="text-[11px] font-mono text-slate-400 hover:text-slate-200 flex items-center gap-1"
+                        className="text-[11px] font-mono text-slate-500 hover:text-slate-800 flex items-center gap-1 cursor-pointer"
                       >
                         <span>{isExpanded ? "Tutup Rincian" : "Lihat Rincian"}</span>
-                        {isExpanded ? (
-                          <ChevronUp className="w-3.5 h-3.5" />
-                        ) : (
-                          <ChevronDown className="w-3.5 h-3.5" />
-                        )}
+                        {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                       </button>
 
                       {onSelectProject && (
                         <button
                           onClick={() => onSelectProject(p.code)}
-                          className="text-[11px] font-mono text-[#163d78] hover:text-[#2563eb] flex items-center gap-1 font-semibold"
+                          className="text-[11px] font-mono text-[#163d78] hover:underline flex items-center gap-1 font-semibold cursor-pointer"
                         >
                           <span>Buka Dokumen</span>
                           <ExternalLink className="w-3 h-3" />
@@ -866,40 +698,27 @@ export function CommandCenterView({
                       )}
                     </div>
 
-                    {/* Collapsible Rincian Drawer */}
                     {isExpanded && (
-                      <div className="mt-3 pt-3 border-t border-[#1e293b] space-y-2 text-xs">
-                        {/* ITR per Disiplin */}
+                      <div className="mt-3 pt-3 border-t border-slate-100 space-y-2 text-xs">
                         {p.itrByDiscipline && Object.keys(p.itrByDiscipline).length > 0 && (
                           <div>
-                            <div className="text-[10px] font-mono uppercase text-slate-400 mb-1">
-                              ITR per Disiplin
-                            </div>
+                            <div className="text-[10px] font-mono uppercase text-slate-500 mb-1">ITR per Disiplin</div>
                             <div className="flex flex-wrap gap-1">
                               {Object.entries(p.itrByDiscipline).map(([d, c]) => (
-                                <span
-                                  key={d}
-                                  className="px-1.5 py-0.5 rounded-[3px] bg-[#0a0f1d] border border-[#1e293b] text-[10px] font-mono text-slate-300"
-                                >
-                                  {d}: <strong className="text-white">{c}</strong>
+                                <span key={d} className="px-1.5 py-0.5 rounded-[3px] bg-slate-50 border border-slate-200 text-[10px] font-mono text-slate-700">
+                                  {d}: <strong className="text-slate-900">{c}</strong>
                                 </span>
                               ))}
                             </div>
                           </div>
                         )}
 
-                        {/* Disciplines Chips */}
                         {p.disciplines && p.disciplines.length > 0 && (
                           <div>
-                            <div className="text-[10px] font-mono uppercase text-slate-400 mb-1">
-                              Disiplin Teknis
-                            </div>
+                            <div className="text-[10px] font-mono uppercase text-slate-500 mb-1">Disiplin Teknis</div>
                             <div className="flex flex-wrap gap-1">
                               {p.disciplines.map((d) => (
-                                <span
-                                  key={d}
-                                  className="px-1.5 py-0.5 rounded-[3px] bg-[#163d78]/20 border border-[#163d78]/40 text-[10px] font-mono text-slate-200"
-                                >
+                                <span key={d} className="px-1.5 py-0.5 rounded-[3px] bg-blue-50 border border-blue-200 text-[10px] font-mono text-[#163d78]">
                                   {d}
                                 </span>
                               ))}
@@ -909,7 +728,7 @@ export function CommandCenterView({
                       </div>
                     )}
                   </div>
-                </Card>
+                </div>
               );
             })}
           </div>
@@ -918,4 +737,3 @@ export function CommandCenterView({
     </div>
   );
 }
-

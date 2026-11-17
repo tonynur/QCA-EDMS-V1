@@ -2,9 +2,7 @@
 
 import React, { useState } from "react";
 import { UserPlus, Search } from "lucide-react";
-import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { Card } from "@/components/ui/Card";
 
 interface SystemUser {
   id: string;
@@ -104,180 +102,179 @@ export function UserManagementView() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
-      <div className="border-b border-[#1e293b] pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="bg-white p-4 sm:p-5 rounded-[8px] border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-lg font-bold tracking-wide text-slate-100 uppercase">
+          <h1 className="text-xl font-bold tracking-tight text-slate-900">
             Manajemen Pengguna & Hak Akses
           </h1>
-          <p className="text-xs text-slate-400 font-mono mt-0.5">
+          <p className="text-xs text-slate-500 font-mono mt-0.5">
             Otoritas akses sistem EDMS, approval dokumen & manajemen inspektor QA/QC PT Asuka Engineering Indonesia
           </p>
         </div>
-        <Button
-          variant="primary"
-          size="sm"
+        <button
           onClick={() => setIsModalOpen(true)}
-          className="text-xs font-mono gap-1.5 bg-[#163d78] hover:bg-[#1a4a91]"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[6px] bg-[#163d78] hover:bg-[#1a4a91] text-white font-semibold text-xs tracking-wide shadow-sm transition-all cursor-pointer self-start sm:self-auto"
         >
-          <UserPlus className="w-3.5 h-3.5" />
+          <UserPlus className="w-4 h-4" />
           <span>Tambah Pengguna</span>
-        </Button>
+        </button>
       </div>
 
-      {/* Role Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <Card className="p-4 bg-[#0f172a] border border-[#1e293b]">
-          <div className="text-[11px] font-mono uppercase text-slate-400">Total Pengguna</div>
-          <div className="text-2xl font-bold font-mono text-slate-100 mt-1 tabular-nums">
-            {users.length}
-          </div>
-        </Card>
-        <Card className="p-4 bg-[#0f172a] border border-[#1e293b]">
-          <div className="text-[11px] font-mono uppercase text-[#38bdf8]">Administrator</div>
-          <div className="text-2xl font-bold font-mono text-[#38bdf8] mt-1 tabular-nums">
+      {/* Role Summary Cards — Light Theme */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-[#163d78]">
+          <div className="text-[11px] font-semibold uppercase text-slate-500 font-mono">Total Pengguna</div>
+          <div className="text-2xl font-bold font-mono text-slate-900 mt-1 tabular-nums">{users.length}</div>
+        </div>
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-sky-600">
+          <div className="text-[11px] font-semibold uppercase text-sky-700 font-mono">Administrator</div>
+          <div className="text-2xl font-bold font-mono text-sky-700 mt-1 tabular-nums">
             {users.filter((u) => u.role === "Admin").length}
           </div>
-        </Card>
-        <Card className="p-4 bg-[#0f172a] border border-[#1e293b]">
-          <div className="text-[11px] font-mono uppercase text-[#4ade80]">QA/QC Approver</div>
-          <div className="text-2xl font-bold font-mono text-[#4ade80] mt-1 tabular-nums">
+        </div>
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-emerald-600">
+          <div className="text-[11px] font-semibold uppercase text-emerald-700 font-mono">QA/QC Approver</div>
+          <div className="text-2xl font-bold font-mono text-emerald-700 mt-1 tabular-nums">
             {users.filter((u) => u.role === "QA/QC Manager" || u.role === "QA/QC Engineer").length}
           </div>
-        </Card>
-        <Card className="p-4 bg-[#0f172a] border border-[#1e293b]">
-          <div className="text-[11px] font-mono uppercase text-[#facc15]">Site Inspector</div>
-          <div className="text-2xl font-bold font-mono text-[#facc15] mt-1 tabular-nums">
+        </div>
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-amber-500">
+          <div className="text-[11px] font-semibold uppercase text-amber-700 font-mono">Site Inspector</div>
+          <div className="text-2xl font-bold font-mono text-amber-700 mt-1 tabular-nums">
             {users.filter((u) => u.role === "QC Inspector").length}
           </div>
-        </Card>
+        </div>
       </div>
 
-      {/* Search Toolbar */}
-      <div className="bg-[#0f172a] border border-[#1e293b] rounded-[6px] p-3 flex items-center justify-between">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400 pointer-events-none" />
+      {/* Search Toolbar — Light Theme */}
+      <div className="bg-white p-3 rounded-[8px] border border-slate-200/90 shadow-sm flex items-center gap-3">
+        <div className="relative flex-1 max-w-md">
+          <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Cari nama, email, atau peran..."
-            className="w-full bg-[#0a0f1d] border border-[#1e293b] rounded-[6px] pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 outline-none focus:border-[#163d78]"
+            placeholder="Cari pengguna berdasarkan nama, email, atau peran..."
+            className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-[6px] focus:outline-none focus:border-[#163d78] focus:bg-white text-slate-900 transition-colors"
           />
+        </div>
+        <span className="text-xs font-mono text-slate-500 tabular-nums">
+          Total: <strong className="text-slate-800">{filteredUsers.length}</strong> akun
+        </span>
+      </div>
+
+      {/* User Table — Light Theme */}
+      <div className="bg-white rounded-[8px] border border-slate-200/90 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr className="bg-slate-100/90 border-b border-slate-200 text-slate-700 font-semibold uppercase tracking-wider text-[11px]">
+                <th className="py-2.5 px-3 w-12 text-center">No</th>
+                <th className="py-2.5 px-3">Nama Lengkap</th>
+                <th className="py-2.5 px-3">Email Asuka</th>
+                <th className="py-2.5 px-3">Peran / Role</th>
+                <th className="py-2.5 px-3">Status</th>
+                <th className="py-2.5 px-3">Aktivitas Terakhir</th>
+                <th className="py-2.5 px-3 text-center">Tindakan</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-150 bg-white">
+              {filteredUsers.map((u, idx) => (
+                <tr key={u.id} className="hover:bg-slate-50/80 transition-colors">
+                  <td className="py-3 px-3 text-center font-mono text-slate-400 text-xs tabular-nums">{idx + 1}</td>
+                  <td className="py-3 px-3 font-semibold text-slate-900">{u.name}</td>
+                  <td className="py-3 px-3 font-mono text-slate-600">{u.email}</td>
+                  <td className="py-3 px-3">
+                    <span className="px-2 py-0.5 rounded-[3px] bg-slate-100 text-slate-800 font-semibold font-mono text-[11px] border border-slate-300">
+                      {u.role}
+                    </span>
+                  </td>
+                  <td className="py-3 px-3">
+                    <span className={`px-2 py-0.5 rounded-[3px] text-[11px] font-semibold ${
+                      u.status === "Active"
+                        ? "bg-emerald-50 text-emerald-800 border border-emerald-300"
+                        : "bg-slate-100 text-slate-500 border border-slate-300"
+                    }`}>
+                      {u.status}
+                    </span>
+                  </td>
+                  <td className="py-3 px-3 font-mono text-slate-500 text-[11px]">{u.lastLogin}</td>
+                  <td className="py-3 px-3 text-center">
+                    <button
+                      onClick={() => handleToggleStatus(u.id)}
+                      className="px-2.5 py-1 text-[11px] font-mono rounded-[4px] border border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-700 transition-colors cursor-pointer"
+                    >
+                      {u.status === "Active" ? "Nonaktifkan" : "Aktifkan"}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
-      {/* Users Table */}
-      <div className="bg-[#0f172a] border border-[#1e293b] rounded-[6px] overflow-hidden">
-        <table className="w-full text-left border-collapse text-xs">
-          <thead>
-            <tr className="bg-[#0a0f1d] border-b border-[#1e293b] text-slate-400 font-mono uppercase text-[10.5px]">
-              <th className="py-2.5 px-3">ID Pengguna</th>
-              <th className="py-2.5 px-3">Nama Lengkap</th>
-              <th className="py-2.5 px-3">Email Korporat</th>
-              <th className="py-2.5 px-3">Peran (Role)</th>
-              <th className="py-2.5 px-3 text-center">Status</th>
-              <th className="py-2.5 px-3">Terakhir Masuk</th>
-              <th className="py-2.5 px-3 text-center">Aksi</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#1e293b]">
-            {filteredUsers.map((u) => (
-              <tr key={u.id} className="hover:bg-[#1e293b]/40 transition-colors">
-                <td className="py-3 px-3 font-mono text-[#38bdf8] font-semibold">{u.id}</td>
-                <td className="py-3 px-3 font-semibold text-slate-100">{u.name}</td>
-                <td className="py-3 px-3 font-mono text-slate-300">{u.email}</td>
-                <td className="py-3 px-3">
-                  <span className="font-mono text-xs px-2 py-0.5 rounded-[3px] bg-[#163d78]/30 border border-[#163d78] text-[#38bdf8]">
-                    {u.role}
-                  </span>
-                </td>
-                <td className="py-3 px-3 text-center">
-                  <Badge variant={u.status === "Active" ? "approved" : "rejected"}>
-                    {u.status}
-                  </Badge>
-                </td>
-                <td className="py-3 px-3 font-mono text-slate-400 tabular-nums">{u.lastLogin}</td>
-                <td className="py-3 px-3 text-center">
-                  <button
-                    onClick={() => handleToggleStatus(u.id)}
-                    className="text-[11px] font-mono text-slate-400 hover:text-white px-2 py-1 rounded-[3px] bg-[#1e293b] hover:bg-[#334155] border border-[#334155] transition-colors"
-                  >
-                    {u.status === "Active" ? "Nonaktifkan" : "Aktifkan"}
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Add User Modal */}
+      {/* Modal Add User */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="w-full max-w-md bg-[#0f172a] border border-[#1e293b] rounded-[8px] p-5 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#1e293b]">
-              <div className="flex items-center gap-2">
-                <UserPlus className="w-4 h-4 text-[#38bdf8]" />
-                <h3 className="text-sm font-bold font-mono text-slate-100 uppercase">
-                  Tambah Pengguna Baru
-                </h3>
-              </div>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white">
-                ✕
-              </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="w-full max-w-md bg-white border border-slate-200 rounded-[8px] p-5 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <h3 className="text-sm font-bold font-mono text-slate-900 uppercase">Tambah Pengguna Baru</h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-700 text-lg">×</button>
             </div>
-
             <form onSubmit={handleAddUser} className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-300 font-mono mb-1">Nama Lengkap:</label>
+                <label className="block font-mono text-slate-700 mb-1">Nama Lengkap</label>
                 <input
                   type="text"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Contoh: Ahmad Nur Fatony"
-                  className="w-full bg-[#0a0f1d] border border-[#1e293b] rounded-[6px] p-2 text-slate-100 outline-none focus:border-[#163d78]"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-[6px] p-2 text-slate-900 outline-none focus:border-[#163d78]"
                 />
               </div>
-
               <div>
-                <label className="block text-slate-300 font-mono mb-1">Email Korporat:</label>
+                <label className="block font-mono text-slate-700 mb-1">Email Asuka / Akun Google</label>
                 <input
                   type="email"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="nama@asuka.co.id"
-                  className="w-full bg-[#0a0f1d] border border-[#1e293b] rounded-[6px] p-2 text-slate-100 outline-none focus:border-[#163d78]"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-[6px] p-2 text-slate-900 outline-none focus:border-[#163d78]"
                 />
               </div>
-
               <div>
-                <label className="block text-slate-300 font-mono mb-1">Peran Akses:</label>
+                <label className="block font-mono text-slate-700 mb-1">Peran / Hak Akses</label>
                 <select
                   value={formData.role}
-                  onChange={(e) =>
-                    setFormData({ ...formData, role: e.target.value as SystemUser["role"] })
-                  }
-                  className="w-full bg-[#0a0f1d] border border-[#1e293b] rounded-[6px] p-2 text-slate-100 outline-none focus:border-[#163d78]"
+                  onChange={(e) => setFormData({ ...formData, role: e.target.value as SystemUser["role"] })}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-[6px] p-2 text-slate-900 outline-none focus:border-[#163d78]"
                 >
-                  <option value="Admin">Admin (Akses Penuh)</option>
-                  <option value="QA/QC Manager">QA/QC Manager (Approval & PQP)</option>
-                  <option value="QA/QC Engineer">QA/QC Engineer (Verifikator ITP)</option>
-                  <option value="QC Inspector">QC Inspector (Site Report & Kalibrasi)</option>
-                  <option value="Viewer">Viewer (Hanya Baca)</option>
+                  <option value="Admin">Admin</option>
+                  <option value="QA/QC Manager">QA/QC Manager</option>
+                  <option value="QA/QC Engineer">QA/QC Engineer</option>
+                  <option value="QC Inspector">QC Inspector</option>
+                  <option value="Viewer">Viewer</option>
                 </select>
               </div>
-
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#1e293b]">
-                <Button variant="outline" size="sm" type="button" onClick={() => setIsModalOpen(false)}>
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 text-xs font-semibold rounded-[6px] border border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-700"
+                >
                   Batal
-                </Button>
-                <Button variant="primary" size="sm" type="submit" className="bg-[#163d78] hover:bg-[#1a4a91]">
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-xs font-semibold rounded-[6px] bg-[#163d78] hover:bg-[#1a4a91] text-white"
+                >
                   Simpan Pengguna
-                </Button>
+                </button>
               </div>
             </form>
           </div>
@@ -286,4 +283,3 @@ export function UserManagementView() {
     </div>
   );
 }
-

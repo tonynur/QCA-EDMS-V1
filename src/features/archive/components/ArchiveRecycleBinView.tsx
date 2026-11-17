@@ -100,105 +100,111 @@ export function ArchiveRecycleBinView({
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
-      <div className="border-b border-[#1e293b] pb-4">
-        <h1 className="text-lg font-bold tracking-wide text-slate-100 uppercase">
-          Arsip & Tempat Sampah (Recycle Bin)
-        </h1>
-        <p className="text-xs text-slate-400 font-mono mt-0.5">
-          Manajemen dokumen mutu superseded, masa retensi ISO 9001:2015 & pemulihan dokumen yang terhapus
-        </p>
+      <div className="bg-white p-4 sm:p-5 rounded-[8px] border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-bold tracking-tight text-slate-900">
+            Arsip & Tempat Sampah (Recycle Bin)
+          </h1>
+          <p className="text-xs text-slate-500 font-mono mt-0.5">
+            Manajemen dokumen mutu superseded, masa retensi ISO 9001:2015 & pemulihan dokumen yang terhapus
+          </p>
+        </div>
+
+        {/* Tab switchers */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setActiveTab("archive")}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-[6px] text-xs font-semibold transition-colors cursor-pointer ${
+              activeTab === "archive"
+                ? "bg-[#163d78] text-white shadow-sm"
+                : "bg-slate-50 text-slate-700 border border-slate-300 hover:bg-slate-100"
+            }`}
+          >
+            <Archive className="w-3.5 h-3.5" />
+            <span>Arsip Dokumen ({sourceDocs.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("trash")}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-[6px] text-xs font-semibold transition-colors cursor-pointer ${
+              activeTab === "trash"
+                ? "bg-[#ed2e35] text-white shadow-sm"
+                : "bg-slate-50 text-slate-700 border border-slate-300 hover:bg-slate-100"
+            }`}
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Tempat Sampah</span>
+          </button>
+        </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-[#1e293b] pb-2">
-        <button
-          onClick={() => setActiveTab("archive")}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-[4px] text-xs font-mono font-medium transition-colors ${
-            activeTab === "archive"
-              ? "bg-[#163d78] text-white"
-              : "text-slate-400 hover:text-slate-200 hover:bg-[#1e293b]"
-          }`}
-        >
-          <Archive className="w-3.5 h-3.5" />
-          <span>Arsip Dokumen ({mockArchivedDocs.length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("trash")}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-[4px] text-xs font-mono font-medium transition-colors ${
-            activeTab === "trash"
-              ? "bg-[#ed2e35] text-white"
-              : "text-slate-400 hover:text-slate-200 hover:bg-[#1e293b]"
-          }`}
-        >
-          <Trash2 className="w-3.5 h-3.5" />
-          <span>Tempat Sampah ({mockTrashDocs.length})</span>
-        </button>
-      </div>
-
-      {/* Search Toolbar */}
-      <div className="bg-[#0f172a] border border-[#1e293b] rounded-[6px] p-3 flex items-center justify-between">
+      {/* Search Toolbar — Light Theme */}
+      <div className="bg-white p-3 rounded-[8px] border border-slate-200/90 shadow-sm flex items-center justify-between">
         <div className="relative flex-1 max-w-sm">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400 pointer-events-none" />
+          <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={`Cari di ${activeTab === "archive" ? "arsip" : "tempat sampah"}...`}
-            className="w-full bg-[#0a0f1d] border border-[#1e293b] rounded-[6px] pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 outline-none focus:border-[#163d78]"
+            className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-[6px] focus:outline-none focus:border-[#163d78] focus:bg-white text-slate-900 transition-colors"
           />
         </div>
+        <span className="text-xs font-mono text-slate-500 tabular-nums">
+          Ditemukan: <strong className="text-slate-800">{displayedDocs.length}</strong> dokumen
+        </span>
       </div>
 
-      {/* Table */}
-      <div className="bg-[#0f172a] border border-[#1e293b] rounded-[6px] overflow-hidden">
-        <table className="w-full text-left border-collapse text-xs">
-          <thead>
-            <tr className="bg-[#0a0f1d] border-b border-[#1e293b] text-slate-400 font-mono uppercase text-[10.5px]">
-              <th className="py-2.5 px-3">Kode Dokumen</th>
-              <th className="py-2.5 px-3">Judul Dokumen</th>
-              <th className="py-2.5 px-3">Proyek & Disiplin</th>
-              <th className="py-2.5 px-3 text-center">Status Retensi</th>
-              <th className="py-2.5 px-3">Tanggal Pengarsipan</th>
-              <th className="py-2.5 px-3 text-center">Aksi</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#1e293b]">
-            {displayedDocs.map((doc) => (
-              <tr key={doc.docId} className="hover:bg-[#1e293b]/40 transition-colors">
-                <td className="py-3 px-3 font-mono font-semibold text-slate-300">
-                  {doc.documentCode}
-                  <span className="text-[10px] text-slate-400 ml-1.5">Rev {doc.revision}</span>
-                </td>
-                <td className="py-3 px-3 text-slate-200 max-w-xs">{doc.title}</td>
-                <td className="py-3 px-3 font-mono text-slate-400">
-                  {doc.projectName} • {doc.discipline}
-                </td>
-                <td className="py-3 px-3 text-center">
-                  <Badge variant={activeTab === "archive" ? "neutral" : "rejected"}>
-                    {doc.status}
-                  </Badge>
-                </td>
-                <td className="py-3 px-3 font-mono text-slate-400 tabular-nums">
-                  {formatDate(doc.timestamp)}
-                </td>
-                <td className="py-3 px-3 text-center">
-                  <button
-                    onClick={() => onRestore && onRestore(doc.docId)}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-[4px] bg-[#16a34a]/20 hover:bg-[#16a34a]/30 border border-[#16a34a]/40 text-[#4ade80] text-xs font-mono font-semibold transition-colors"
-                  >
-                    <RotateCcw className="w-3 h-3" />
-                    <span>Pulihkan</span>
-                  </button>
-                </td>
+      {/* Table — Light Theme */}
+      <div className="bg-white rounded-[8px] border border-slate-200/90 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr className="bg-slate-100/90 border-b border-slate-200 text-slate-700 font-semibold uppercase tracking-wider text-[11px]">
+                <th className="py-2.5 px-3">Kode Dokumen</th>
+                <th className="py-2.5 px-3 min-w-[240px]">Judul Dokumen</th>
+                <th className="py-2.5 px-3">Proyek & Disiplin</th>
+                <th className="py-2.5 px-3 text-center">Status Retensi</th>
+                <th className="py-2.5 px-3 text-center">Tanggal Pengarsipan</th>
+                <th className="py-2.5 px-3 text-center">Aksi</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-slate-150 bg-white">
+              {displayedDocs.map((doc) => (
+                <tr key={doc.docId} className="hover:bg-slate-50/80 transition-colors">
+                  <td className="py-3 px-3 font-mono font-bold text-[#163d78]">
+                    {doc.documentCode}
+                    <span className="text-[10px] text-slate-500 ml-1.5 font-normal">Rev {doc.revision}</span>
+                  </td>
+                  <td className="py-3 px-3 text-slate-900 font-medium max-w-xs">{doc.title}</td>
+                  <td className="py-3 px-3 font-mono text-slate-600">
+                    {doc.projectName} • {doc.discipline}
+                  </td>
+                  <td className="py-3 px-3 text-center">
+                    <span className="px-2 py-0.5 rounded-[3px] bg-slate-100 text-slate-700 font-semibold text-[11px] border border-slate-300">
+                      {doc.status}
+                    </span>
+                  </td>
+                  <td className="py-3 px-3 font-mono text-slate-600 tabular-nums text-center">
+                    {formatDate(doc.timestamp)}
+                  </td>
+                  <td className="py-3 px-3 text-center">
+                    <button
+                      onClick={() => onRestore && onRestore(doc.docId)}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-[4px] bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-mono font-semibold transition-colors cursor-pointer"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      <span>Pulihkan</span>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
 }
-

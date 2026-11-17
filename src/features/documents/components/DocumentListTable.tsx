@@ -13,6 +13,11 @@ import {
   QrCode,
   FileSpreadsheet,
   UploadCloud,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  FileBox,
+  RotateCcw,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -55,8 +60,10 @@ export function DocumentListTable({
   const filteredDocs = useMemo(() => {
     return documents.filter((doc) => {
       const matchSearch =
+        searchTerm === "" ||
         doc.documentNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
         doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (doc.documentCode && doc.documentCode.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (doc.projectName && doc.projectName.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (doc.uploaderName && doc.uploaderName.toLowerCase().includes(searchTerm.toLowerCase()));
 
@@ -70,8 +77,8 @@ export function DocumentListTable({
     });
   }, [documents, searchTerm, selectedType, selectedDiscipline, selectedStatus]);
 
-  // Donut chart status breakdown (Matching CMS Screenshot)
-  const statusCounts = useMemo(() => {
+  // Breakdown KPI Metrik
+  const stats = useMemo(() => {
     let pending = 0;
     let approved = 0;
     let rejected = 0;
@@ -86,73 +93,69 @@ export function DocumentListTable({
       else pending++;
     });
 
+    const total = documents.length;
     return {
-      Pending: pending,
-      Approved: approved,
-      Rejected: rejected,
-      Superseded: superseded,
+      total,
+      pending,
+      approved,
+      rejected,
+      superseded,
+      pctPending: total > 0 ? Math.round((pending / total) * 100) : 0,
+      pctApproved: total > 0 ? Math.round((approved / total) * 100) : 0,
+      pctRejected: total > 0 ? Math.round((rejected / total) * 100) : 0,
     };
   }, [documents]);
 
-  const totalDocs = documents.length;
+  const hasActiveFilter =
+    searchTerm !== "" || selectedType !== "ALL" || selectedDiscipline !== "ALL" || selectedStatus !== "ALL";
 
-  const donutElements = useMemo(() => {
-    if (totalDocs === 0) return null;
-    const size = 160;
-    const r = 56;
-    const sw = 22;
-    const cx = size / 2;
-    const cy = size / 2;
-    const cir = 2 * Math.PI * r;
-
-    const items = [
-      { key: "Pending", count: statusCounts.Pending, color: "#f59e0b" },
-      { key: "Approved", count: statusCounts.Approved, color: "#16a34a" },
-      { key: "Rejected", count: statusCounts.Rejected, color: "#dc2626" },
-      { key: "Superseded", count: statusCounts.Superseded, color: "#64748b" },
-    ].filter((it) => it.count > 0);
-
-    let cum = 0;
-    const circles = items.map((it) => {
-      const frac = it.count / totalDocs;
-      const dash = frac * cir;
-      const gap = cir - dash;
-      const offset = -cum;
-      cum += dash;
-      return (
-        <circle
-          key={it.key}
-          cx={cx}
-          cy={cy}
-          r={r}
-          fill="none"
-          stroke={it.color}
-          strokeWidth={sw}
-          strokeDasharray={`${dash} ${gap}`}
-          strokeDashoffset={offset}
-        />
-      );
-    });
-
-    return { size, cx, cy, circles, items };
-  }, [totalDocs, statusCounts]);
+  const resetFilters = () => {
+    setSearchTerm("");
+    setSelectedType("ALL");
+    setSelectedDiscipline("ALL");
+    setSelectedStatus("ALL");
+  };
 
   const renderStatusBadge = (status: string) => {
     const s = (status || "").toUpperCase();
     switch (s) {
       case "APPROVED":
-        return <Badge variant="approved">APPROVED</Badge>;
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold rounded-[3px] bg-emerald-50 text-emerald-800 border border-emerald-300">
+            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+            APPROVED
+          </span>
+        );
       case "PENDING":
-        return <Badge variant="pending">PENDING</Badge>;
       case "SUBMITTED":
-        return <Badge variant="submitted">SUBMITTED</Badge>;
       case "IN REVIEW":
       case "IN_REVIEW":
-        return <Badge variant="pending">IN REVIEW</Badge>;
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold rounded-[3px] bg-amber-50 text-amber-900 border border-amber-300">
+            <Clock className="w-3 h-3 text-amber-600" />
+            PENDING
+          </span>
+        );
       case "REJECTED":
-        return <Badge variant="rejected">REJECTED</Badge>;
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold rounded-[3px] bg-rose-50 text-rose-800 border border-rose-300">
+            <X className="w-3 h-3 text-rose-600" />
+            REJECTED
+          </span>
+        );
+      case "SUPERSEDED":
+      case "OBSOLETE":
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold rounded-[3px] bg-slate-100 text-slate-700 border border-slate-300">
+            SUPERSEDED
+          </span>
+        );
       default:
-        return <Badge variant="neutral">{status || "DRAFT"}</Badge>;
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold rounded-[3px] bg-slate-100 text-slate-700 border border-slate-300">
+            {status || "DRAFT"}
+          </span>
+        );
     }
   };
 
@@ -195,301 +198,364 @@ export function DocumentListTable({
   };
 
   return (
-    <div className="bg-white border border-slate-200/80 rounded-xl shadow-sm p-6 space-y-5">
-      {/* Top Banner Row matching CMS Screenshot */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
+    <div className="space-y-4">
+      {/* 1. Header Banner & Action Button */}
+      <div className="bg-white p-4 sm:p-5 rounded-[8px] border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900">
-            Daftar Dokumen Mutu
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold tracking-tight text-slate-900">
+              Daftar Dokumen Mutu (EDMS)
+            </h1>
+            <span className="text-[11px] font-mono px-2 py-0.5 rounded-[3px] bg-slate-100 text-slate-600 font-semibold border border-slate-200">
+              {filteredDocs.length} Dokumen Aktif
+            </span>
+          </div>
           <p className="text-xs text-slate-500 font-mono mt-0.5">
-            Semua dokumen proyek yang terdaftar dan riwayat approval.
+            Sistem sentral kontrol dokumen ITP, Method Statement, MTR & laporan inspeksi
           </p>
         </div>
 
-        {onAddNew && (
-          <button
-            onClick={onAddNew}
-            className="flex items-center gap-2.5 px-6 py-3 rounded-[8px] bg-[#ed2e35] hover:bg-[#c92026] text-white font-bold text-sm tracking-wide shadow-md shadow-[#ed2e35]/20 transition-all self-start sm:self-auto cursor-pointer"
-          >
-            <UploadCloud className="w-5 h-5" strokeWidth={2} />
-            <span>Unggah Dokumen Baru</span>
-          </button>
-        )}
-      </div>
-
-      {/* Filter Row 1 (Search, Scan, Types, Status, Muat Ulang) */}
-      <div className="flex flex-wrap items-center gap-2.5 bg-slate-50/70 p-3 border border-slate-200 rounded-[8px]">
-        <div className="flex-1 min-w-[200px]">
-          <Input
-            placeholder="Cari nama file, proyek, atau jud..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            icon={<Search className="w-4 h-4 text-slate-400" strokeWidth={1.8} />}
-            className="bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:bg-white"
-          />
+        <div className="flex items-center gap-2">
+          {onAddNew && (
+            <button
+              onClick={onAddNew}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[6px] bg-[#ed2e35] hover:bg-[#c92026] text-white font-semibold text-xs tracking-wide shadow-sm hover:shadow transition-all cursor-pointer"
+            >
+              <UploadCloud className="w-4 h-4" strokeWidth={2} />
+              <span>Unggah Dokumen Baru</span>
+            </button>
+          )}
         </div>
-
-        {onOpenQRScanner && (
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={onOpenQRScanner}
-            icon={<QrCode className="w-4 h-4 text-slate-500" strokeWidth={1.8} />}
-            className="bg-white hover:bg-slate-50 text-slate-700 border-slate-300"
-          >
-            Scan
-          </Button>
-        )}
-
-        <select
-          value={selectedType}
-          onChange={(e) => setSelectedType(e.target.value)}
-          className="h-9 bg-white text-slate-700 border border-slate-300 rounded-[6px] px-3 text-xs focus:outline-none focus:border-[#163d78]"
-        >
-          <option value="ALL">Semua Jenis</option>
-          <option value="ITP">ITP (Inspection & Test Plan)</option>
-          <option value="MS">Method Statement (MS)</option>
-          <option value="MTR">Material Approval (MTR)</option>
-          <option value="NCR">Non-Conformance Report (NCR)</option>
-        </select>
-
-        <select
-          value={selectedDiscipline}
-          onChange={(e) => setSelectedDiscipline(e.target.value)}
-          className="h-9 bg-white text-slate-700 border border-slate-300 rounded-[6px] px-3 text-xs focus:outline-none focus:border-[#163d78]"
-        >
-          <option value="ALL">Semua Disiplin</option>
-          <option value="CIVIL">Civil & Architectural</option>
-          <option value="MECHANICAL">Mechanical & Piping</option>
-          <option value="ELECTRICAL">Electrical & Instrument</option>
-        </select>
-
-        <select
-          value={selectedStatus}
-          onChange={(e) => setSelectedStatus(e.target.value)}
-          className="h-9 bg-white text-slate-700 border border-slate-300 rounded-[6px] px-3 text-xs focus:outline-none focus:border-[#163d78]"
-        >
-          <option value="ALL">Semua Status</option>
-          <option value="PENDING">Pending</option>
-          <option value="APPROVED">Approved</option>
-          <option value="REJECTED">Rejected</option>
-          <option value="SUPERSEDED">Superseded</option>
-        </select>
-
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={onRefresh}
-          isLoading={isLoading}
-          icon={<RefreshCw className="w-4 h-4 text-slate-500" strokeWidth={1.8} />}
-          className="bg-white hover:bg-slate-50 text-slate-700 border-slate-300"
-        >
-          Muat Ulang
-        </Button>
       </div>
 
-      {/* Filter Row 2 (Ekspor Excel, Laporan Harian, Laporan Mingguan) */}
-      <div className="flex flex-wrap items-center gap-2">
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={handleExportCSV}
-          icon={<FileSpreadsheet className="w-4 h-4 text-[#16a34a]" strokeWidth={1.8} />}
-          className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200"
-        >
-          Ekspor Excel
-        </Button>
-
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={handleExportCSV}
-          icon={<FileText className="w-4 h-4 text-slate-500" strokeWidth={1.8} />}
-          className="bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200"
-        >
-          Laporan Harian
-        </Button>
-
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={handleExportCSV}
-          icon={<FileText className="w-4 h-4 text-slate-500" strokeWidth={1.8} />}
-          className="bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200"
-        >
-          Laporan Mingguan
-        </Button>
-      </div>
-
-      {/* Donut Chart Summary Card (Matching CMS Screenshot) */}
-      {donutElements && (
-        <Card className="p-5 border-slate-200 bg-slate-50/50">
-          <div className="flex flex-col sm:flex-row items-center gap-8">
-            {/* SVG Donut */}
-            <div className="relative flex items-center justify-center flex-shrink-0">
-              <svg
-                viewBox={`0 0 ${donutElements.size} ${donutElements.size}`}
-                width={donutElements.size}
-                height={donutElements.size}
-                className="transform -rotate-90"
-              >
-                {donutElements.circles}
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-2xl font-bold font-mono text-slate-900 tabular-nums">
-                  {totalDocs}
-                </span>
-                <span className="text-[10px] font-mono font-bold tracking-wider text-slate-500">
-                  DOKUMEN
-                </span>
-              </div>
+      {/* 2. Executive KPI Cards Strip (Pass 9 Layout: Ringkasan di paling atas, Tanpa Donut Raksasa) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {/* Total */}
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-[#163d78]">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">
+                Total Dokumen
+              </p>
+              <p className="text-2xl font-bold text-slate-900 tabular-nums mt-0.5">
+                {stats.total}
+              </p>
             </div>
-
-            {/* Donut Legend */}
-            <div className="space-y-2.5 flex-1 w-full font-mono text-xs">
-              {donutElements.items.map((it) => {
-                const pct = Math.round((it.count / totalDocs) * 100);
-                return (
-                  <div key={it.key} className="flex items-center gap-3">
-                    <span
-                      className="w-3 h-3 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: it.color }}
-                    />
-                    <span className="text-slate-700 w-24">{it.key}</span>
-                    <span className="font-bold text-slate-900 tabular-nums w-8">
-                      {it.count}
-                    </span>
-                    <span className="text-slate-500 tabular-nums">({pct}%)</span>
-                  </div>
-                );
-              })}
+            <div className="p-2 bg-slate-100 rounded-[6px]">
+              <FileBox className="w-5 h-5 text-[#163d78]" />
             </div>
           </div>
-        </Card>
-      )}
+          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+            <span>Portfolio Aktif</span>
+            <span className="font-semibold text-slate-700">100%</span>
+          </div>
+        </div>
 
-      {/* Technical Engineering Document Table */}
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-12 text-center">NO</TableHead>
-            <TableHead className="w-48">NO DOKUMEN & REV</TableHead>
-            <TableHead>JUDUL DOKUMEN & PROYEK</TableHead>
-            <TableHead className="w-32">TIPE / DISIPLIN</TableHead>
-            <TableHead className="w-28 text-center">TGL SUBMIT</TableHead>
-            <TableHead className="w-28 text-center">STATUS</TableHead>
-            <TableHead className="w-32">SUBMITTER</TableHead>
-            <TableHead className="w-28 text-center">AKSI</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filteredDocs.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={8} className="text-center py-8 text-slate-400 font-mono text-xs">
-                {isLoading ? "Mengambil daftar dokumen dari EDMS Master..." : "Tidak ada dokumen yang ditemukan."}
-              </TableCell>
-            </TableRow>
-          ) : (
-            filteredDocs.map((doc, idx) => (
-              <TableRow key={doc.docId}>
-                <TableCell className="text-center font-mono text-slate-400 text-xs">
-                  {idx + 1}
-                </TableCell>
-                <TableCell>
-                  <div className="font-mono font-semibold text-[#163d78] text-xs">
-                    {doc.documentCode || doc.documentNumber}
-                  </div>
-                  {onHistoryDoc ? (
-                    <button
-                      onClick={() => onHistoryDoc(doc)}
-                      className="font-mono text-[11px] text-slate-500 hover:text-[#163d78] transition-colors mt-0.5 flex items-center gap-1 group"
-                      title="Lihat Riwayat & Rollback Revisi"
-                    >
-                      <History className="w-3 h-3 text-slate-400 group-hover:text-[#163d78]" />
-                      <span>Rev {doc.revision ?? 0}</span>
-                    </button>
-                  ) : (
-                    <div className="font-mono text-[11px] text-slate-500 mt-0.5">
-                      Rev {doc.revision ?? 0}
-                    </div>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <div className="font-medium text-slate-900 text-xs">{doc.title}</div>
-                  <div className="text-[11px] text-slate-500 font-mono mt-0.5">
-                    {doc.projectName}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="text-xs text-slate-800 font-medium">{doc.documentType}</div>
-                  <div className="text-[11px] text-slate-500 font-mono">{doc.discipline}</div>
-                </TableCell>
-                <TableCell className="text-center font-mono text-xs text-slate-600">
-                  {formatDate(doc.timestamp)}
-                </TableCell>
-                <TableCell className="text-center">
-                  {renderStatusBadge(doc.status)}
-                </TableCell>
-                <TableCell className="text-xs text-slate-700">
-                  {doc.uploaderName}
-                </TableCell>
-                <TableCell className="text-center">
-                  <div className="flex items-center justify-center gap-1">
-                    {onPreviewDoc && doc.fileUrl && (
-                      <button
-                        onClick={() => onPreviewDoc(doc)}
-                        className="p-1.5 rounded-[4px] bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 transition-colors"
-                        title="Pratinjau Dokumen (In-App)"
-                      >
-                        <FileText className="w-3.5 h-3.5" strokeWidth={1.8} />
-                      </button>
-                    )}
-                    {onViewDetail && (
-                      <button
-                        onClick={() => onViewDetail(doc)}
-                        className="p-1.5 rounded-[4px] bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition-colors"
-                        title="Lihat Detail Dokumen"
-                      >
-                        <Eye className="w-3.5 h-3.5" strokeWidth={1.8} />
-                      </button>
-                    )}
-                    {doc.fileUrl && (
-                      <a
-                        href={doc.fileUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="p-1.5 rounded-[4px] hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors"
-                        title="Buka File di Drive"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" strokeWidth={1.8} />
-                      </a>
-                    )}
-                    {doc.status === "PENDING" && onApprove && (
-                      <button
-                        onClick={() => onApprove(doc.docId)}
-                        className="p-1.5 rounded-[4px] bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 transition-colors"
-                        title="Setujui Dokumen"
-                      >
-                        <Check className="w-3.5 h-3.5" strokeWidth={2} />
-                      </button>
-                    )}
-                    {doc.status === "PENDING" && onReject && (
-                      <button
-                        onClick={() => onReject(doc.docId)}
-                        className="p-1.5 rounded-[4px] bg-red-50 hover:bg-red-100 text-red-700 border border-red-300 transition-colors"
-                        title="Tolak Dokumen"
-                      >
-                        <X className="w-3.5 h-3.5" strokeWidth={2} />
-                      </button>
-                    )}
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+        {/* Pending */}
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-amber-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">
+                Menunggu Review
+              </p>
+              <p className="text-2xl font-bold text-amber-700 tabular-nums mt-0.5">
+                {stats.pending}
+              </p>
+            </div>
+            <div className="p-2 bg-amber-50 rounded-[6px]">
+              <Clock className="w-5 h-5 text-amber-600" />
+            </div>
+          </div>
+          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+            <span>Antrean Approval</span>
+            <span className="font-semibold text-amber-700">{stats.pctPending}%</span>
+          </div>
+        </div>
+
+        {/* Approved */}
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-emerald-600">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">
+                Disetujui (Approved)
+              </p>
+              <p className="text-2xl font-bold text-emerald-700 tabular-nums mt-0.5">
+                {stats.approved}
+              </p>
+            </div>
+            <div className="p-2 bg-emerald-50 rounded-[6px]">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+            </div>
+          </div>
+          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+            <span>Tingkat Kepatuhan</span>
+            <span className="font-semibold text-emerald-700">{stats.pctApproved}%</span>
+          </div>
+        </div>
+
+        {/* Rejected */}
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-rose-600">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">
+                Ditolak / Perlu Revisi
+              </p>
+              <p className="text-2xl font-bold text-rose-700 tabular-nums mt-0.5">
+                {stats.rejected}
+              </p>
+            </div>
+            <div className="p-2 bg-rose-50 rounded-[6px]">
+              <AlertCircle className="w-5 h-5 text-rose-600" />
+            </div>
+          </div>
+          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+            <span>Tingkat Deviasi</span>
+            <span className="font-semibold text-rose-700">{stats.pctRejected}%</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Sleek Toolbar: Search, Filters & Export Options */}
+      <div className="bg-white p-3 rounded-[8px] border border-slate-200/90 shadow-sm space-y-2.5">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5">
+          {/* Search & Select Filters */}
+          <div className="flex flex-wrap items-center gap-2 flex-1">
+            <div className="relative min-w-[240px] flex-1 max-w-md">
+              <Search className="w-4 h-4 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Cari No Dokumen, Judul, Proyek, Submitter..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-[6px] focus:outline-none focus:border-[#163d78] focus:bg-white text-slate-900 transition-colors"
+              />
+            </div>
+
+            {onOpenQRScanner && (
+              <button
+                onClick={onOpenQRScanner}
+                title="Pindai QR Dokumen"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-[6px] text-xs font-medium text-slate-700 transition-colors cursor-pointer"
+              >
+                <QrCode className="w-3.5 h-3.5 text-slate-600" />
+                <span>Scan QR</span>
+              </button>
+            )}
+
+            <select
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+              className="px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-[6px] text-slate-700 font-medium focus:outline-none focus:border-[#163d78] cursor-pointer"
+            >
+              <option value="ALL">Semua Jenis</option>
+              <option value="ITP">ITP (Inspection & Test Plan)</option>
+              <option value="MS">Method Statement (MS)</option>
+              <option value="MTR">Material Approval (MTR)</option>
+              <option value="FAT">Factory Acceptance Test (FAT)</option>
+              <option value="RFI">Request For Inspection (RFI)</option>
+              <option value="MRIR">Material Receiving Inspection (MRIR)</option>
+            </select>
+
+            <select
+              value={selectedDiscipline}
+              onChange={(e) => setSelectedDiscipline(e.target.value)}
+              className="px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-[6px] text-slate-700 font-medium focus:outline-none focus:border-[#163d78] cursor-pointer"
+            >
+              <option value="ALL">Semua Disiplin</option>
+              <option value="CIVIL">Civil & Architectural</option>
+              <option value="MECHANICAL">Mechanical & Piping</option>
+              <option value="ELECTRICAL">Electrical & Instrument</option>
+            </select>
+
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-[6px] text-slate-700 font-medium focus:outline-none focus:border-[#163d78] cursor-pointer"
+            >
+              <option value="ALL">Semua Status</option>
+              <option value="PENDING">Pending Approval</option>
+              <option value="APPROVED">Approved</option>
+              <option value="REJECTED">Rejected</option>
+              <option value="SUPERSEDED">Superseded</option>
+            </select>
+
+            {hasActiveFilter && (
+              <button
+                onClick={resetFilters}
+                className="inline-flex items-center gap-1 px-2 py-1.5 text-xs text-rose-700 hover:bg-rose-50 border border-rose-200 rounded-[6px] transition-colors"
+                title="Reset Semua Filter"
+              >
+                <RotateCcw className="w-3 h-3 text-rose-600" />
+                <span>Reset</span>
+              </button>
+            )}
+          </div>
+
+          {/* Quick Export Actions & Refresh */}
+          <div className="flex items-center gap-2 self-end lg:self-auto pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100">
+            <button
+              onClick={handleExportCSV}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 rounded-[6px] text-xs font-semibold transition-colors cursor-pointer"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Ekspor Excel</span>
+            </button>
+
+            <button
+              onClick={onRefresh}
+              disabled={isLoading}
+              title="Perbarui Data Dokumen"
+              className="p-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-[6px] text-slate-700 transition-colors disabled:opacity-50 cursor-pointer"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 text-slate-600 ${isLoading ? "animate-spin" : ""}`} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 4. Technical Engineering Document Table */}
+      <div className="bg-white rounded-[8px] border border-slate-200/90 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr className="bg-slate-100/90 border-b border-slate-200 text-slate-700 font-semibold uppercase tracking-wider text-[11px]">
+                <th className="py-2.5 px-3 w-12 text-center">No</th>
+                <th className="py-2.5 px-3 min-w-[170px]">No. Dokumen & Rev</th>
+                <th className="py-2.5 px-3 min-w-[260px]">Judul Dokumen & Proyek</th>
+                <th className="py-2.5 px-3 w-32">Tipe & Disiplin</th>
+                <th className="py-2.5 px-3 w-28 text-center">Tgl Submit</th>
+                <th className="py-2.5 px-3 w-28 text-center">Status</th>
+                <th className="py-2.5 px-3 w-36">Submitter</th>
+                <th className="py-2.5 px-3 w-28 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-150 bg-white">
+              {filteredDocs.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="text-center py-12 text-slate-400 font-mono text-xs">
+                    {isLoading ? "Mengambil daftar dokumen dari EDMS Master..." : "Tidak ada dokumen yang sesuai dengan filter."}
+                  </td>
+                </tr>
+              ) : (
+                filteredDocs.map((doc, idx) => (
+                  <tr
+                    key={doc.docId || idx}
+                    className="hover:bg-slate-50/80 transition-colors even:bg-slate-50/30"
+                  >
+                    <td className="py-2.5 px-3 text-center font-mono text-slate-400 text-xs tabular-nums">
+                      {idx + 1}
+                    </td>
+
+                    <td className="py-2.5 px-3">
+                      <div className="font-mono font-bold text-[#163d78] text-xs">
+                        {doc.documentCode || doc.documentNumber}
+                      </div>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        {onHistoryDoc ? (
+                          <button
+                            onClick={() => onHistoryDoc(doc)}
+                            className="font-mono text-[10.5px] text-slate-500 hover:text-[#163d78] transition-colors flex items-center gap-1 group cursor-pointer"
+                            title="Lihat Riwayat & Rollback Revisi"
+                          >
+                            <History className="w-3 h-3 text-slate-400 group-hover:text-[#163d78]" />
+                            <span className="font-semibold">Rev {doc.revision ?? 0}</span>
+                          </button>
+                        ) : (
+                          <span className="font-mono text-[10.5px] text-slate-500">
+                            Rev {doc.revision ?? 0}
+                          </span>
+                        )}
+                        {doc.isLatestRevision && (
+                          <span className="text-[9.5px] font-mono px-1 py-0.2 rounded-[2px] bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            Latest
+                          </span>
+                        )}
+                      </div>
+                    </td>
+
+                    <td className="py-2.5 px-3">
+                      <div className="font-semibold text-slate-900 text-xs line-clamp-1">
+                        {doc.title}
+                      </div>
+                      <div className="text-[11px] text-slate-500 font-mono mt-0.5 line-clamp-1">
+                        {doc.projectName || "-"}
+                      </div>
+                    </td>
+
+                    <td className="py-2.5 px-3">
+                      <span className="text-xs font-semibold text-slate-800">
+                        {doc.documentType}
+                      </span>
+                      <div className="text-[10.5px] text-slate-500 font-mono mt-0.5">
+                        {doc.discipline}
+                      </div>
+                    </td>
+
+                    <td className="py-2.5 px-3 text-center font-mono text-xs text-slate-600 tabular-nums">
+                      {formatDate(doc.timestamp)}
+                    </td>
+
+                    <td className="py-2.5 px-3 text-center">
+                      {renderStatusBadge(doc.status)}
+                    </td>
+
+                    <td className="py-2.5 px-3">
+                      <div className="text-xs font-medium text-slate-800 line-clamp-1">
+                        {doc.uploaderName || "-"}
+                      </div>
+                      <div className="text-[10px] text-slate-400 font-mono line-clamp-1">
+                        {doc.uploaderEmail || ""}
+                      </div>
+                    </td>
+
+                    <td className="py-2.5 px-3 text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        {onPreviewDoc && doc.fileUrl && (
+                          <button
+                            onClick={() => onPreviewDoc(doc)}
+                            className="p-1.5 rounded-[4px] bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-[#163d78] border border-slate-200 transition-colors cursor-pointer"
+                            title="Pratinjau Dokumen (In-App PDF/Viewer)"
+                          >
+                            <Eye className="w-3.5 h-3.5" strokeWidth={1.8} />
+                          </button>
+                        )}
+
+                        {onViewDetail && (
+                          <button
+                            onClick={() => onViewDetail(doc)}
+                            className="p-1.5 rounded-[4px] bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-200 transition-colors cursor-pointer"
+                            title="Lembar Detail Metadata Teknis"
+                          >
+                            <FileText className="w-3.5 h-3.5" strokeWidth={1.8} />
+                          </button>
+                        )}
+
+                        {doc.fileUrl && (
+                          <a
+                            href={doc.fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-1.5 rounded-[4px] bg-slate-50 hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 border border-slate-200 transition-colors"
+                            title="Buka File di Google Drive"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" strokeWidth={1.8} />
+                          </a>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Footer Info */}
+        <div className="px-4 py-2.5 bg-slate-50/80 border-t border-slate-200 text-slate-500 font-mono text-[11px] flex items-center justify-between">
+          <span>Menampilkan {filteredDocs.length} dari {documents.length} total dokumen</span>
+          <span>PT Asuka Engineering Indonesia — QA/QC Division</span>
+        </div>
+      </div>
     </div>
   );
 }

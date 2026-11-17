@@ -2,11 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import { Search, RefreshCw, Plus, CheckCircle2, Clock, XCircle, FileSpreadsheet, Download, Upload } from "lucide-react";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
-import { Card } from "@/components/ui/Card";
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/Table";
 import { NFIEntry, NFISummary } from "../types";
 import { formatDate } from "@/lib/utils";
 
@@ -73,230 +69,217 @@ export function NFILogTable({
   };
 
   return (
-    <div className="space-y-6">
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-4 border-[#1e293b]">
+    <div className="space-y-4">
+      {/* KPI Cards — Light Theme */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-[#163d78]">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase tracking-wider text-slate-400">Total Temuan NFI</span>
-            <FileSpreadsheet className="w-4 h-4 text-slate-400" strokeWidth={1.8} />
+            <div>
+              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">Total Temuan NFI</p>
+              <p className="text-2xl font-bold text-slate-900 tabular-nums mt-0.5">{summary.total}</p>
+            </div>
+            <div className="p-2 bg-slate-100 rounded-[6px]">
+              <FileSpreadsheet className="w-5 h-5 text-[#163d78]" strokeWidth={1.8} />
+            </div>
           </div>
-          <div className="mt-2 text-2xl font-bold font-mono text-slate-100 tabular-nums">
-            {summary.total}
+          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+            <span>Notice of Finding</span>
+            <span className="font-semibold text-slate-700">100%</span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">Notice of Finding tercatat</p>
-        </Card>
-
-        <Card className="p-4 border-[#1e293b]">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase tracking-wider text-[#facc15]">Temuan Open</span>
-            <Clock className="w-4 h-4 text-[#facc15]" strokeWidth={1.8} />
-          </div>
-          <div className="mt-2 text-2xl font-bold font-mono text-[#facc15] tabular-nums">
-            {summary.openCount}
-          </div>
-          <p className="text-[11px] text-slate-400 mt-1">Perlu tindakan perbaikan (CAPA)</p>
-        </Card>
-
-        <Card className="p-4 border-[#1e293b]">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase tracking-wider text-[#f87171]">Hasil Fail / Re-Inspect</span>
-            <XCircle className="w-4 h-4 text-[#f87171]" strokeWidth={1.8} />
-          </div>
-          <div className="mt-2 text-2xl font-bold font-mono text-[#f87171] tabular-nums">
-            {summary.failCount}
-          </div>
-          <p className="text-[11px] text-slate-400 mt-1">Tidak sesuai spesifikasi teknis</p>
-        </Card>
-
-        <Card className="p-4 border-[#1e293b]">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase tracking-wider text-[#4ade80]">Selesai (Closed)</span>
-            <CheckCircle2 className="w-4 h-4 text-[#4ade80]" strokeWidth={1.8} />
-          </div>
-          <div className="mt-2 text-2xl font-bold font-mono text-[#4ade80] tabular-nums">
-            {summary.closedCount}
-          </div>
-          <p className="text-[11px] text-slate-400 mt-1">Telah diverifikasi tuntas</p>
-        </Card>
-      </div>
-
-      {/* Filter Row */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-[#0f172a] p-3.5 border border-[#1e293b] rounded-[6px]">
-        <div className="flex flex-wrap items-center gap-2.5 flex-1">
-          <div className="w-full sm:w-72">
-            <Input
-              placeholder="Cari nomor NFI / uraian / area / PIC..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              icon={<Search className="w-4 h-4" strokeWidth={1.8} />}
-            />
-          </div>
-
-          <select
-            value={selectedDiscipline}
-            onChange={(e) => setSelectedDiscipline(e.target.value)}
-            className="h-9 bg-[#1e293b] text-slate-200 border border-[#334155] rounded-[6px] px-3 text-xs focus:outline-none focus:border-[#163d78]"
-          >
-            <option value="ALL">SEMUA DISIPLIN</option>
-            <option value="CIVIL">CIVIL & ARCHITECTURAL</option>
-            <option value="MECHANICAL">MECHANICAL & PIPING</option>
-            <option value="ELECTRICAL">ELECTRICAL</option>
-            <option value="INSTRUMENT">INSTRUMENTATION</option>
-          </select>
-
-          <select
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            className="h-9 bg-[#1e293b] text-slate-200 border border-[#334155] rounded-[6px] px-3 text-xs focus:outline-none focus:border-[#163d78]"
-          >
-            <option value="ALL">SEMUA STATUS</option>
-            <option value="OPEN">OPEN / PENDING</option>
-            <option value="CLOSED">CLOSED / RESOLVED</option>
-          </select>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => {
-              if (filteredEntries.length === 0) return;
-              const headers = [
-                "No",
-                "No NFI",
-                "Subject / Description",
-                "Discipline",
-                "Area / Location",
-                "Inspection Date",
-                "Result",
-                "Status",
-                "PIC AEI",
-                "Remark",
-              ];
-              const rows = filteredEntries.map((e, idx) => [
-                idx + 1,
-                `"${e.noNfi}"`,
-                `"${(e.subjectDescription || "").replace(/"/g, '""')}"`,
-                `"${e.discipline}"`,
-                `"${(e.area || "").replace(/"/g, '""')}"`,
-                `"${e.inspectionDate}"`,
-                `"${e.result}"`,
-                `"${e.status}"`,
-                `"${e.picAei}"`,
-                `"${(e.remark || "").replace(/"/g, '""')}"`,
-              ]);
-              const csvContent =
-                "data:text/csv;charset=utf-8," +
-                [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
-              const encodedUri = encodeURI(csvContent);
-              const link = document.createElement("a");
-              link.setAttribute("href", encodedUri);
-              link.setAttribute("download", `NFI_Log_${new Date().toISOString().slice(0, 10)}.csv`);
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-            }}
-            icon={<Download className="w-4 h-4" strokeWidth={1.8} />}
-          >
-            Ekspor CSV
-          </Button>
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-amber-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">Temuan Open</p>
+              <p className="text-2xl font-bold text-amber-700 tabular-nums mt-0.5">{summary.openCount}</p>
+            </div>
+            <div className="p-2 bg-amber-50 rounded-[6px]">
+              <Clock className="w-5 h-5 text-amber-600" strokeWidth={1.8} />
+            </div>
+          </div>
+          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+            <span>Perlu CAPA</span>
+            <span className="font-semibold text-amber-700">{summary.total > 0 ? Math.round((summary.openCount / summary.total) * 100) : 0}%</span>
+          </div>
+        </div>
 
-          {onOpenImport && (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={onOpenImport}
-              icon={<Upload className="w-4 h-4" strokeWidth={1.8} />}
-              className="text-[#38bdf8] border-[#38bdf8]/30 hover:bg-[#38bdf8]/10"
-            >
-              Impor Batch
-            </Button>
-          )}
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-rose-600">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">Hasil Fail / Re-Inspect</p>
+              <p className="text-2xl font-bold text-rose-700 tabular-nums mt-0.5">{summary.failCount}</p>
+            </div>
+            <div className="p-2 bg-rose-50 rounded-[6px]">
+              <XCircle className="w-5 h-5 text-rose-600" strokeWidth={1.8} />
+            </div>
+          </div>
+          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+            <span>Tidak Sesuai Spek</span>
+            <span className="font-semibold text-rose-700">{summary.total > 0 ? Math.round((summary.failCount / summary.total) * 100) : 0}%</span>
+          </div>
+        </div>
 
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={onRefresh}
-            isLoading={isLoading}
-            icon={<RefreshCw className="w-4 h-4" strokeWidth={1.8} />}
-          >
-            Refresh
-          </Button>
-
-          {onAddNew && (
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={onAddNew}
-              icon={<Plus className="w-4 h-4" strokeWidth={1.8} />}
-            >
-              Catat Temuan NFI
-            </Button>
-          )}
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-emerald-600">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">Selesai (Closed)</p>
+              <p className="text-2xl font-bold text-emerald-700 tabular-nums mt-0.5">{summary.closedCount}</p>
+            </div>
+            <div className="p-2 bg-emerald-50 rounded-[6px]">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600" strokeWidth={1.8} />
+            </div>
+          </div>
+          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+            <span>Terverifikasi Tuntas</span>
+            <span className="font-semibold text-emerald-700">{summary.total > 0 ? Math.round((summary.closedCount / summary.total) * 100) : 0}%</span>
+          </div>
         </div>
       </div>
 
-      {/* Table */}
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-12 text-center">NO</TableHead>
-            <TableHead className="w-36">NO NFI</TableHead>
-            <TableHead>URAIAN TEMUAN & LOKASI</TableHead>
-            <TableHead className="w-28">DISIPLIN</TableHead>
-            <TableHead className="w-24 text-center">TGL INSPEKSI</TableHead>
-            <TableHead className="w-24 text-center">HASIL</TableHead>
-            <TableHead className="w-24 text-center">STATUS</TableHead>
-            <TableHead className="w-32">PIC AEI</TableHead>
-            <TableHead className="w-40">TINDAK LANJUT / REMARK</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filteredEntries.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={9} className="text-center py-8 text-slate-400 font-mono text-xs">
-                {isLoading ? "Mengambil data NFI Log dari Master..." : "Tidak ada temuan NFI yang sesuai kriteria."}
-              </TableCell>
-            </TableRow>
-          ) : (
-            filteredEntries.map((item, idx) => (
-              <TableRow key={item.nfiId}>
-                <TableCell className="text-center font-mono text-slate-400 text-xs">
-                  {idx + 1}
-                </TableCell>
-                <TableCell className="font-mono font-semibold text-[#38bdf8] text-xs">
-                  {item.noNfi}
-                </TableCell>
-                <TableCell>
-                  <div className="font-medium text-slate-100 text-xs">{item.subjectDescription}</div>
-                  <div className="text-[11px] text-slate-400 font-mono mt-0.5">
-                    {item.area} • {item.location}
-                  </div>
-                </TableCell>
-                <TableCell className="font-mono text-xs text-slate-300">
-                  {item.discipline}
-                </TableCell>
-                <TableCell className="text-center font-mono text-xs text-slate-300">
-                  {formatDate(item.inspectionDate)}
-                </TableCell>
-                <TableCell className="text-center">
-                  {renderResultBadge(item.result)}
-                </TableCell>
-                <TableCell className="text-center">
-                  {renderStatusBadge(item.status)}
-                </TableCell>
-                <TableCell className="text-xs text-slate-300">
-                  {item.picAei}
-                </TableCell>
-                <TableCell className="text-[11px] text-slate-300 truncate max-w-[180px]">
-                  {item.remark || "-"}
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+      {/* Filter & Action Row — Light Theme */}
+      <div className="bg-white p-3 rounded-[8px] border border-slate-200/90 shadow-sm">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5">
+          <div className="flex flex-wrap items-center gap-2 flex-1">
+            <div className="relative min-w-[240px] flex-1 max-w-md">
+              <Search className="w-4 h-4 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Cari nomor NFI / uraian / area / PIC..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-[6px] focus:outline-none focus:border-[#163d78] focus:bg-white text-slate-900 transition-colors"
+              />
+            </div>
+
+            <select
+              value={selectedDiscipline}
+              onChange={(e) => setSelectedDiscipline(e.target.value)}
+              className="px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-[6px] text-slate-700 font-medium focus:outline-none focus:border-[#163d78] cursor-pointer"
+            >
+              <option value="ALL">Semua Disiplin</option>
+              <option value="CIVIL">Civil & Architectural</option>
+              <option value="MECHANICAL">Mechanical & Piping</option>
+              <option value="ELECTRICAL">Electrical</option>
+              <option value="INSTRUMENT">Instrumentation</option>
+            </select>
+
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-[6px] text-slate-700 font-medium focus:outline-none focus:border-[#163d78] cursor-pointer"
+            >
+              <option value="ALL">Semua Status</option>
+              <option value="OPEN">Open / Pending</option>
+              <option value="CLOSED">Closed / Resolved</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100">
+            <button
+              onClick={() => {
+                if (filteredEntries.length === 0) return;
+                const headers = ["No","No NFI","Subject / Description","Discipline","Area / Location","Inspection Date","Result","Status","PIC AEI","Remark"];
+                const rows = filteredEntries.map((e, idx) => [
+                  idx + 1,`"${e.noNfi}"`,`"${(e.subjectDescription||"").replace(/"/g,'""')}"`,`"${e.discipline}"`,
+                  `"${(e.area||"").replace(/"/g,'""')}"`,`"${e.inspectionDate}"`,`"${e.result}"`,`"${e.status}"`,
+                  `"${e.picAei}"`,`"${(e.remark||"").replace(/"/g,'""')}"`,
+                ]);
+                const csv = "\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+                const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url; a.download = `NFI_Log_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+                URL.revokeObjectURL(url);
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 rounded-[6px] text-xs font-semibold transition-colors cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Ekspor CSV</span>
+            </button>
+
+            {onOpenImport && (
+              <button
+                onClick={onOpenImport}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-[6px] text-xs font-medium text-slate-700 transition-colors cursor-pointer"
+              >
+                <Upload className="w-3.5 h-3.5 text-slate-600" />
+                <span>Impor Batch</span>
+              </button>
+            )}
+
+            <button
+              onClick={onRefresh}
+              disabled={isLoading}
+              className="p-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-[6px] text-slate-700 transition-colors disabled:opacity-50 cursor-pointer"
+              title="Refresh Data NFI"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 text-slate-600 ${isLoading ? "animate-spin" : ""}`} />
+            </button>
+
+            {onAddNew && (
+              <button
+                onClick={onAddNew}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] bg-[#ed2e35] hover:bg-[#c92026] text-white font-semibold text-xs tracking-wide shadow-sm transition-all cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" strokeWidth={2} />
+                <span>Catat Temuan NFI</span>
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* NFI Table — Light Theme */}
+      <div className="bg-white rounded-[8px] border border-slate-200/90 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr className="bg-slate-100/90 border-b border-slate-200 text-slate-700 font-semibold uppercase tracking-wider text-[11px]">
+                <th className="py-2.5 px-3 w-12 text-center">No</th>
+                <th className="py-2.5 px-3 w-36">No NFI</th>
+                <th className="py-2.5 px-3 min-w-[260px]">Uraian Temuan & Lokasi</th>
+                <th className="py-2.5 px-3 w-28">Disiplin</th>
+                <th className="py-2.5 px-3 w-24 text-center">Tgl Inspeksi</th>
+                <th className="py-2.5 px-3 w-24 text-center">Hasil</th>
+                <th className="py-2.5 px-3 w-24 text-center">Status</th>
+                <th className="py-2.5 px-3 w-32">PIC AEI</th>
+                <th className="py-2.5 px-3 w-40">Tindak Lanjut / Remark</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-150 bg-white">
+              {filteredEntries.length === 0 ? (
+                <tr>
+                  <td colSpan={9} className="text-center py-12 text-slate-400 font-mono text-xs">
+                    {isLoading ? "Mengambil data NFI Log dari Master..." : "Tidak ada temuan NFI yang sesuai kriteria."}
+                  </td>
+                </tr>
+              ) : (
+                filteredEntries.map((item, idx) => (
+                  <tr key={item.nfiId} className="hover:bg-slate-50/80 transition-colors even:bg-slate-50/30">
+                    <td className="py-2.5 px-3 text-center font-mono text-slate-400 text-xs tabular-nums">{idx + 1}</td>
+                    <td className="py-2.5 px-3 font-mono font-bold text-[#163d78] text-xs">{item.noNfi}</td>
+                    <td className="py-2.5 px-3">
+                      <div className="font-semibold text-slate-900 text-xs line-clamp-1">{item.subjectDescription}</div>
+                      <div className="text-[11px] text-slate-500 font-mono mt-0.5">{item.area} • {item.location}</div>
+                    </td>
+                    <td className="py-2.5 px-3 font-mono text-xs text-slate-700">{item.discipline}</td>
+                    <td className="py-2.5 px-3 text-center font-mono text-xs text-slate-600 tabular-nums">{formatDate(item.inspectionDate)}</td>
+                    <td className="py-2.5 px-3 text-center">{renderResultBadge(item.result)}</td>
+                    <td className="py-2.5 px-3 text-center">{renderStatusBadge(item.status)}</td>
+                    <td className="py-2.5 px-3 text-xs text-slate-700">{item.picAei}</td>
+                    <td className="py-2.5 px-3 text-[11px] text-slate-600 font-mono truncate max-w-[180px]">{item.remark || "-"}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+        <div className="px-4 py-2.5 bg-slate-50/80 border-t border-slate-200 text-slate-500 font-mono text-[11px] flex items-center justify-between">
+          <span>Menampilkan {filteredEntries.length} dari {entries.length} temuan NFI</span>
+          <span>PT Asuka Engineering Indonesia — QA/QC Division</span>
+        </div>
+      </div>
     </div>
   );
 }

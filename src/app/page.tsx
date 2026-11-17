@@ -379,23 +379,23 @@ export default function HomePage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-[#0a0f1d] flex flex-col items-center justify-center text-slate-300 font-mono text-xs">
-        <div className="w-8 h-8 border-2 border-[#163d78] border-t-[#38bdf8] rounded-full animate-spin mb-4" />
-        <span>MEMUAT SUBSISTEM QCA EDMS...</span>
+      <div className="min-h-screen bg-[#f1f5f9] flex flex-col items-center justify-center text-slate-600 font-mono text-xs">
+        <div className="w-8 h-8 border-2 border-[#163d78] border-t-[#ed2e35] rounded-full animate-spin mb-4" />
+        <span className="font-semibold tracking-wider text-slate-700">MEMUAT SUBSISTEM QCA EDMS...</span>
       </div>
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#0a0f1d] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#0d2347] flex items-center justify-center p-4">
         <LoginForm onSuccess={refreshUser} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0f1d] flex flex-col text-slate-100">
+    <div className="min-h-screen bg-[#f1f5f9] flex flex-col text-slate-900 font-sans antialiased">
       <Navbar
         user={user}
         onLogout={logout}
@@ -407,12 +407,13 @@ export default function HomePage() {
       {/* Floating Toast */}
       {toastMessage && (
         <div
-          className={`fixed bottom-5 right-5 z-50 px-4 py-2.5 rounded-[4px] border text-xs font-mono shadow-2xl transition-all ${toastMessage.type === "success"
+          className={`fixed bottom-5 right-5 z-50 px-4 py-2.5 rounded-[4px] border text-xs font-mono shadow-2xl transition-all ${
+            toastMessage.type === "success"
               ? "bg-[#052e16] text-[#4ade80] border-[#166534]"
               : toastMessage.type === "info"
                 ? "bg-[#0b1f3a] text-[#60a5fa] border-[#1e40af]"
                 : "bg-[#450a0a] text-[#f87171] border-[#991b1b]"
-            }`}
+          }`}
         >
           {toastMessage.text}
         </div>
@@ -436,15 +437,15 @@ export default function HomePage() {
           onOpenAIChat={() => setIsAIChatOpen(true)}
         />
 
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6 bg-[#f1f5f9]">
           {/* TAB 1: DASHBOARD OVERVIEW */}
           {activeTab === "dashboard" && (
             <div className="space-y-6">
-              <div className="border-b border-[#1e293b] pb-4">
-                <h1 className="text-lg font-bold tracking-wide text-slate-100 uppercase">
+              <div className="border-b border-slate-200 pb-3">
+                <h1 className="text-lg font-bold tracking-wide text-slate-900 uppercase">
                   Overview Dashboard Mutu QA/QC
                 </h1>
-                <p className="text-xs text-slate-400 font-mono mt-0.5">
+                <p className="text-xs text-slate-500 font-mono mt-0.5">
                   Monitoring eksekutif dokumen kontrol, kepatuhan kalibrasi & temuan lapangan
                 </p>
               </div>
@@ -500,268 +501,158 @@ export default function HomePage() {
 
           {/* TAB 4: TRANSMITTALS */}
           {activeTab === "transmittals" && (
-            <div className="space-y-6">
-              <div className="border-b border-[#1e293b] pb-4">
-                <h1 className="text-lg font-bold tracking-wide text-slate-100 uppercase">
-                  Transmittal Dokumen Mutu
-                </h1>
-                <p className="text-xs text-slate-400 font-mono mt-0.5">
-                  Surat pengantar resmi pengiriman dokumen ke Client & Vendor
-                </p>
-              </div>
-              <TransmittalTable
-                transmittals={transmittals}
-                isLoading={isTransmittalLoading}
-                onRefresh={loadTransmittals}
-              />
-            </div>
+            <TransmittalTable
+              transmittals={transmittals}
+              isLoading={isTransmittalLoading}
+              onRefresh={loadTransmittals}
+            />
           )}
 
           {/* TAB 4B: APPROVAL & TUGAS SAYA */}
           {activeTab === "approval" && (
-            <div className="space-y-6">
-              <div className="border-b border-[#1e293b] pb-4">
-                <h1 className="text-lg font-bold tracking-wide text-slate-100 uppercase">
-                  Approval Queue & Verifikasi Dokumen
-                </h1>
-                <p className="text-xs text-slate-400 font-mono mt-0.5">
-                  Antrean persetujuan dokumen ITP, Method Statement & Material Approval oleh QA/QC Manager
-                </p>
-              </div>
-              <ApprovalQueueView
-                documents={documents}
-                onApprove={async (docId, comments) => {
-                  try {
-                    const res = await documentService.approveDocument(docId, comments);
-                    showToast(res.message, res.success ? "success" : "error");
-                    await loadDocuments();
-                  } catch (e) {
-                    showToast((e as Error).message, "error");
-                  }
-                }}
-                onReject={async (docId, comments) => {
-                  try {
-                    const res = await documentService.rejectDocument(docId, comments);
-                    showToast(res.message, res.success ? "success" : "error");
-                    await loadDocuments();
-                  } catch (e) {
-                    showToast((e as Error).message, "error");
-                  }
-                }}
-                onRefresh={loadDocuments}
-                isLoading={isDocLoading}
-              />
-            </div>
+            <ApprovalQueueView
+              documents={documents}
+              onApprove={async (docId, comments) => {
+                try {
+                  const res = await documentService.approveDocument(docId, comments);
+                  showToast(res.message, res.success ? "success" : "error");
+                  await loadDocuments();
+                } catch (e) {
+                  showToast((e as Error).message, "error");
+                }
+              }}
+              onReject={async (docId, comments) => {
+                try {
+                  const res = await documentService.rejectDocument(docId, comments);
+                  showToast(res.message, res.success ? "success" : "error");
+                  await loadDocuments();
+                } catch (e) {
+                  showToast((e as Error).message, "error");
+                }
+              }}
+              onRefresh={loadDocuments}
+              isLoading={isDocLoading}
+            />
           )}
 
           {/* TAB 5: KALIBRASI ALAT */}
           {activeTab === "calibration" && (
-            <div className="space-y-6">
-              <div className="border-b border-[#1e293b] pb-4">
-                <h1 className="text-lg font-bold tracking-wide text-slate-100 uppercase">
-                  Monitoring Kalibrasi Alat Ukur
-                </h1>
-                <p className="text-xs text-slate-400 font-mono mt-0.5">
-                  Registrasi alat ukur, masa berlaku sertifikat & status kalibrasi
-                </p>
-              </div>
-              <CalibrationTable
-                tools={calTools}
-                summary={calSummary}
-                isLoading={isCalLoading}
-                onRefresh={loadCalibration}
-                onAddNew={() => setIsCalModalOpen(true)}
-              />
-            </div>
+            <CalibrationTable
+              tools={calTools}
+              summary={calSummary}
+              isLoading={isCalLoading}
+              onRefresh={loadCalibration}
+              onAddNew={() => setIsCalModalOpen(true)}
+            />
           )}
 
           {/* TAB 5B: MONITORING NCR */}
           {activeTab === "ncr" && (
-            <div className="space-y-6">
-              <div className="border-b border-[#1e293b] pb-4">
-                <h1 className="text-lg font-bold tracking-wide text-slate-100 uppercase">
-                  Monitoring Non Conformance Record (NCR)
-                </h1>
-                <p className="text-xs text-slate-400 font-mono mt-0.5">
-                  Pengendalian ketidaksesuaian produk, status perbaikan site, dan register terintegrasi
-                </p>
-              </div>
-              <NCRTable
-                entries={ncrEntries}
-                summary={ncrSummary}
-                isLoading={isNcrLoading}
-                onRefresh={loadNcr}
-                onOpenCreateModal={() => setIsNcrModalOpen(true)}
-                onViewDetail={(ncr) => setSelectedNcrForDetail(ncr)}
-                onDeleteNcr={async (ncrNo) => {
-                  const res = await ncrService.deleteNcr(ncrNo);
-                  showToast(res.message, res.success ? "success" : "error");
-                  loadNcr();
-                }}
-              />
-            </div>
+            <NCRTable
+              entries={ncrEntries}
+              summary={ncrSummary}
+              isLoading={isNcrLoading}
+              onRefresh={loadNcr}
+              onOpenCreateModal={() => setIsNcrModalOpen(true)}
+              onViewDetail={(ncr) => setSelectedNcrForDetail(ncr)}
+              onDeleteNcr={async (ncrNo) => {
+                const res = await ncrService.deleteNcr(ncrNo);
+                showToast(res.message, res.success ? "success" : "error");
+                loadNcr();
+              }}
+            />
           )}
 
           {/* TAB 6: NFI LOG */}
           {activeTab === "nfilog" && (
-            <div className="space-y-6">
-              <div className="border-b border-[#1e293b] pb-4">
-                <h1 className="text-lg font-bold tracking-wide text-slate-100 uppercase">
-                  NFI Log — Notice of Finding & Temuan Mutu
-                </h1>
-                <p className="text-xs text-slate-400 font-mono mt-0.5">
-                  Pencatatan temuan inspeksi lapangan, non-conformance & tindak lanjut
-                </p>
-              </div>
-              <NFILogTable
-                entries={nfiEntries}
-                summary={nfiSummary}
-                isLoading={isNfiLoading}
-                onRefresh={loadNfi}
-                onAddNew={() => setIsNfiModalOpen(true)}
-                onOpenImport={() => setIsNfiImportOpen(true)}
-              />
-            </div>
+            <NFILogTable
+              entries={nfiEntries}
+              summary={nfiSummary}
+              isLoading={isNfiLoading}
+              onRefresh={loadNfi}
+              onAddNew={() => setIsNfiModalOpen(true)}
+              onOpenImport={() => setIsNfiImportOpen(true)}
+            />
           )}
 
           {/* TAB 7: SITE REPORT */}
           {activeTab === "sitereport" && (
-            <div className="space-y-6">
-              <div className="border-b border-[#1e293b] pb-4">
-                <h1 className="text-lg font-bold tracking-wide text-slate-100 uppercase">
-                  Laporan Inspeksi Lapangan (Daily Site Report)
-                </h1>
-                <p className="text-xs text-slate-400 font-mono mt-0.5">
-                  Laporan harian aktivitas pengawasan mutu inspektor QA/QC
-                </p>
-              </div>
-              <SiteReportTable
-                reports={siteReports}
-                isLoading={isSiteReportLoading}
-                onRefresh={loadSiteReports}
-                onAddNew={() => setIsSiteReportModalOpen(true)}
-              />
-            </div>
+            <SiteReportTable
+              reports={siteReports}
+              isLoading={isSiteReportLoading}
+              onRefresh={loadSiteReports}
+              onAddNew={() => setIsSiteReportModalOpen(true)}
+            />
           )}
 
           {/* TAB 8: EXECUTIVE ANALYTICS */}
           {activeTab === "analytics" && (
-            <div className="space-y-6">
-              <div className="border-b border-[#1e293b] pb-4">
-                <h1 className="text-lg font-bold tracking-wide text-slate-100 uppercase">
-                  Executive Analytics & Quality Compliance
-                </h1>
-                <p className="text-xs text-slate-400 font-mono mt-0.5">
-                  Analisis aging persetujuan, tingkat kepatuhan ISO 9001 & matriks disiplin
-                </p>
-              </div>
-              <ExecutiveAnalytics
-                documents={documents}
-                calibrationSummary={calSummary}
-                nfiSummary={nfiSummary}
-              />
-            </div>
+            <ExecutiveAnalytics
+              documents={documents}
+              calibrationSummary={calSummary}
+              nfiSummary={nfiSummary}
+            />
           )}
 
           {/* TAB 9: KELOLA PROYEK */}
           {activeTab === "projects" && (
-            <div className="space-y-6">
-              <div className="border-b border-[#1e293b] pb-4">
-                <h1 className="text-lg font-bold tracking-wide text-slate-100 uppercase">
-                  Kelola Proyek & Integrasi Folder
-                </h1>
-                <p className="text-xs text-slate-400 font-mono mt-0.5">
-                  Master proyek PT Asuka Engineering Indonesia terhubung Google Apps Script
-                </p>
-              </div>
-              <ProjectManagement
-                projects={projects}
-                isLoading={isProjectLoading}
-                onRefresh={loadProjects}
-                onAddProject={handleAddProject}
-              />
-            </div>
+            <ProjectManagement
+              projects={projects}
+              isLoading={isProjectLoading}
+              onRefresh={loadProjects}
+              onAddProject={handleAddProject}
+            />
           )}
 
           {/* TAB 9B: MANAJEMEN PENGGUNA */}
           {activeTab === "users" && (
-            <div className="space-y-6">
-              <div className="border-b border-[#1e293b] pb-4">
-                <h1 className="text-lg font-bold tracking-wide text-slate-100 uppercase">
-                  Manajemen Pengguna & Hak Akses QA/QC
-                </h1>
-                <p className="text-xs text-slate-400 font-mono mt-0.5">
-                  Direktori personel kontrol mutu, verifikator dokumen & penetapan peran (RBAC)
-                </p>
-              </div>
-              <UserManagementView />
-            </div>
+            <UserManagementView />
           )}
 
           {/* TAB 9C: ARSIP MUTU & RECYCLE BIN */}
           {activeTab === "archive" && (
-            <div className="space-y-6">
-              <div className="border-b border-[#1e293b] pb-4">
-                <h1 className="text-lg font-bold tracking-wide text-slate-100 uppercase">
-                  Arsip Mutu & Tempat Sampah Dokumen
-                </h1>
-                <p className="text-xs text-slate-400 font-mono mt-0.5">
-                  Dokumen berstatus Superseded, revisi lama, dan riwayat pemulihan berkas kontrol
-                </p>
-              </div>
-              <ArchiveRecycleBinView
-                documents={documents}
-                onRestore={(docId) => {
-                  showToast(`Dokumen ${docId} berhasil dipulihkan.`, "success");
-                }}
-              />
-            </div>
+            <ArchiveRecycleBinView
+              documents={documents}
+              onRestore={(docId) => {
+                showToast(`Dokumen ${docId} berhasil dipulihkan.`, "success");
+              }}
+            />
           )}
 
           {/* TAB 10: PENGATURAN SISTEM */}
           {activeTab === "settings" && (
-            <div className="space-y-6">
-              <div className="border-b border-[#1e293b] pb-4">
-                <h1 className="text-lg font-bold tracking-wide text-slate-100 uppercase">
-                  Konfigurasi Sistem, Penomoran & Approval
-                </h1>
-                <p className="text-xs text-slate-400 font-mono mt-0.5">
-                  Aturan format nomor dokumen otomatis, matriks approver QA/QC & status arsitektur
-                </p>
-              </div>
-
-              {/* Numbering Rules & Approval Matrix Subsystem */}
+            <div className="space-y-4">
               <NumberingAndApprovalSettingsView
                 projects={projects.map((p) => ({ code: p.code, name: p.name }))}
                 showToast={showToast}
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-[#1e293b]">
-                <Card className="p-5 border-[#1e293b]">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-200">
+                <Card className="p-5 border-slate-200 bg-white">
                   <div className="flex items-center gap-3 mb-3">
-                    <Server className="w-5 h-5 text-[#38bdf8]" />
-                    <CardTitle>Arsitektur Frontend Baru</CardTitle>
+                    <Server className="w-5 h-5 text-[#163d78]" />
+                    <CardTitle className="text-slate-900">Arsitektur Frontend Baru</CardTitle>
                   </div>
-                  <div className="space-y-2 text-xs font-mono text-slate-300">
-                    <div>Framework: <span className="text-[#4ade80]">Next.js 16.4.6 (App Router)</span></div>
-                    <div>Language: <span className="text-[#4ade80]">TypeScript 5 (Strict Mode)</span></div>
-                    <div>Styling: <span className="text-[#4ade80]">Tailwind CSS v4 (Anti-AI Industrial Theme)</span></div>
-                    <div>Pattern: <span className="text-[#4ade80]">Feature-Based Architecture (Screaming)</span></div>
-                    <div>Ukuran Rata-rata File: <span className="text-[#38bdf8]">100 - 350 LOC per modul</span></div>
+                  <div className="space-y-2 text-xs font-mono text-slate-600">
+                    <div>Framework: <span className="text-[#163d78] font-bold">Next.js 16.4.6 (App Router)</span></div>
+                    <div>Language: <span className="text-[#163d78] font-bold">TypeScript 5 (Strict Mode)</span></div>
+                    <div>Styling: <span className="text-[#163d78] font-bold">Tailwind CSS v4 (Anti-AI Industrial)</span></div>
+                    <div>Pattern: <span className="text-[#163d78] font-bold">Feature-Based Architecture</span></div>
+                    <div>Ukuran Rata-rata File: <span className="text-slate-800">100 - 350 LOC per modul</span></div>
                   </div>
                 </Card>
 
-                <Card className="p-5 border-[#1e293b]">
+                <Card className="p-5 border-slate-200 bg-white">
                   <div className="flex items-center gap-3 mb-3">
-                    <Database className="w-5 h-5 text-[#4ade80]" />
-                    <CardTitle>Integrasi Google Apps Script</CardTitle>
+                    <Database className="w-5 h-5 text-emerald-700" />
+                    <CardTitle className="text-slate-900">Integrasi Google Apps Script</CardTitle>
                   </div>
-                  <div className="space-y-2 text-xs font-mono text-slate-300">
-                    <div>Backend Engine: <span className="text-[#4ade80]">kode.gs (Vercel Serverless BFF Proxy)</span></div>
-                    <div>Database: <span className="text-[#4ade80]">Google Sheets Multi-Sheet Master</span></div>
-                    <div>Storage Berkas: <span className="text-[#4ade80]">Google Drive (Root Folder ID)</span></div>
-                    <div>Konektivitas Proxy: <span className="text-[#4ade80]">/api/gas (Bypass CORS 100%)</span></div>
-                    <div>Status Keamanan: <span className="text-[#4ade80]">CSRF Protection + Session Token</span></div>
+                  <div className="space-y-2 text-xs font-mono text-slate-600">
+                    <div>Backend Engine: <span className="text-emerald-700 font-bold">kode.gs (Vercel Serverless BFF Proxy)</span></div>
+                    <div>Database: <span className="text-emerald-700 font-bold">Google Sheets Multi-Sheet Master</span></div>
+                    <div>Storage Berkas: <span className="text-emerald-700 font-bold">Google Drive (Root Folder ID)</span></div>
+                    <div>Konektivitas Proxy: <span className="text-emerald-700 font-bold">/api/gas (Bypass CORS 100%)</span></div>
+                    <div>Status Keamanan: <span className="text-emerald-700 font-bold">CSRF Protection + Session Token</span></div>
                   </div>
                 </Card>
               </div>
