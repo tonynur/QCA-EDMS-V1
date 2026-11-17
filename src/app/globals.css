@@ -1,20 +1,20 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,500;0,6..12,600;0,6..12,700;0,6..12,800;1,6..12,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @layer base {
   :root {
     --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-sans: 'Nunito Sans', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
-    /* Technical Color Tokens - PT Asuka Engineering Indonesia */
+    /* Technical Brand Tokens - PT Asuka Engineering Indonesia (Petrosea-inspired Engineering Precision) */
     --color-asuka-navy: #163d78;
-    --color-asuka-navy-hover: #123364;
+    --color-asuka-navy-hover: #102d59;
     --color-asuka-red: #ed2e35;
-    --color-asuka-red-hover: #cf2228;
+    --color-asuka-red-hover: #c92026;
     
-    --color-bg-base: #f8fafc;
+    --color-bg-base: #f4f6fa;
     --color-bg-surface: #ffffff;
-    --color-bg-panel: #f1f5f9;
+    --color-bg-panel: #f8fafc;
     --color-bg-element: #e2e8f0;
     
     --color-border-subtle: #e2e8f0;
@@ -41,9 +41,10 @@
     padding: 0;
   }
 
-  /* Industrial Geometry Standards: Zero Pill Shapes */
+  /* Industrial Geometry Standards */
   button, input, select, textarea {
     border-radius: 6px;
+    font-family: inherit;
   }
 
   /* Tabular numbers across technical elements */
@@ -52,7 +53,66 @@
   }
 }
 
-/* Custom Scrollbar for Industrial Technical Theme */
+/* Petrosea-Style Smooth Transition Keyframes */
+@keyframes petroseaFadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes petroseaFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes petroseaScaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-petrosea-fade-up {
+  animation: petroseaFadeInUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-petrosea-fade {
+  animation: petroseaFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-petrosea-scale {
+  animation: petroseaScaleIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Card Interactive Hover Lift */
+.petrosea-card {
+  transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.2s ease;
+}
+.petrosea-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -2px rgba(15, 23, 42, 0.04);
+}
+
+/* Interactive Button Click Feedback */
+button:active:not(:disabled) {
+  transform: scale(0.985);
+  transition: transform 0.08s ease;
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

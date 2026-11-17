@@ -57,9 +57,9 @@ export function CalibrationTable({
 
   return (
     <div className="space-y-6">
-      {/* Technical Metric Cards — Light Theme */}
+      {/* Technical Metric Cards — Light Theme (Petrosea-inspired) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-[#163d78]">
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-[#163d78] petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">Total Alat Ukur</p>
@@ -75,7 +75,7 @@ export function CalibrationTable({
           </div>
         </div>
 
-        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-emerald-600">
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-emerald-600 petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">Sertifikat Valid</p>
@@ -91,7 +91,7 @@ export function CalibrationTable({
           </div>
         </div>
 
-        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-amber-500">
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-amber-500 petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">Segera Berakhir</p>
@@ -107,7 +107,7 @@ export function CalibrationTable({
           </div>
         </div>
 
-        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-rose-600">
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-rose-600 petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">Sudah Kedaluwarsa</p>

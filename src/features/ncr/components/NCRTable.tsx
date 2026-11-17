@@ -90,9 +90,9 @@ export function NCRTable({
 
   return (
     <div className="space-y-4">
-      {/* 1. KPI Cards (Pass 9: Ringkasan di paling atas) */}
+      {/* 1. KPI Cards (Petrosea-inspired) */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Card className="p-3.5 border-l-4 border-l-[#163d78]">
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-[#163d78] petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase">Total NCR Terbit</p>
@@ -102,9 +102,9 @@ export function NCRTable({
               <AlertOctagon className="w-5 h-5 text-[#163d78]" />
             </div>
           </div>
-        </Card>
+        </div>
 
-        <Card className="p-3.5 border-l-4 border-l-amber-500">
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-amber-500 petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase">NCR Status Open</p>
@@ -116,9 +116,9 @@ export function NCRTable({
               <Clock className="w-5 h-5 text-amber-600" />
             </div>
           </div>
-        </Card>
+        </div>
 
-        <Card className="p-3.5 border-l-4 border-l-rose-600">
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-rose-600 petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase">Jatuh Tempo (Overdue)</p>
@@ -130,9 +130,9 @@ export function NCRTable({
               <AlertTriangle className="w-5 h-5 text-rose-600" />
             </div>
           </div>
-        </Card>
+        </div>
 
-        <Card className="p-3.5 border-l-4 border-l-emerald-600">
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-emerald-600 petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase">Terselesaikan (Closed)</p>
@@ -144,7 +144,7 @@ export function NCRTable({
               <CheckCircle2 className="w-5 h-5 text-emerald-600" />
             </div>
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* 2. Filter & Action Bar */}

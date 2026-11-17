@@ -29,9 +29,9 @@ export function DashboardOverview({
 
   return (
     <div className="space-y-6">
-      {/* Executive QA/QC Metrics */}
+      {/* Executive QA/QC Metrics (Petrosea-inspired hover elevation) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-4 border-slate-200 bg-white cursor-pointer hover:border-slate-300 hover:shadow-sm transition-all" onClick={() => onNavigateToTab("documents")}>
+        <Card className="p-4 border-slate-200 bg-white cursor-pointer hover:border-slate-300 petrosea-card border-l-4 border-l-[#163d78]" onClick={() => onNavigateToTab("documents")}>
           <div className="flex items-center justify-between">
             <span className="text-xs font-mono uppercase tracking-wider text-slate-500">Total Dokumen EDMS</span>
             <FileText className="w-4 h-4 text-slate-400" strokeWidth={1.8} />
@@ -42,7 +42,7 @@ export function DashboardOverview({
           <p className="text-[11px] text-slate-500 mt-1">ITP, MS, MTR & Laporan</p>
         </Card>
 
-        <Card className="p-4 border-slate-200 bg-white cursor-pointer hover:border-slate-300 hover:shadow-sm transition-all" onClick={() => onNavigateToTab("documents")}>
+        <Card className="p-4 border-slate-200 bg-white cursor-pointer hover:border-slate-300 petrosea-card border-l-4 border-l-sky-600" onClick={() => onNavigateToTab("documents")}>
           <div className="flex items-center justify-between">
             <span className="text-xs font-mono uppercase tracking-wider text-[#0284c7]">Menunggu Approval</span>
             <Clock className="w-4 h-4 text-[#0284c7]" strokeWidth={1.8} />
@@ -53,7 +53,7 @@ export function DashboardOverview({
           <p className="text-[11px] text-slate-500 mt-1">Perlu review QA/QC Manager</p>
         </Card>
 
-        <Card className="p-4 border-slate-200 bg-white cursor-pointer hover:border-slate-300 hover:shadow-sm transition-all" onClick={() => onNavigateToTab("documents")}>
+        <Card className="p-4 border-slate-200 bg-white cursor-pointer hover:border-slate-300 petrosea-card border-l-4 border-l-emerald-600" onClick={() => onNavigateToTab("documents")}>
           <div className="flex items-center justify-between">
             <span className="text-xs font-mono uppercase tracking-wider text-[#16a34a]">Dokumen Disetujui</span>
             <CheckCircle2 className="w-4 h-4 text-[#16a34a]" strokeWidth={1.8} />
@@ -66,7 +66,7 @@ export function DashboardOverview({
           </p>
         </Card>
 
-        <Card className="p-4 border-slate-200 bg-white cursor-pointer hover:border-slate-300 hover:shadow-sm transition-all" onClick={() => onNavigateToTab("calibration")}>
+        <Card className="p-4 border-slate-200 bg-white cursor-pointer hover:border-slate-300 petrosea-card border-l-4 border-l-amber-500" onClick={() => onNavigateToTab("calibration")}>
           <div className="flex items-center justify-between">
             <span className="text-xs font-mono uppercase tracking-wider text-[#d97706]">Alat Perlu Kalibrasi</span>
             <Ruler className="w-4 h-4 text-[#d97706]" strokeWidth={1.8} />

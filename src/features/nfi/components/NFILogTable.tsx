@@ -70,9 +70,9 @@ export function NFILogTable({
 
   return (
     <div className="space-y-4">
-      {/* KPI Cards — Light Theme */}
+      {/* KPI Cards — Light Theme (Petrosea-inspired) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-[#163d78]">
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-[#163d78] petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">Total Temuan NFI</p>
@@ -88,7 +88,7 @@ export function NFILogTable({
           </div>
         </div>
 
-        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-amber-500">
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-amber-500 petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">Temuan Open</p>
@@ -104,7 +104,7 @@ export function NFILogTable({
           </div>
         </div>
 
-        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-rose-600">
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-rose-600 petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">Hasil Fail / Re-Inspect</p>
@@ -120,7 +120,7 @@ export function NFILogTable({
           </div>
         </div>
 
-        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-emerald-600">
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-emerald-600 petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">Selesai (Closed)</p>

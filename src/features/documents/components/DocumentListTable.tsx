@@ -228,10 +228,10 @@ export function DocumentListTable({
         </div>
       </div>
 
-      {/* 2. Executive KPI Cards Strip (Pass 9 Layout: Ringkasan di paling atas, Tanpa Donut Raksasa) */}
+      {/* 2. Executive KPI Cards Strip (Petrosea-inspired hover elevation & clean metric cards) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {/* Total */}
-        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-[#163d78]">
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-[#163d78] petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">
@@ -252,7 +252,7 @@ export function DocumentListTable({
         </div>
 
         {/* Pending */}
-        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-amber-500">
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-amber-500 petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">
@@ -273,7 +273,7 @@ export function DocumentListTable({
         </div>
 
         {/* Approved */}
-        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-emerald-600">
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-emerald-600 petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">
@@ -294,7 +294,7 @@ export function DocumentListTable({
         </div>
 
         {/* Rejected */}
-        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-rose-600">
+        <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-rose-600 petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">

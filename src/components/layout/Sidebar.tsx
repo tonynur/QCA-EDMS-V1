@@ -252,10 +252,10 @@ export function Sidebar({
                         key={item.id}
                         onClick={() => onTabChange(item.id)}
                         className={cn(
-                          "w-full flex items-center justify-between px-2.5 py-1.5 rounded-[5px] text-xs font-medium transition-all text-left border-l-[3px]",
+                          "w-full flex items-center justify-between px-2.5 py-1.5 rounded-[5px] text-xs transition-all duration-150 ease-out text-left border-l-[3px] cursor-pointer",
                           isActive
-                            ? "bg-slate-100/90 border-l-[#163d78] text-[#163d78] font-bold shadow-xs"
-                            : "border-l-transparent text-slate-700 hover:bg-slate-50 hover:text-slate-900"
+                            ? "bg-blue-50/80 border-l-[#163d78] text-[#163d78] font-bold shadow-xs translate-x-0.5"
+                            : "border-l-transparent text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:translate-x-0.5"
                         )}
                       >
                         <div className="flex items-center gap-2">

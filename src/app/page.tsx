@@ -437,7 +437,8 @@ export default function HomePage() {
           onOpenAIChat={() => setIsAIChatOpen(true)}
         />
 
-        <main className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6 bg-[#f1f5f9]">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6 bg-[#f4f6fa]">
+          <div key={activeTab} className="animate-petrosea-fade-up">
           {/* TAB 1: DASHBOARD OVERVIEW */}
           {activeTab === "dashboard" && (
             <div className="space-y-6">
@@ -658,6 +659,7 @@ export default function HomePage() {
               </div>
             </div>
           )}
+          </div>
         </main>
       </div>
 
