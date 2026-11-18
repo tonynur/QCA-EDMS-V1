@@ -124,25 +124,38 @@ export default function HomePage() {
 
   // Global Project Filter & Modals
   const [selectedProject, setSelectedProject] = useState<string>("");
+  const [globalSearchQuery, setGlobalSearchQuery] = useState<string>("");
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const [isQRScannerOpen, setIsQRScannerOpen] = useState(false);
   const [previewDoc, setPreviewDoc] = useState<DocumentItem | null>(null);
   const [historyDoc, setHistoryDoc] = useState<DocumentItem | null>(null);
   const [isNfiImportOpen, setIsNfiImportOpen] = useState(false);
 
-  // Filtered documents by project
-  const filteredDocuments = selectedProject
-    ? documents.filter((doc) => {
+  // Filtered documents by project & global search
+  const filteredDocuments = documents.filter((doc) => {
+    if (selectedProject) {
       const pCode = (doc.projectCode || "").toUpperCase();
       const pName = (doc.projectName || "").toUpperCase();
       const target = selectedProject.toUpperCase();
-      return (
+      const matchesProject =
         pCode === target ||
         pName.includes(target) ||
-        (doc.documentCode && doc.documentCode.toUpperCase().includes(target))
-      );
-    })
-    : documents;
+        (doc.documentCode && doc.documentCode.toUpperCase().includes(target));
+      if (!matchesProject) return false;
+    }
+    if (globalSearchQuery.trim()) {
+      const q = globalSearchQuery.trim().toLowerCase();
+      const matchesQuery =
+        (doc.documentCode || "").toLowerCase().includes(q) ||
+        (doc.title || "").toLowerCase().includes(q) ||
+        (doc.projectName || "").toLowerCase().includes(q) ||
+        (doc.discipline || "").toLowerCase().includes(q) ||
+        (doc.documentType || "").toLowerCase().includes(q) ||
+        (doc.documentNumber || "").toLowerCase().includes(q);
+      if (!matchesQuery) return false;
+    }
+    return true;
+  });
 
   // Pending approval counter for badge
   const pendingApprovalCount = documents.filter((d) =>
@@ -400,8 +413,16 @@ export default function HomePage() {
         user={user}
         onLogout={logout}
         selectedProject={selectedProject}
+        onGlobalSearch={(q) => {
+          setGlobalSearchQuery(q);
+          if (q.trim() && activeTab !== "documents") {
+            setActiveTab("documents");
+          }
+        }}
         onOpenQRScanner={() => setIsQRScannerOpen(true)}
         onOpenAIChat={() => setIsAIChatOpen(true)}
+        unreadNotificationsCount={pendingApprovalCount}
+        onOpenNotifications={() => setActiveTab("approval")}
       />
 
       {/* Floating Toast */}
