@@ -70,158 +70,172 @@ export function Navbar({
     return normalized.length > 8 ? normalized.slice(0, 8) : normalized;
   };
 
+  const userInitial = user?.name ? user.name.trim().charAt(0).toUpperCase() : "U";
+
   return (
-    <header className="h-14 bg-[#0a1a33] border-b border-[#1b3a6b] px-3 sm:px-5 flex items-center justify-between sticky top-0 z-30 shadow-md select-none">
-      {/* 1. Official Brand Identity & Subsystem Header */}
-      <div className="flex items-center gap-3 shrink-0">
+    <header className="h-14 bg-[#0a182e] border-b border-[#162f55] px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 select-none shadow-sm">
+      {/* ========================================================
+          LEFT ZONE: Brand Identity + Integrated Search
+          ======================================================== */}
+      <div className="flex items-center gap-4 shrink-0">
+        {/* Brand Logo */}
         <div className="flex items-center shrink-0">
           <Image
             src="/icons/logo.png"
             alt="PT Asuka Engineering Indonesia"
-            width={120}
-            height={28}
-            className="h-7 max-w-[130px] w-auto object-contain"
+            width={116}
+            height={26}
+            className="h-6 w-auto object-contain"
             priority
           />
         </div>
 
-        {/* Vertical Hairline Divider */}
-        <div className="h-7 w-[1px] bg-[#244785] shrink-0 hidden sm:block" />
+        {/* Vertical Separator */}
+        <div className="h-6 w-[1px] bg-[#1d3c6a] shrink-0 hidden sm:block" />
 
+        {/* Technical System Title */}
         <div className="hidden sm:flex flex-col justify-center">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-xs tracking-wider text-white uppercase whitespace-nowrap">
+            <span className="font-bold text-[11.5px] tracking-wider text-white uppercase whitespace-nowrap">
               PT Asuka Engineering Indonesia
             </span>
-            <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded-[3px] bg-[#163d78] text-[#38bdf8] border border-[#255bb5] whitespace-nowrap">
-              QCA EDMS
-            </span>
             {selectedProject && (
-              <span className="hidden xl:inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded-[3px] bg-[#16a34a]/20 text-[#4ade80] border border-[#16a34a]/40 whitespace-nowrap">
+              <span className="inline-flex items-center gap-1 text-[9.5px] font-mono px-1.5 py-0.2 rounded-[3px] bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 whitespace-nowrap">
                 <Target className="w-2.5 h-2.5" />
                 <span>{selectedProject}</span>
               </span>
             )}
           </div>
-          <p className="text-[10px] text-slate-300 font-medium tracking-wide flex items-center gap-1.5 whitespace-nowrap">
+          <div className="flex items-center gap-1.5 text-[10px] text-slate-400 font-sans tracking-wide whitespace-nowrap">
+            <span className="text-[#38bdf8] font-mono font-semibold">QCA EDMS</span>
+            <span className="text-slate-600">•</span>
             <span>Sistem Kontrol Dokumen Mutu & Inspeksi Lapangan</span>
-          </p>
-        </div>
-      </div>
-
-      {/* 2. Global Document Search Bar */}
-      <div className="hidden md:flex items-center flex-1 min-w-[200px] max-w-sm mx-3 lg:mx-6 shrink-0 lg:shrink">
-        <div className="relative w-full">
-          <Search
-            className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-            strokeWidth={1.8}
-          />
-          <input
-            type="text"
-            placeholder="Cari dokumen, ITP, kalibrasi, proyek..."
-            onChange={(e) => onGlobalSearch && onGlobalSearch(e.target.value)}
-            className="w-full h-8 pl-8 pr-12 text-xs bg-[#091830] text-slate-200 border border-[#244785] rounded-[6px] placeholder-slate-400 focus:outline-none focus:border-[#38bdf8] focus:ring-1 focus:ring-[#38bdf8]/30 transition-all font-sans"
-          />
-          <kbd className="absolute right-2 top-1/2 -translate-y-1/2 hidden xl:inline-flex items-center text-[9px] font-mono text-slate-400 bg-[#163d78]/60 border border-[#255bb5]/60 px-1.5 py-0.5 rounded pointer-events-none">
-            Ctrl+K
-          </kbd>
-        </div>
-      </div>
-
-      {/* 3. Quick Action Tools & Status Indicators */}
-      <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-        {/* Sync Status Badge */}
-        <div
-          className="hidden sm:inline-flex items-center gap-1.5 h-8 px-2.5 rounded-[4px] bg-[#052e16]/80 border border-[#166534] text-[11px] font-mono text-[#4ade80] whitespace-nowrap shrink-0"
-          title="Status Koneksi: Terhubung ke Master Database"
-        >
-          <span className="w-2 h-2 rounded-[2px] bg-[#22c55e] shrink-0" />
-          <span className="hidden lg:inline">Tersinkronisasi</span>
-          <span className="lg:hidden">Tersinkron</span>
-          <RefreshCw className="w-3 h-3 text-[#4ade80] shrink-0" />
-        </div>
-
-        {/* Tabular Clock */}
-        {timeStr && (
-          <div
-            className="hidden xl:inline-flex items-center h-8 font-mono text-[11px] text-slate-300 tabular-nums px-2.5 bg-[#091830] rounded-[6px] border border-[#244785] whitespace-nowrap shrink-0"
-            title="Waktu Sistem (WIB)"
-          >
-            {timeStr}
           </div>
-        )}
+        </div>
 
-        {/* Scan QR Button */}
-        {onOpenQRScanner && (
-          <button
-            type="button"
-            onClick={onOpenQRScanner}
-            className="hidden lg:inline-flex items-center gap-1.5 h-8 px-2.5 rounded-[6px] bg-[#163d78]/60 hover:bg-[#163d78] text-slate-200 hover:text-white border border-[#244785] text-xs font-mono whitespace-nowrap shrink-0 transition-colors"
-            title="Pindai QR / Verifikasi Dokumen"
-          >
-            <QrCode className="w-3.5 h-3.5 text-[#38bdf8] shrink-0" />
-            <span>Scan QR</span>
-          </button>
-        )}
+        {/* Global Search Bar (Positioned cohesively alongside Brand) */}
+        <div className="hidden lg:flex items-center w-72 xl:w-80 ml-2 xl:ml-4 shrink-0">
+          <div className="relative w-full">
+            <Search
+              className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+              strokeWidth={1.8}
+            />
+            <input
+              type="text"
+              placeholder="Cari dokumen, ITP, kalibrasi..."
+              onChange={(e) => onGlobalSearch && onGlobalSearch(e.target.value)}
+              className="w-full h-8 pl-8 pr-12 text-xs bg-[#061224] text-slate-200 border border-[#1b3a6b] rounded-[6px] placeholder-slate-400 focus:outline-none focus:border-[#38bdf8] focus:ring-1 focus:ring-[#38bdf8]/30 transition-all font-sans"
+            />
+            <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] font-mono text-slate-400 bg-[#0d2347] border border-[#1d3c6a] px-1.5 py-0.5 rounded pointer-events-none">
+              Ctrl+K
+            </kbd>
+          </div>
+        </div>
+      </div>
 
-        {/* Tanya AI QC Button */}
-        {onOpenAIChat && (
-          <button
-            type="button"
-            onClick={onOpenAIChat}
-            className="hidden md:inline-flex items-center gap-1.5 h-8 px-2.5 rounded-[6px] bg-[#163d78]/80 hover:bg-[#1c4b91] text-[#38bdf8] hover:text-white border border-[#255bb5] text-xs font-mono font-medium whitespace-nowrap shrink-0 transition-colors"
-            title="Buka Tanya AI QC / Asisten Regulasi"
-          >
-            <Bot className="w-3.5 h-3.5 shrink-0" />
-            <span className="hidden lg:inline">Tanya AI QC</span>
-            <span className="lg:hidden">AI QC</span>
-          </button>
-        )}
-
-        {/* Notification Bell with Badge */}
-        <button
-          type="button"
-          onClick={onOpenNotifications}
-          className="relative w-8 h-8 rounded-[6px] bg-[#163d78]/50 hover:bg-[#163d78] border border-[#244785] text-slate-200 hover:text-white flex items-center justify-center shrink-0 transition-colors"
-          title={
-            unreadNotificationsCount > 0
-              ? `${unreadNotificationsCount} dokumen memerlukan approval / tindakan`
-              : "Notifikasi Sistem"
-          }
-        >
-          <Bell className="w-3.5 h-3.5" strokeWidth={1.8} />
-          {unreadNotificationsCount > 0 && (
-            <span className="absolute -top-1 -right-1 px-1 min-w-[16px] h-4 rounded-[3px] bg-[#ed2e35] text-white text-[9px] font-mono font-bold flex items-center justify-center shadow-sm pointer-events-none">
-              {unreadNotificationsCount > 99 ? "99+" : unreadNotificationsCount}
-            </span>
+      {/* ========================================================
+          RIGHT ZONE: Telemetry + Action Utilities + User Profile
+          ======================================================== */}
+      <div className="flex items-center gap-3 shrink-0">
+        {/* Unified Telemetry Capsule (Live Sync & Server Time in ONE cohesive frame) */}
+        <div className="hidden xl:flex items-center gap-2.5 h-8 px-3 rounded-[6px] bg-[#061224] border border-[#1b3a6b] text-[11px] font-mono text-slate-300 whitespace-nowrap shrink-0">
+          <div className="flex items-center gap-1.5" title="Koneksi Master Database Aktif">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
+            <span className="text-slate-200 font-sans">Live Sync</span>
+            <RefreshCw className="w-2.5 h-2.5 text-slate-400 shrink-0" />
+          </div>
+          {timeStr && (
+            <>
+              <span className="text-[#1d3c6a] font-normal">|</span>
+              <span className="text-slate-300 tabular-nums" title="Waktu Sistem (WIB)">
+                {timeStr}
+              </span>
+            </>
           )}
-        </button>
+        </div>
 
-        {/* User Profile Pill & Logout */}
+        {/* Quick Action Tools */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          {/* Scan QR Button */}
+          {onOpenQRScanner && (
+            <button
+              type="button"
+              onClick={onOpenQRScanner}
+              className="hidden md:inline-flex items-center gap-1.5 h-8 px-2.5 rounded-[6px] text-slate-300 hover:text-white hover:bg-[#163d78]/60 border border-transparent hover:border-[#1d3c6a] text-xs font-mono whitespace-nowrap shrink-0 transition-colors"
+              title="Pindai QR / Verifikasi Dokumen"
+            >
+              <QrCode className="w-3.5 h-3.5 text-[#38bdf8] shrink-0" />
+              <span>Scan QR</span>
+            </button>
+          )}
+
+          {/* Tanya AI QC Button (Featured Action) */}
+          {onOpenAIChat && (
+            <button
+              type="button"
+              onClick={onOpenAIChat}
+              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[6px] bg-[#163d78] hover:bg-[#1c4b91] text-white border border-[#255bb5] text-xs font-mono font-medium whitespace-nowrap shrink-0 transition-colors shadow-sm"
+              title="Buka Tanya AI QC / Asisten Regulasi"
+            >
+              <Bot className="w-3.5 h-3.5 text-[#38bdf8] shrink-0" />
+              <span className="hidden sm:inline">Tanya AI QC</span>
+              <span className="sm:hidden">AI QC</span>
+            </button>
+          )}
+
+          {/* Notification Bell */}
+          <button
+            type="button"
+            onClick={onOpenNotifications}
+            className="relative w-8 h-8 rounded-[6px] text-slate-300 hover:text-white hover:bg-[#163d78]/50 border border-transparent hover:border-[#1d3c6a] flex items-center justify-center shrink-0 transition-colors"
+            title={
+              unreadNotificationsCount > 0
+                ? `${unreadNotificationsCount} dokumen memerlukan tindakan`
+                : "Notifikasi Sistem"
+            }
+          >
+            <Bell className="w-4 h-4" strokeWidth={1.8} />
+            {unreadNotificationsCount > 0 && (
+              <span className="absolute 1 top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#ed2e35] ring-2 ring-[#0a182e]" />
+            )}
+          </button>
+        </div>
+
+        {/* Separator before User Profile */}
+        <div className="h-6 w-[1px] bg-[#1d3c6a] shrink-0" />
+
+        {/* Unified User Profile & Session */}
         {user ? (
-          <div className="flex items-center gap-2 pl-2 border-l border-[#244785] shrink-0">
-            <div className="flex items-center gap-2 h-8 px-2.5 rounded-[6px] bg-[#091830] border border-[#244785] shrink-0">
-              <div className="w-5 h-5 rounded-[4px] bg-[#163d78] border border-[#255bb5] flex items-center justify-center text-[#38bdf8] shrink-0">
-                <UserIcon className="w-3 h-3" />
+          <div className="flex items-center gap-1.5 shrink-0">
+            <div className="flex items-center gap-2 h-8 pl-1.5 pr-2.5 rounded-[6px] bg-[#061224] border border-[#1b3a6b] shrink-0">
+              {/* User Avatar Circle */}
+              <div className="w-5 h-5 rounded-full bg-[#163d78] text-[#38bdf8] border border-[#255bb5] flex items-center justify-center text-[10px] font-bold shrink-0">
+                {userInitial}
               </div>
-              <span className="text-xs font-medium text-slate-100 hidden sm:inline whitespace-nowrap max-w-[110px] xl:max-w-[160px] truncate">
+
+              {/* User Display Name */}
+              <span className="text-xs font-medium text-slate-200 hidden sm:inline whitespace-nowrap max-w-[110px] 2xl:max-w-[150px] truncate">
                 {user.name}
               </span>
-              <span className="px-1.5 py-0.5 rounded-[3px] bg-[#ed2e35] text-white text-[9px] font-mono font-bold uppercase tracking-wider whitespace-nowrap shrink-0">
+
+              {/* Technical Role Stamp */}
+              <span className="px-1.5 py-0.2 rounded-[3px] bg-[#ed2e35]/15 text-[#f87171] border border-[#ed2e35]/30 text-[9.5px] font-mono font-bold uppercase tracking-wider whitespace-nowrap shrink-0">
                 {formatRoleLabel(user.role)}
               </span>
             </div>
+
+            {/* Logout Button */}
             <button
               type="button"
               onClick={onLogout}
-              className="w-8 h-8 rounded-[6px] text-slate-300 hover:text-white border border-[#244785] bg-[#091830] hover:bg-[#dc2626]/20 hover:border-[#dc2626]/60 flex items-center justify-center transition-colors shrink-0"
+              className="w-8 h-8 rounded-[6px] text-slate-400 hover:text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 flex items-center justify-center transition-colors shrink-0"
               title="Keluar dari Sistem (Logout)"
             >
               <LogOut className="w-3.5 h-3.5" strokeWidth={1.8} />
             </button>
           </div>
         ) : (
-          <div className="flex items-center gap-1.5 h-8 px-2.5 rounded-[6px] bg-[#091830] border border-[#244785] text-xs text-slate-400 font-mono shrink-0">
+          <div className="flex items-center gap-1.5 h-8 px-2.5 rounded-[6px] bg-[#061224] border border-[#1b3a6b] text-xs text-slate-400 font-mono shrink-0">
             <UserIcon className="w-3.5 h-3.5" />
             <span>Guest</span>
           </div>
