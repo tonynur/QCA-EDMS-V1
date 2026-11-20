@@ -19,6 +19,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "QC-CMS EDMS — PT Asuka Engineering Indonesia",
   description: "QA/QC Electronic Document Management System & Control Platform — PT Asuka Engineering Indonesia",
+  manifest: "/manifest.json",
   icons: {
     icon: "/icons/logo.png",
   },

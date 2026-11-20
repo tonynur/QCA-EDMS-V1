@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { User } from "@/features/auth/types";
+import { useOfflineSync } from "@/lib/offline-sync";
 
 interface NavbarProps {
   user: User | null;
@@ -37,6 +38,7 @@ export function Navbar({
   const [timeStr, setTimeStr] = useState<string>("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { isOnline, queueCount, isSyncing, triggerManualSync } = useOfflineSync();
 
   useEffect(() => {
     const updateTime = () => {
@@ -140,6 +142,36 @@ export function Navbar({
 
       {/* ═══ RIGHT ZONE: Notification + User Dropdown (Zero Clutter) ═══ */}
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        {/* Dynamic Online / Offline Field Mode Indicator */}
+        {isOnline ? (
+          <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] bg-[#091830] border border-[#244785] text-slate-200 text-[11px] font-sans">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+            <span className="text-emerald-400 font-semibold">Tersinkronisasi</span>
+            <span className="text-white/20">•</span>
+            <span className="font-mono text-slate-300 tabular-nums">{timeStr}</span>
+            {queueCount > 0 && (
+              <button
+                type="button"
+                onClick={triggerManualSync}
+                className="ml-1 px-1.5 py-0.2 rounded-[2px] bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-[10px] font-mono cursor-pointer"
+                title="Ada data offline yang menunggu sinkronisasi"
+              >
+                {isSyncing ? "Syncing..." : `Sync (${queueCount})`}
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] bg-amber-500/20 border border-amber-400/40 text-amber-200 text-[11px] font-sans">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0 animate-pulse" />
+            <span className="font-bold">Mode Lapangan (Offline)</span>
+            {queueCount > 0 && (
+              <span className="bg-amber-400 text-slate-950 font-bold px-1.5 py-0.2 rounded-[2px] text-[10px] font-mono">
+                {queueCount} Antrean
+              </span>
+            )}
+          </div>
+        )}
+
         {/* Compact Notification Bell */}
         <button
           type="button"

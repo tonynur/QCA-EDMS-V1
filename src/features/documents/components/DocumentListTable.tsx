@@ -20,6 +20,7 @@ import {
   RotateCcw,
   BarChart2,
   PieChart,
+  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -29,6 +30,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { PageHeader } from "@/components/layout/PageHeader";
 import { DocumentItem } from "../types";
 import { formatDate } from "@/lib/utils";
+import { DigitalSealModal } from "./DigitalSealModal";
 
 interface DocumentListTableProps {
   documents: DocumentItem[];
@@ -60,6 +62,7 @@ export function DocumentListTable({
   const [selectedDiscipline, setSelectedDiscipline] = useState<string>("ALL");
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
   const [showCharts, setShowCharts] = useState(true);
+  const [sealDoc, setSealDoc] = useState<DocumentItem | null>(null);
 
   // Discipline breakdown
   const discStats = useMemo(() => {
@@ -685,6 +688,14 @@ export function DocumentListTable({
 
                     <td className="py-2.5 px-3 text-center">
                       <div className="flex items-center justify-center gap-1">
+                        <button
+                          onClick={() => setSealDoc(doc)}
+                          className="p-1.5 rounded-[4px] bg-slate-50 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-200 transition-colors cursor-pointer"
+                          title="Segel Mutu Digital & QR Verifikasi Resmi (ISO 9001:2015)"
+                        >
+                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" strokeWidth={1.8} />
+                        </button>
+
                         {onPreviewDoc && (
                           <button
                             onClick={() => onPreviewDoc(doc)}
@@ -731,6 +742,12 @@ export function DocumentListTable({
           <span>PT Asuka Engineering Indonesia — QA/QC Division</span>
         </div>
       </div>
+
+      <DigitalSealModal
+        isOpen={!!sealDoc}
+        onClose={() => setSealDoc(null)}
+        document={sealDoc}
+      />
     </div>
   );
 }

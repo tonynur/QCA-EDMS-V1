@@ -30,6 +30,7 @@ import {
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
+import { EarlyWarningModal } from "./EarlyWarningModal";
 
 interface CommandCenterViewProps {
   onSelectProject?: (projectCode: string) => void;
@@ -52,6 +53,7 @@ export function CommandCenterView({
   const [selectedDiscipline, setSelectedDiscipline] = useState<string>("ALL");
   const [sortOrder, setSortOrder] = useState<CCSortOrder>("critical_first");
   const [showCharts, setShowCharts] = useState(true);
+  const [showEWSModal, setShowEWSModal] = useState(false);
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
 
   // Fetch data
@@ -221,6 +223,15 @@ export function CommandCenterView({
         icon={<Target className="w-4 h-4 text-[#38bdf8]" />}
         actions={
           <>
+            <button
+              onClick={() => setShowEWSModal(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] bg-amber-400 hover:bg-amber-300 text-slate-950 font-sans font-bold text-xs tracking-wide shadow-sm transition-all cursor-pointer"
+              title="Sistem Peringatan Dini Mutu & Broadcast WhatsApp"
+            >
+              <AlertTriangle className="w-3.5 h-3.5 text-slate-950" />
+              <span>EWS Alert</span>
+            </button>
+
             <button
               onClick={() => setShowCharts(!showCharts)}
               className={cn(
@@ -858,6 +869,16 @@ export function CommandCenterView({
           </div>
         )}
       </div>
+
+      <EarlyWarningModal
+        isOpen={showEWSModal}
+        onClose={() => setShowEWSModal(false)}
+        criticalNCRCount={totals ? Math.max(1, Math.round(totals.open * 0.15)) : 2}
+        expiringCalCount={3}
+        pendingNFICount={totals ? totals.open : 8}
+        maxAgingDays={maxAgingInfo.maxDays}
+        oldestProjectCode={maxAgingInfo.projCode}
+      />
     </div>
   );
 }

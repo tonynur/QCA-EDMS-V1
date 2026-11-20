@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/Badge";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { TransmittalItem } from "../types";
 import { formatDate, cn } from "@/lib/utils";
+import { TransmittalGeneratorModal } from "./TransmittalGeneratorModal";
 
 interface TransmittalTableProps {
   transmittals: TransmittalItem[];
@@ -21,6 +22,7 @@ export function TransmittalTable({
   onAddNew,
 }: TransmittalTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [showGeneratorModal, setShowGeneratorModal] = useState(false);
 
   const filteredTransmittals = useMemo(() => {
     return transmittals.filter((item) => {
@@ -62,15 +64,13 @@ export function TransmittalTable({
               <RefreshCw className={cn("w-3.5 h-3.5", isLoading && "animate-spin")} />
               <span>Refresh</span>
             </button>
-            {onAddNew && (
-              <button
-                onClick={onAddNew}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-[6px] bg-[#163d78] hover:bg-[#102d59] text-white font-semibold text-xs tracking-wide shadow-sm transition-all cursor-pointer font-mono"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Buat Transmittal</span>
-              </button>
-            )}
+            <button
+              onClick={() => (onAddNew ? onAddNew() : setShowGeneratorModal(true))}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-[6px] bg-[#163d78] hover:bg-[#102d59] text-white font-semibold text-xs tracking-wide shadow-sm transition-all cursor-pointer font-sans"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Buat Transmittal</span>
+            </button>
           </div>
         }
       />
@@ -146,6 +146,11 @@ export function TransmittalTable({
           <span>PT Asuka Engineering Indonesia — QA/QC Division</span>
         </div>
       </div>
+
+      <TransmittalGeneratorModal
+        isOpen={showGeneratorModal}
+        onClose={() => setShowGeneratorModal(false)}
+      />
     </div>
   );
 }

@@ -24,6 +24,7 @@ import {
 import { DocumentItem } from "../types";
 import { Badge } from "@/components/ui/Badge";
 import { formatDate } from "@/lib/utils";
+import { DigitalSealModal } from "./DigitalSealModal";
 
 interface DocumentPreviewModalProps {
   document: DocumentItem | null;
@@ -39,6 +40,7 @@ export function DocumentPreviewModal({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [activeView, setActiveView] = useState<"sheet" | "drive">("sheet");
   const [iframeError, setIframeError] = useState(false);
+  const [showSealModal, setShowSealModal] = useState(false);
 
   // Extract Drive ID or construct preview URL
   const { fileId, previewUrl, downloadUrl, hasValidFile } = useMemo(() => {
@@ -159,6 +161,16 @@ export function DocumentPreviewModal({
                 Drive / Berkas
               </button>
             </div>
+
+            <button
+              type="button"
+              onClick={() => setShowSealModal(true)}
+              className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-[4px] bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 text-xs font-sans font-semibold transition-colors cursor-pointer"
+              title="Lihat Segel Mutu Digital & QR Verifikasi Resmi (ISO 9001:2015)"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Segel Mutu Digital</span>
+            </button>
 
             <button
               type="button"
@@ -428,6 +440,12 @@ export function DocumentPreviewModal({
           )}
         </div>
       </div>
+
+      <DigitalSealModal
+        isOpen={showSealModal}
+        onClose={() => setShowSealModal(false)}
+        document={doc}
+      />
     </div>
   );
 }
