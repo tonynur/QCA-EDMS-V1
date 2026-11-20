@@ -62,11 +62,22 @@ import { NumberingAndApprovalSettingsView } from "@/features/settings/components
 
 // UI Components
 import { Card, CardTitle } from "@/components/ui/Card";
-import { Database, Server } from "lucide-react";
+import { PageHeader } from "@/components/layout/PageHeader";
+import {
+  Database,
+  Server,
+  LayoutDashboard,
+  Building2,
+  UploadCloud,
+  BarChart3,
+  Users,
+  Archive,
+  Settings,
+} from "lucide-react";
 
 export default function HomePage() {
   const { user, isAuthenticated, isLoading: authLoading, logout, refreshUser } = useAuth();
-  const [activeTab, setActiveTab] = useState<NavTab>("documents");
+  const [activeTab, setActiveTab] = useState<NavTab>("command");
 
   // Notification Toast
   const [toastMessage, setToastMessage] = useState<{ text: string; type: "success" | "error" | "info" } | null>(null);
@@ -124,25 +135,38 @@ export default function HomePage() {
 
   // Global Project Filter & Modals
   const [selectedProject, setSelectedProject] = useState<string>("");
+  const [globalSearchQuery, setGlobalSearchQuery] = useState<string>("");
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const [isQRScannerOpen, setIsQRScannerOpen] = useState(false);
   const [previewDoc, setPreviewDoc] = useState<DocumentItem | null>(null);
   const [historyDoc, setHistoryDoc] = useState<DocumentItem | null>(null);
   const [isNfiImportOpen, setIsNfiImportOpen] = useState(false);
 
-  // Filtered documents by project
-  const filteredDocuments = selectedProject
-    ? documents.filter((doc) => {
+  // Filtered documents by project & global search
+  const filteredDocuments = documents.filter((doc) => {
+    if (selectedProject) {
       const pCode = (doc.projectCode || "").toUpperCase();
       const pName = (doc.projectName || "").toUpperCase();
       const target = selectedProject.toUpperCase();
-      return (
+      const matchesProject =
         pCode === target ||
         pName.includes(target) ||
-        (doc.documentCode && doc.documentCode.toUpperCase().includes(target))
-      );
-    })
-    : documents;
+        (doc.documentCode && doc.documentCode.toUpperCase().includes(target));
+      if (!matchesProject) return false;
+    }
+    if (globalSearchQuery.trim()) {
+      const q = globalSearchQuery.trim().toLowerCase();
+      const matchesQuery =
+        (doc.documentCode || "").toLowerCase().includes(q) ||
+        (doc.title || "").toLowerCase().includes(q) ||
+        (doc.projectName || "").toLowerCase().includes(q) ||
+        (doc.discipline || "").toLowerCase().includes(q) ||
+        (doc.documentType || "").toLowerCase().includes(q) ||
+        (doc.documentNumber || "").toLowerCase().includes(q);
+      if (!matchesQuery) return false;
+    }
+    return true;
+  });
 
   // Pending approval counter for badge
   const pendingApprovalCount = documents.filter((d) =>
@@ -388,20 +412,28 @@ export default function HomePage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#0d2347] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#f1f5f9] flex items-center justify-center p-4">
         <LoginForm onSuccess={refreshUser} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f1f5f9] flex flex-col text-slate-900 font-sans antialiased">
+    <div className="min-h-screen bg-[#f1f5f9] flex flex-col text-slate-900 font-sans antialiased w-full max-w-full overflow-x-hidden">
       <Navbar
         user={user}
         onLogout={logout}
         selectedProject={selectedProject}
+        onGlobalSearch={(q) => {
+          setGlobalSearchQuery(q);
+          if (q.trim() && activeTab !== "documents") {
+            setActiveTab("documents");
+          }
+        }}
         onOpenQRScanner={() => setIsQRScannerOpen(true)}
         onOpenAIChat={() => setIsAIChatOpen(true)}
+        unreadNotificationsCount={pendingApprovalCount}
+        onOpenNotifications={() => setActiveTab("approval")}
       />
 
       {/* Floating Toast */}
@@ -419,7 +451,7 @@ export default function HomePage() {
         </div>
       )}
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden w-full max-w-full min-w-0">
         <Sidebar
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -437,19 +469,38 @@ export default function HomePage() {
           onOpenAIChat={() => setIsAIChatOpen(true)}
         />
 
-        <main className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6 bg-[#f4f6fa]">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-5 lg:p-6 bg-[#f4f6fa] min-w-0 max-w-full">
           <div key={activeTab} className="animate-petrosea-fade-up">
           {/* TAB 1: DASHBOARD OVERVIEW */}
           {activeTab === "dashboard" && (
             <div className="space-y-6">
-              <div className="border-b border-slate-200 pb-3">
-                <h1 className="text-lg font-bold tracking-wide text-slate-900 uppercase">
-                  Overview Dashboard Mutu QA/QC
-                </h1>
-                <p className="text-xs text-slate-500 font-mono mt-0.5">
-                  Monitoring eksekutif dokumen kontrol, kepatuhan kalibrasi & temuan lapangan
-                </p>
-              </div>
+              <PageHeader
+                category="MONITORING & LAPORAN // DASHBOARD"
+                title="Overview Dashboard Mutu QA/QC"
+                badge="Executive View"
+                badgeVariant="primary"
+                description="Monitoring eksekutif dokumen kontrol, kepatuhan kalibrasi & temuan inspeksi lapangan"
+                icon={<LayoutDashboard className="w-4 h-4 text-[#163d78]" />}
+              />
+              <DashboardOverview
+                documents={filteredDocuments}
+                calibrationSummary={calSummary}
+                onNavigateToTab={setActiveTab}
+              />
+            </div>
+          )}
+
+          {/* TAB 1C: RINGKASAN PROYEK */}
+          {activeTab === "overview" && (
+            <div className="space-y-6">
+              <PageHeader
+                category="MONITORING & LAPORAN // PORTOFOLIO"
+                title="Ringkasan Portofolio Proyek"
+                badge={`${projects.length} Proyek Aktif`}
+                badgeVariant="success"
+                description="Distribusi status dokumen, progres inspeksi & ringkasan mutu per proyek konstruksi"
+                icon={<Building2 className="w-4 h-4 text-[#163d78]" />}
+              />
               <DashboardOverview
                 documents={filteredDocuments}
                 calibrationSummary={calSummary}
@@ -489,6 +540,14 @@ export default function HomePage() {
           {/* TAB 3: UNGGAH DOKUMEN */}
           {activeTab === "upload" && (
             <div className="space-y-6">
+              <PageHeader
+                category="DOKUMEN MUTU // UPLOAD REGISTER"
+                title="Unggah Dokumen Mutu Baru"
+                badge="Form Registrasi"
+                badgeVariant="primary"
+                description="Registrasi berkas dokumen kontrol mutu (ITP, Method Statement, MTR, dll.) ke Master Register QCA EDMS"
+                icon={<UploadCloud className="w-4 h-4 text-[#163d78]" />}
+              />
               <DocumentUploadForm
                 onSuccess={() => {
                   showToast("Dokumen berhasil diunggah ke master register.");
@@ -588,41 +647,89 @@ export default function HomePage() {
 
           {/* TAB 8: EXECUTIVE ANALYTICS */}
           {activeTab === "analytics" && (
-            <ExecutiveAnalytics
-              documents={documents}
-              calibrationSummary={calSummary}
-              nfiSummary={nfiSummary}
-            />
+            <div className="space-y-6">
+              <PageHeader
+                category="MONITORING & LAPORAN // ANALISIS"
+                title="Analisis Eksekutif & Tren Mutu"
+                badge="Smart Analytics"
+                badgeVariant="primary"
+                description="Visualisasi komprehensif rasio approval, tren temuan NFI, dan proyeksi SLA kepatuhan mutu proyek"
+                icon={<BarChart3 className="w-4 h-4 text-[#163d78]" />}
+              />
+              <ExecutiveAnalytics
+                documents={documents}
+                calibrationSummary={calSummary}
+                nfiSummary={nfiSummary}
+              />
+            </div>
           )}
 
           {/* TAB 9: KELOLA PROYEK */}
           {activeTab === "projects" && (
-            <ProjectManagement
-              projects={projects}
-              isLoading={isProjectLoading}
-              onRefresh={loadProjects}
-              onAddProject={handleAddProject}
-            />
+            <div className="space-y-6">
+              <PageHeader
+                category="ADMINISTRASI // KELOLA PROYEK"
+                title="Manajemen Portofolio Proyek"
+                badge={`${projects.length} Proyek Terdaftar`}
+                badgeVariant="success"
+                description="Konfigurasi data induk proyek, penetapan kode unik, PIC QC, dan parameter kontrol mutu"
+                icon={<Building2 className="w-4 h-4 text-[#163d78]" />}
+              />
+              <ProjectManagement
+                projects={projects}
+                isLoading={isProjectLoading}
+                onRefresh={loadProjects}
+                onAddProject={handleAddProject}
+              />
+            </div>
           )}
 
           {/* TAB 9B: MANAJEMEN PENGGUNA */}
           {activeTab === "users" && (
-            <UserManagementView />
+            <div className="space-y-6">
+              <PageHeader
+                category="ADMINISTRASI // MANAJEMEN USER"
+                title="Manajemen Pengguna & Otorisasi Tim"
+                badge="Role Matrix"
+                badgeVariant="primary"
+                description="Pengaturan akun teknis, peran hierarki (Lead, Engineer, Inspector), dan otorisasi dokumen"
+                icon={<Users className="w-4 h-4 text-[#163d78]" />}
+              />
+              <UserManagementView />
+            </div>
           )}
 
           {/* TAB 9C: ARSIP MUTU & RECYCLE BIN */}
           {activeTab === "archive" && (
-            <ArchiveRecycleBinView
-              documents={documents}
-              onRestore={(docId) => {
-                showToast(`Dokumen ${docId} berhasil dipulihkan.`, "success");
-              }}
-            />
+            <div className="space-y-6">
+              <PageHeader
+                category="ADMINISTRASI // ARSIP & RETENSI"
+                title="Arsip Mutu & Tempat Sampah (Recycle Bin)"
+                badge="Retention Policy"
+                badgeVariant="neutral"
+                description="Penyimpanan berkas historis, audit trail penghapusan, dan pemulihan dokumen terdahulu"
+                icon={<Archive className="w-4 h-4 text-[#163d78]" />}
+              />
+              <ArchiveRecycleBinView
+                documents={documents}
+                onRestore={(docId) => {
+                  showToast(`Dokumen ${docId} berhasil dipulihkan.`, "success");
+                }}
+              />
+            </div>
           )}
 
           {/* TAB 10: PENGATURAN SISTEM */}
           {activeTab === "settings" && (
-            <div className="space-y-4">
+            <div className="space-y-6">
+              <PageHeader
+                category="ADMINISTRASI // PENGATURAN SISTEM"
+                title="Pengaturan Format Penomoran & Matriks Approval"
+                badge="SOP AEI Config"
+                badgeVariant="primary"
+                description="Konfigurasi kode disiplin, format nomor dokumen mutu, alur persetujuan, dan sinkronisasi Cloud"
+                icon={<Settings className="w-4 h-4 text-[#163d78]" />}
+              />
               <NumberingAndApprovalSettingsView
                 projects={projects.map((p) => ({ code: p.code, name: p.name }))}
                 showToast={showToast}

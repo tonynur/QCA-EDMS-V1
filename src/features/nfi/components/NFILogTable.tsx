@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { Search, RefreshCw, Plus, CheckCircle2, Clock, XCircle, FileSpreadsheet, Download, Upload } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { NFIEntry, NFISummary } from "../types";
 import { formatDate } from "@/lib/utils";
 
@@ -70,6 +71,38 @@ export function NFILogTable({
 
   return (
     <div className="space-y-4">
+      {/* 1. Header Banner & Actions */}
+      <PageHeader
+        category="INSPEKSI & ALAT // LOG TEMUAN"
+        title="Notice For Inspection (NFI Log Sheet)"
+        badge={`${summary.total} Temuan Lapangan`}
+        badgeVariant="primary"
+        description="Pencatatan dan pemantauan tindak lanjut temuan inspeksi mutu (CAPA) di seluruh proyek"
+        icon={<FileSpreadsheet className="w-4 h-4 text-[#163d78]" />}
+        actions={
+          <div className="flex items-center gap-2">
+            {onOpenImport && (
+              <button
+                onClick={onOpenImport}
+                className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-[6px] text-xs font-semibold font-mono transition-colors cursor-pointer"
+              >
+                <Upload className="w-3.5 h-3.5 text-slate-500" />
+                <span>Import Batch</span>
+              </button>
+            )}
+            {onAddNew && (
+              <button
+                onClick={onAddNew}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[6px] bg-[#ed2e35] hover:bg-[#c92026] text-white font-semibold text-xs tracking-wide shadow-sm transition-all cursor-pointer font-mono"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Catat NFI Baru</span>
+              </button>
+            )}
+          </div>
+        }
+      />
+
       {/* KPI Cards — Light Theme (Petrosea-inspired) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-[#163d78] petrosea-card cursor-default">

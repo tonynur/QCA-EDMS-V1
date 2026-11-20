@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import {
-  Search,
   LogOut,
   QrCode,
   Bot,
@@ -29,7 +28,6 @@ interface NavbarProps {
 export function Navbar({
   user,
   onLogout,
-  onGlobalSearch,
   selectedProject,
   onOpenQRScanner,
   onOpenAIChat,
@@ -120,7 +118,7 @@ export function Navbar({
         <div className="border-l border-[#244785] pl-2.5 sm:pl-3 flex flex-col justify-center min-w-0">
           <div className="flex items-center gap-1.5 sm:gap-2">
             <span className="font-bold text-xs tracking-wider text-white uppercase whitespace-nowrap">
-              PT Asuka Engineering
+              PT Asuka Engineering Indonesia
             </span>
             <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-[3px] bg-[#163d78] text-[#38bdf8] border border-[#255bb5] shrink-0">
               CMS EDMS
@@ -132,25 +130,11 @@ export function Navbar({
               </span>
             )}
           </div>
-          <p className="text-[10px] text-slate-300 font-mono tracking-tight flex items-center gap-1 whitespace-nowrap hidden sm:flex">
+          <p className="text-[10px] text-slate-300 font-mono tracking-tight flex items-center gap-1 whitespace-nowrap">
             <span>{getGreeting()}, {firstName}</span>
+            <span className="text-white/20 hidden sm:inline">•</span>
+            <span className="text-slate-400 hidden sm:inline">Quality Assurance & Quality Control EDMS</span>
           </p>
-        </div>
-      </div>
-
-      {/* ═══ CENTER ZONE: Global Search Bar (Spacious & Clean) ═══ */}
-      <div className="hidden md:flex items-center flex-1 max-w-lg mx-4 lg:mx-8 min-w-0">
-        <div className="relative w-full">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" strokeWidth={1.8} />
-          <input
-            type="text"
-            placeholder="Cari cepat dokumen, ITP, kalibrasi, atau proyek..."
-            onChange={(e) => onGlobalSearch && onGlobalSearch(e.target.value)}
-            className="w-full h-8 pl-8 pr-7 text-xs bg-[#091830] text-slate-200 border border-[#244785] rounded-[6px] placeholder-slate-400 focus:outline-none focus:border-[#38bdf8] transition-all font-sans"
-          />
-          <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] font-mono text-slate-400 bg-[#162f6b] border border-[#244785] px-1 py-0.5 rounded pointer-events-none">
-            /
-          </kbd>
         </div>
       </div>
 
@@ -284,7 +268,7 @@ export function Navbar({
                 </div>
               </div>
 
-              {/* Telemetry & System Status Strip (Dipindahkan ke dalam dropdown) */}
+              {/* Telemetry & System Status Strip */}
               <div className="px-3.5 py-2 bg-slate-50 border-t border-b border-slate-100 flex items-center justify-between text-[10px] font-mono">
                 <span className="flex items-center gap-1.5 text-emerald-700 font-semibold">
                   <span className="w-2 h-2 rounded-[2px] bg-emerald-500 inline-block shrink-0" />

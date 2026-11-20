@@ -19,6 +19,7 @@ import {
   Filter,
   SlidersHorizontal,
   ExternalLink,
+  PieChart,
 } from "lucide-react";
 import { commandCenterService } from "../services/command-center-service";
 import {
@@ -26,6 +27,7 @@ import {
   ExecutiveTotals,
   CCSortOrder,
 } from "../types";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
 
@@ -188,76 +190,88 @@ export function CommandCenterView({
     return { maxDays, projCode };
   }, [projects]);
 
+  const donutTotals = useMemo(() => {
+    if (!totals) return null;
+    const total = totals.total || 1;
+    const C = 238.76;
+    const closedLen = (totals.closed / total) * C;
+    const openLen = (totals.open / total) * C;
+    const otherLen = ((totals.canceled + totals.other) / total) * C;
+
+    const closedOff = 0;
+    const openOff = -closedLen;
+    const otherOff = -(closedLen + openLen);
+
+    return {
+      C,
+      closedLen, openLen, otherLen,
+      closedOff, openOff, otherOff,
+    };
+  }, [totals]);
+
   return (
-    <div className="space-y-4">
-      {/* ═══ HEADER ═══ */}
-      <div className="bg-white p-4 sm:p-5 rounded-[8px] border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold tracking-tight text-slate-900">
-              QA/QC Command Center
-            </h1>
-            <span className="text-[11px] font-mono px-2 py-0.5 rounded-[3px] bg-slate-100 text-slate-600 font-semibold border border-slate-200">
-              {filteredProjects.length} Proyek Aktif
-            </span>
-          </div>
-          <p className="text-xs text-slate-500 font-mono mt-0.5">
-            Monitor seluruh portofolio proyek dalam 1 layar — terhubung langsung ke Master Hub & ITR
-          </p>
-        </div>
+    <div className="space-y-4 w-full max-w-full overflow-hidden">
+      {/* ═══ EXECUTIVE COMMAND DECK HEADER ═══ */}
+      <PageHeader
+        variant="executive"
+        category="MONITORING & LAPORAN // COMMAND DECK"
+        title="QA/QC Command Center"
+        badge={`${filteredProjects.length} Proyek Aktif`}
+        description="Monitoring terpadu seluruh portofolio proyek dalam 1 layar — terhubung langsung ke Master Hub Cloud, ITR & Log NFI"
+        icon={<Target className="w-4 h-4 text-[#38bdf8]" />}
+        actions={
+          <>
+            <button
+              onClick={() => setShowCharts(!showCharts)}
+              className={cn(
+                "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] text-xs font-mono font-medium transition-all cursor-pointer",
+                showCharts
+                  ? "bg-[#38bdf8] text-[#0c1b40] font-bold shadow-sm"
+                  : "bg-white/10 hover:bg-white/20 text-white border border-white/20"
+              )}
+            >
+              <BarChart2 className="w-3.5 h-3.5" />
+              <span>{showCharts ? "Grafik Aktif" : "Buka Grafik"}</span>
+            </button>
 
-        {/* Global Action Tools */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <button
-            onClick={() => setShowCharts(!showCharts)}
-            className={cn(
-              "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] text-xs font-semibold border transition-colors cursor-pointer",
-              showCharts
-                ? "bg-slate-100 text-[#163d78] border-slate-300"
-                : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
-            )}
-          >
-            <BarChart2 className="w-3.5 h-3.5" />
-            <span>Grafik</span>
-          </button>
+            <button
+              onClick={handleExportCSV}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-200 rounded-[6px] text-xs font-mono font-medium transition-all cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5 text-emerald-300" />
+              <span>Ekspor CSV</span>
+            </button>
 
-          <button
-            onClick={handleExportCSV}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 rounded-[6px] text-xs font-semibold transition-colors cursor-pointer"
-          >
-            <Download className="w-3.5 h-3.5 text-emerald-700" />
-            <span>CSV</span>
-          </button>
+            <button
+              onClick={handleSync}
+              disabled={isSyncing}
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-[6px] bg-[#ed2e35] hover:bg-[#c92026] text-white font-mono font-semibold text-xs tracking-wider shadow-md transition-all cursor-pointer disabled:opacity-50"
+            >
+              <RefreshCw className={cn("w-3.5 h-3.5", isSyncing && "animate-spin")} />
+              <span>{isSyncing ? "Menyinkronkan..." : "Sync Master Hub"}</span>
+            </button>
+          </>
+        }
+      />
 
-          <button
-            onClick={handleSync}
-            disabled={isSyncing}
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-[6px] bg-[#163d78] hover:bg-[#1a4a91] text-white font-semibold text-xs tracking-wide shadow-sm transition-all cursor-pointer disabled:opacity-50"
-          >
-            <RefreshCw className={cn("w-3.5 h-3.5", isSyncing && "animate-spin")} />
-            <span>{isSyncing ? "Menyinkronkan..." : "Sync Data"}</span>
-          </button>
-        </div>
-      </div>
-
-      {/* ═══ FILTER BAR ═══ */}
-      <div className="bg-white p-3 rounded-[8px] border border-slate-200/90 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-2.5">
-        <div className="flex flex-wrap items-center gap-2 flex-1">
-          <div className="relative min-w-[240px] max-w-sm flex-1">
-            <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+      {/* ═══ FILTER & SEARCH TOOLBAR ═══ */}
+      <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2.5 flex-1 min-w-0">
+          <div className="relative min-w-[180px] sm:min-w-[220px] max-w-sm flex-1">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
               type="text"
               placeholder="Cari proyek, kode, atau PIC..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-[6px] focus:outline-none focus:border-[#163d78] focus:bg-white text-slate-900 transition-colors"
+              className="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-[6px] focus:outline-none focus:border-[#163d78] focus:bg-white text-slate-900 transition-colors placeholder:text-slate-400 font-sans"
             />
           </div>
 
           <select
             value={selectedDiscipline}
             onChange={(e) => setSelectedDiscipline(e.target.value)}
-            className="px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-[6px] text-slate-700 font-medium focus:outline-none focus:border-[#163d78] cursor-pointer"
+            className="px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-[6px] text-slate-800 font-medium focus:outline-none focus:border-[#163d78] cursor-pointer shadow-sm"
           >
             <option value="ALL">Semua Disiplin</option>
             {disciplines.map((d) => (
@@ -271,7 +285,7 @@ export function CommandCenterView({
           <select
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value as CCSortOrder)}
-            className="px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-[6px] text-slate-700 font-medium focus:outline-none focus:border-[#163d78] cursor-pointer"
+            className="px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-[6px] text-slate-800 font-medium focus:outline-none focus:border-[#163d78] cursor-pointer shadow-sm"
           >
             <option value="critical_first">Prioritas: Kritis Dulu</option>
             <option value="progress_asc">Progres: Terendah Dulu</option>
@@ -285,31 +299,37 @@ export function CommandCenterView({
                 setSearchQuery("");
                 setSelectedDiscipline("ALL");
               }}
-              className="text-xs font-mono text-rose-600 hover:text-rose-800 underline px-1 cursor-pointer"
+              className="text-xs font-mono text-rose-600 hover:text-rose-800 underline px-1.5 cursor-pointer font-medium"
             >
-              Reset
+              Reset Filter
             </button>
           )}
         </div>
 
-        <div className="text-[11px] font-mono text-slate-500 tabular-nums self-end lg:self-auto">
-          {lastUpdate
-            ? `Update: ${new Date(lastUpdate).toLocaleTimeString("id-ID")}`
-            : "Menunggu sinkronisasi..."}
+        <div className="text-[11px] font-mono text-slate-500 tabular-nums self-end md:self-auto flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-[4px] border border-slate-200">
+          <Clock className="w-3.5 h-3.5 text-slate-400" />
+          <span>{lastUpdate ? `Update: ${new Date(lastUpdate).toLocaleTimeString("id-ID")} WIB` : "Menunggu sinkronisasi..."}</span>
         </div>
       </div>
 
       {/* ═══ 1. TOP EXECUTIVE 3-COLUMN METRICS ═══ */}
       {totals && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
           {/* Column 1: Volume Dokumen Mutu */}
           <div className="bg-white p-4 rounded-[8px] border border-slate-200/90 shadow-sm flex flex-col justify-between border-l-4 border-l-[#163d78]">
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <FileText className="w-4 h-4 text-[#163d78]" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
-                  Volume Dokumen Mutu
-                </h3>
+              <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-[4px] bg-[#163d78]/10 text-[#163d78] flex items-center justify-center">
+                    <FileText className="w-3.5 h-3.5" />
+                  </div>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
+                    Volume Dokumen Mutu
+                  </h3>
+                </div>
+                <span className="text-[10px] font-mono text-[#163d78] bg-blue-50 px-1.5 py-0.5 rounded-[3px] border border-blue-200 font-semibold">
+                  TOTAL RECORD
+                </span>
               </div>
 
               <div className="space-y-2">
@@ -354,11 +374,18 @@ export function CommandCenterView({
           {/* Column 2: Klasifikasi Disiplin (ITR & MRIR) */}
           <div className="bg-white p-4 rounded-[8px] border border-slate-200/90 shadow-sm flex flex-col justify-between border-l-4 border-l-sky-600">
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <ClipboardCheck className="w-4 h-4 text-sky-600" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
-                  Klasifikasi Disiplin (ITR & MRIR)
-                </h3>
+              <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-[4px] bg-sky-500/10 text-sky-700 flex items-center justify-center">
+                    <ClipboardCheck className="w-3.5 h-3.5" />
+                  </div>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
+                    Klasifikasi Disiplin
+                  </h3>
+                </div>
+                <span className="text-[10px] font-mono text-sky-700 bg-sky-50 px-1.5 py-0.5 rounded-[3px] border border-sky-200 font-semibold">
+                  ITR & MRIR
+                </span>
               </div>
 
               <div className="grid grid-cols-2 gap-1.5 max-h-[148px] overflow-y-auto pr-1">
@@ -413,13 +440,20 @@ export function CommandCenterView({
           </div>
 
           {/* Column 3: Status Pelaksanaan Global */}
-          <div className="bg-white p-4 rounded-[8px] border border-slate-200/90 shadow-sm flex flex-col justify-between border-l-4 border-l-emerald-600">
+          <div className="bg-white p-4 rounded-[8px] border border-slate-200/90 shadow-sm flex flex-col justify-between border-l-4 border-l-emerald-600 col-span-1 md:col-span-2 xl:col-span-1">
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
-                  Status Pelaksanaan Global
-                </h3>
+              <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-[4px] bg-emerald-500/10 text-emerald-700 flex items-center justify-center">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                  </div>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
+                    Status Pelaksanaan Global
+                  </h3>
+                </div>
+                <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-[3px] border border-emerald-200 font-semibold">
+                  PORTOFOLIO
+                </span>
               </div>
 
               <div className="flex items-center gap-4 my-2">
@@ -463,8 +497,8 @@ export function CommandCenterView({
 
       {/* ═══ PRESENTATION CHARTS DECK ═══ */}
       {showCharts && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-          {/* Chart 1: Project Comparison */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {/* Chart 1: Project Comparison (Bar Chart) */}
           <div className="bg-white p-4 rounded-[8px] border border-slate-200/90 shadow-sm">
             <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
               <div className="flex items-center gap-2">
@@ -490,7 +524,7 @@ export function CommandCenterView({
                     <div className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
                         <span className="font-mono font-bold text-[#163d78]">{p.code}</span>
-                        <span className="text-slate-600 truncate max-w-[160px] hidden sm:inline">{p.name}</span>
+                        <span className="text-slate-600 truncate max-w-[140px] hidden sm:inline">{p.name}</span>
                       </div>
                       <div className="flex items-center gap-3 text-[11px] font-mono tabular-nums">
                         <span className="text-emerald-700">{p.closed} Cls</span>
@@ -511,11 +545,90 @@ export function CommandCenterView({
             <div className="mt-4 pt-2 border-t border-slate-100 flex items-center justify-center gap-6 text-[11px] font-mono text-slate-500">
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-[1px] bg-emerald-600" />Closed</span>
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-[1px] bg-rose-600" />Open Aktif</span>
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-[1px] bg-amber-600" />MRIR Material</span>
             </div>
           </div>
 
-          {/* Chart 2: Discipline & Material Distribution */}
+          {/* Chart 2: Global Execution Status Donut Chart */}
+          <div className="bg-white p-4 rounded-[8px] border border-slate-200/90 shadow-sm flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                  <PieChart className="w-4 h-4 text-emerald-600" />
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
+                    Status Pelaksanaan Global
+                  </h3>
+                </div>
+                <span className="text-[11px] font-mono text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded-[2px]">
+                  {globalProgress}% Selesai
+                </span>
+              </div>
+
+              {donutTotals && totals && (
+                <div className="flex flex-col items-center justify-center py-2 space-y-4">
+                  <div className="relative w-32 h-32 flex items-center justify-center shrink-0">
+                    <svg className="w-32 h-32 -rotate-90" viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="38" fill="transparent" stroke="#f1f5f9" strokeWidth="12" />
+                      {totals.closed > 0 && (
+                        <circle
+                          cx="50" cy="50" r="38" fill="transparent" stroke="#059669" strokeWidth="12"
+                          strokeDasharray={`${donutTotals.closedLen} ${donutTotals.C}`}
+                          strokeDashoffset={donutTotals.closedOff}
+                        />
+                      )}
+                      {totals.open > 0 && (
+                        <circle
+                          cx="50" cy="50" r="38" fill="transparent" stroke="#e11d48" strokeWidth="12"
+                          strokeDasharray={`${donutTotals.openLen} ${donutTotals.C}`}
+                          strokeDashoffset={donutTotals.openOff}
+                        />
+                      )}
+                      {(totals.canceled + totals.other) > 0 && (
+                        <circle
+                          cx="50" cy="50" r="38" fill="transparent" stroke="#64748b" strokeWidth="12"
+                          strokeDasharray={`${donutTotals.otherLen} ${donutTotals.C}`}
+                          strokeDashoffset={donutTotals.otherOff}
+                        />
+                      )}
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                      <span className="text-lg font-bold font-mono text-slate-900 tabular-nums">{globalProgress}%</span>
+                      <span className="text-[9px] font-mono text-emerald-700 font-bold uppercase">Selesai</span>
+                    </div>
+                  </div>
+
+                  <div className="w-full space-y-1.5 text-xs font-mono">
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-1.5 text-slate-700">
+                        <span className="w-2.5 h-2.5 rounded-[1px] bg-[#059669] shrink-0" />
+                        <span>Closed (Selesai)</span>
+                      </span>
+                      <span className="font-bold text-slate-900 tabular-nums">{totals.closed.toLocaleString("id-ID")}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-1.5 text-slate-700">
+                        <span className="w-2.5 h-2.5 rounded-[1px] bg-[#e11d48] shrink-0" />
+                        <span>Open Aktif</span>
+                      </span>
+                      <span className="font-bold text-rose-700 tabular-nums">{totals.open.toLocaleString("id-ID")}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-1.5 text-slate-700">
+                        <span className="w-2.5 h-2.5 rounded-[1px] bg-[#64748b] shrink-0" />
+                        <span>Canceled / Lain</span>
+                      </span>
+                      <span className="font-medium text-slate-500 tabular-nums">{(totals.canceled + totals.other).toLocaleString("id-ID")}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="pt-2 border-t border-slate-100 text-center">
+              <span className="text-[10.5px] font-mono text-slate-500">Total: <strong className="text-slate-800">{totals?.total.toLocaleString("id-ID")}</strong> records</span>
+            </div>
+          </div>
+
+          {/* Chart 3: Discipline & Material Distribution (Bar Chart) */}
           <div className="bg-white p-4 rounded-[8px] border border-slate-200/90 shadow-sm">
             <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
               <div className="flex items-center gap-2">
@@ -568,10 +681,21 @@ export function CommandCenterView({
       )}
 
       {/* ═══ 2. ACTIVE PROJECTS GRID ═══ */}
-      <div className="space-y-3">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800 font-mono">
-          Portofolio Proyek Aktif ({filteredProjects.length})
-        </h2>
+      <div className="space-y-3.5 pt-2">
+        <div className="flex items-center justify-between pb-2.5 border-b border-slate-200">
+          <div className="flex items-center gap-2.5">
+            <span className="w-1.5 h-4 bg-[#163d78] rounded-[1px]" />
+            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-900 font-mono">
+              Portofolio Proyek Aktif
+            </h2>
+            <span className="text-[11px] font-mono px-2 py-0.5 rounded-[3px] bg-slate-100 text-slate-700 font-semibold border border-slate-200">
+              {filteredProjects.length} Proyek
+            </span>
+          </div>
+          <span className="text-xs font-mono text-slate-500 hidden sm:inline">
+            Standar Pengendalian Mutu Konstruksi & Fabrikasi
+          </span>
+        </div>
 
         {isLoading ? (
           <div className="p-8 text-center bg-white border border-slate-200 rounded-[8px]">
@@ -584,7 +708,7 @@ export function CommandCenterView({
             <p className="text-xs text-slate-500 font-mono">Tidak ada proyek yang sesuai dengan kriteria filter.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5">
             {filteredProjects.map((p) => {
               const pct = p.total > 0 ? Math.round((p.closed / p.total) * 100) : 0;
               const isExpanded = !!expandedCards[p.code];

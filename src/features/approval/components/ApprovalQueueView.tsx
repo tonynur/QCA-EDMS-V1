@@ -13,7 +13,8 @@ import {
 import { DocumentItem } from "@/features/documents/types";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { formatDate } from "@/lib/utils";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { formatDate, cn } from "@/lib/utils";
 
 interface ApprovalQueueViewProps {
   documents: DocumentItem[];
@@ -82,25 +83,25 @@ export function ApprovalQueueView({
 
   return (
     <div className="space-y-6">
-      {/* Header Deck */}
-      <div className="bg-white p-4 sm:p-5 rounded-[8px] border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900">
-            Approval & Antrean Tugas Mutu
-          </h1>
-          <p className="text-xs text-slate-500 font-mono mt-0.5">
-            Verifikasi bertingkat dokumen kontrol, ITP, Method Statement & MTR sebelum rilis ke lapangan
-          </p>
-        </div>
-        <button
-          onClick={onRefresh}
-          disabled={isLoading}
-          className="p-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-[6px] text-slate-700 transition-colors disabled:opacity-50 cursor-pointer"
-          title="Refresh Data"
-        >
-          <RefreshCw className={`w-4 h-4 text-slate-600 ${isLoading ? "animate-spin" : ""}`} />
-        </button>
-      </div>
+      {/* 1. Header Banner & Actions */}
+      <PageHeader
+        category="DOKUMEN MUTU // WORKFLOW APPROVAL"
+        title="Approval & Antrean Tugas Mutu"
+        badge={`${pendingDocs.length} Dokumen Pending`}
+        badgeVariant={pendingDocs.length > 0 ? "warning" : "success"}
+        description="Verifikasi bertingkat dokumen kontrol, ITP, Method Statement & MTR sebelum rilis ke lapangan"
+        icon={<Clock className="w-4 h-4 text-amber-600" />}
+        actions={
+          <button
+            onClick={onRefresh}
+            disabled={isLoading}
+            className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-[6px] text-xs font-semibold font-mono transition-colors disabled:opacity-50 cursor-pointer"
+          >
+            <RefreshCw className={cn("w-3.5 h-3.5 text-slate-600", isLoading && "animate-spin")} />
+            <span>Sinkronkan Antrean</span>
+          </button>
+        }
+      />
 
       {/* Metric Summary Cards — Light Theme */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

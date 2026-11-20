@@ -18,12 +18,15 @@ import {
   AlertCircle,
   FileBox,
   RotateCcw,
+  BarChart2,
+  PieChart,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/Table";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { DocumentItem } from "../types";
 import { formatDate } from "@/lib/utils";
 
@@ -56,6 +59,17 @@ export function DocumentListTable({
   const [selectedType, setSelectedType] = useState<string>("ALL");
   const [selectedDiscipline, setSelectedDiscipline] = useState<string>("ALL");
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
+  const [showCharts, setShowCharts] = useState(true);
+
+  // Discipline breakdown
+  const discStats = useMemo(() => {
+    const counts: Record<string, number> = {};
+    documents.forEach((d) => {
+      const disc = d.discipline || "CIVIL";
+      counts[disc] = (counts[disc] || 0) + 1;
+    });
+    return counts;
+  }, [documents]);
 
   const filteredDocs = useMemo(() => {
     return documents.filter((doc) => {
@@ -105,6 +119,27 @@ export function DocumentListTable({
       pctRejected: total > 0 ? Math.round((rejected / total) * 100) : 0,
     };
   }, [documents]);
+
+  // Donut chart stroke computations (Anti-AI pure SVG standard)
+  const donutData = useMemo(() => {
+    const total = stats.total || 1;
+    const C = 238.76;
+    const appLen = (stats.approved / total) * C;
+    const penLen = (stats.pending / total) * C;
+    const rejLen = (stats.rejected / total) * C;
+    const supLen = (stats.superseded / total) * C;
+
+    const appOff = 0;
+    const penOff = -appLen;
+    const rejOff = -(appLen + penLen);
+    const supOff = -(appLen + penLen + rejLen);
+
+    return {
+      C,
+      appLen, penLen, rejLen, supLen,
+      appOff, penOff, rejOff, supOff,
+    };
+  }, [stats]);
 
   const hasActiveFilter =
     searchTerm !== "" || selectedType !== "ALL" || selectedDiscipline !== "ALL" || selectedStatus !== "ALL";
@@ -200,33 +235,41 @@ export function DocumentListTable({
   return (
     <div className="space-y-4">
       {/* 1. Header Banner & Action Button */}
-      <div className="bg-white p-4 sm:p-5 rounded-[8px] border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
+      <PageHeader
+        category="DOKUMEN MUTU // MASTER REGISTER"
+        title="Daftar Dokumen Mutu (EDMS)"
+        badge={`${filteredDocs.length} Dokumen Aktif`}
+        badgeVariant="primary"
+        description="Sistem sentral kontrol dokumen ITP, Method Statement, MTR & laporan inspeksi terintegrasi Master Hub"
+        icon={<FileText className="w-4 h-4 text-[#163d78]" />}
+        actions={
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold tracking-tight text-slate-900">
-              Daftar Dokumen Mutu (EDMS)
-            </h1>
-            <span className="text-[11px] font-mono px-2 py-0.5 rounded-[3px] bg-slate-100 text-slate-600 font-semibold border border-slate-200">
-              {filteredDocs.length} Dokumen Aktif
-            </span>
-          </div>
-          <p className="text-xs text-slate-500 font-mono mt-0.5">
-            Sistem sentral kontrol dokumen ITP, Method Statement, MTR & laporan inspeksi
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {onAddNew && (
             <button
-              onClick={onAddNew}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[6px] bg-[#ed2e35] hover:bg-[#c92026] text-white font-semibold text-xs tracking-wide shadow-sm hover:shadow transition-all cursor-pointer"
+              onClick={() => setShowCharts(!showCharts)}
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-[6px] text-xs font-semibold transition-colors cursor-pointer font-mono"
             >
-              <UploadCloud className="w-4 h-4" strokeWidth={2} />
-              <span>Unggah Dokumen Baru</span>
+              <BarChart2 className="w-3.5 h-3.5 text-[#163d78]" />
+              <span>{showCharts ? "Tutup Grafik" : "Buka Grafik"}</span>
             </button>
-          )}
-        </div>
-      </div>
+            <button
+              onClick={handleExportCSV}
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 rounded-[6px] text-xs font-semibold transition-colors cursor-pointer font-mono"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Ekspor CSV</span>
+            </button>
+            {onAddNew && (
+              <button
+                onClick={onAddNew}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-[6px] bg-[#ed2e35] hover:bg-[#c92026] text-white font-semibold text-xs tracking-wide shadow-sm hover:shadow transition-all cursor-pointer font-mono"
+              >
+                <UploadCloud className="w-4 h-4" strokeWidth={2} />
+                <span>Unggah Dokumen</span>
+              </button>
+            )}
+          </div>
+        }
+      />
 
       {/* 2. Executive KPI Cards Strip (Petrosea-inspired hover elevation & clean metric cards) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -314,6 +357,138 @@ export function DocumentListTable({
           </div>
         </div>
       </div>
+
+      {/* 2B. Visual Charts Deck: Grafik Batang & Donat (Anti-AI Engineering Standard) */}
+      {showCharts && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
+          {/* Chart 1: Bar Chart - Distribusi Dokumen per Disiplin */}
+          <div className="bg-white p-4 rounded-[8px] border border-slate-200/90 shadow-sm">
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-[4px] bg-[#163d78]/10 text-[#163d78] flex items-center justify-center">
+                  <BarChart2 className="w-3.5 h-3.5" />
+                </div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
+                  Distribusi Dokumen per Disiplin
+                </h3>
+              </div>
+              <span className="text-[11px] font-mono text-slate-500 tabular-nums">
+                {documents.length} Dokumen Total
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              {Object.entries(discStats).map(([disc, count]) => {
+                const pct = stats.total > 0 ? Math.round((count / stats.total) * 100) : 0;
+                return (
+                  <div key={disc} className="space-y-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-mono font-semibold text-slate-800">{disc}</span>
+                      <span className="font-mono text-slate-500 tabular-nums">{count} dok ({pct}%)</span>
+                    </div>
+                    <div className="h-2.5 w-full bg-slate-100 rounded-[2px] overflow-hidden">
+                      <div
+                        style={{ width: `${pct}%` }}
+                        className="bg-[#163d78] h-full transition-all duration-300"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Chart 2: Donut Chart - Komposisi Status Dokumen Mutu */}
+          <div className="bg-white p-4 rounded-[8px] border border-slate-200/90 shadow-sm">
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-[4px] bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                  <PieChart className="w-3.5 h-3.5" />
+                </div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
+                  Proporsi Status Dokumen Mutu
+                </h3>
+              </div>
+              <span className="text-[11px] font-mono text-emerald-700 font-semibold bg-emerald-50 px-1.5 py-0.5 rounded-[2px]">
+                {stats.pctApproved}% Disetujui
+              </span>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-around gap-4 py-1">
+              {/* SVG Donut */}
+              <div className="relative w-32 h-32 flex items-center justify-center shrink-0">
+                <svg className="w-32 h-32 -rotate-90" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="38" fill="transparent" stroke="#f1f5f9" strokeWidth="12" />
+                  {stats.approved > 0 && (
+                    <circle
+                      cx="50" cy="50" r="38" fill="transparent" stroke="#059669" strokeWidth="12"
+                      strokeDasharray={`${donutData.appLen} ${donutData.C}`}
+                      strokeDashoffset={donutData.appOff}
+                    />
+                  )}
+                  {stats.pending > 0 && (
+                    <circle
+                      cx="50" cy="50" r="38" fill="transparent" stroke="#d97706" strokeWidth="12"
+                      strokeDasharray={`${donutData.penLen} ${donutData.C}`}
+                      strokeDashoffset={donutData.penOff}
+                    />
+                  )}
+                  {stats.rejected > 0 && (
+                    <circle
+                      cx="50" cy="50" r="38" fill="transparent" stroke="#e11d48" strokeWidth="12"
+                      strokeDasharray={`${donutData.rejLen} ${donutData.C}`}
+                      strokeDashoffset={donutData.rejOff}
+                    />
+                  )}
+                  {stats.superseded > 0 && (
+                    <circle
+                      cx="50" cy="50" r="38" fill="transparent" stroke="#64748b" strokeWidth="12"
+                      strokeDasharray={`${donutData.supLen} ${donutData.C}`}
+                      strokeDashoffset={donutData.supOff}
+                    />
+                  )}
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                  <span className="text-lg font-bold font-mono text-slate-900 tabular-nums">{stats.pctApproved}%</span>
+                  <span className="text-[9px] font-mono text-emerald-700 font-bold uppercase">Approved</span>
+                </div>
+              </div>
+
+              {/* Legend & Count Details */}
+              <div className="space-y-2 text-xs font-mono w-full sm:w-auto">
+                <div className="flex items-center justify-between sm:justify-start gap-3">
+                  <span className="flex items-center gap-1.5 text-slate-700">
+                    <span className="w-2.5 h-2.5 rounded-[1px] bg-[#059669] shrink-0" />
+                    <span>Disetujui (Approved)</span>
+                  </span>
+                  <span className="font-bold text-slate-900 tabular-nums">{stats.approved} ({stats.pctApproved}%)</span>
+                </div>
+                <div className="flex items-center justify-between sm:justify-start gap-3">
+                  <span className="flex items-center gap-1.5 text-slate-700">
+                    <span className="w-2.5 h-2.5 rounded-[1px] bg-[#d97706] shrink-0" />
+                    <span>Menunggu Review</span>
+                  </span>
+                  <span className="font-bold text-slate-900 tabular-nums">{stats.pending} ({stats.pctPending}%)</span>
+                </div>
+                <div className="flex items-center justify-between sm:justify-start gap-3">
+                  <span className="flex items-center gap-1.5 text-slate-700">
+                    <span className="w-2.5 h-2.5 rounded-[1px] bg-[#e11d48] shrink-0" />
+                    <span>Ditolak (Rejected)</span>
+                  </span>
+                  <span className="font-bold text-slate-900 tabular-nums">{stats.rejected} ({stats.pctRejected}%)</span>
+                </div>
+                <div className="flex items-center justify-between sm:justify-start gap-3">
+                  <span className="flex items-center gap-1.5 text-slate-700">
+                    <span className="w-2.5 h-2.5 rounded-[1px] bg-[#64748b] shrink-0" />
+                    <span>Superseded / Lainnya</span>
+                  </span>
+                  <span className="font-bold text-slate-900 tabular-nums">{stats.superseded}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 3. Sleek Toolbar: Search, Filters & Export Options */}
       <div className="bg-white p-3 rounded-[8px] border border-slate-200/90 shadow-sm space-y-2.5">
@@ -510,7 +685,7 @@ export function DocumentListTable({
 
                     <td className="py-2.5 px-3 text-center">
                       <div className="flex items-center justify-center gap-1">
-                        {onPreviewDoc && doc.fileUrl && (
+                        {onPreviewDoc && (
                           <button
                             onClick={() => onPreviewDoc(doc)}
                             className="p-1.5 rounded-[4px] bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-[#163d78] border border-slate-200 transition-colors cursor-pointer"

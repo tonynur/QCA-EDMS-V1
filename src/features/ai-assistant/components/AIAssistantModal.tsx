@@ -71,7 +71,7 @@ export function AIAssistantModal({
     },
   ];
 
-  const handleSend = (textToSend?: string) => {
+  const handleSend = async (textToSend?: string) => {
     const text = textToSend || inputPrompt.trim();
     if (!text || isThinking) return;
 
@@ -84,6 +84,63 @@ export function AIAssistantModal({
     setMessages((prev) => [...prev, userMsg]);
     setInputPrompt("");
     setIsThinking(true);
+
+    const groqKey =
+      process.env.NEXT_PUBLIC_GROQ_API_KEY ||
+      (typeof window !== "undefined" && localStorage.getItem("qc_ai_key")) ||
+      "";
+    const groqModel =
+      (typeof window !== "undefined" && localStorage.getItem("qc_ai_model")) ||
+      "qwen/qwen3.8-27b";
+
+    try {
+      if (groqKey) {
+        const systemPrompt =
+          "Anda adalah Asisten AI QA/QC Copilot cerdas PT Asuka Engineering Indonesia (AEI). Anda pakar dalam ISO 9001:2015, standar konstruksi (ASTM, ACI, AWS D1.1, ASME), dokumen ITP, ITR, PQP, NCR, dan prosedur inspeksi mutu. Jawab dengan gaya profesional, teknis, presisi, ramah, dan solutif. Jika pengguna mengajukan pertanyaan di luar QA/QC (pengetahuan umum, kepemimpinan/nama presiden/tokoh, coding, rumus Excel, atau draft surat), jawablah dengan tepat, akurat, dan berwawasan luas.";
+
+        const historyMessages = messages.slice(-4).map((m) => ({
+          role: m.sender === "user" ? "user" : "assistant",
+          content: m.text,
+        }));
+
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${groqKey.trim()}`,
+          },
+          body: JSON.stringify({
+            model: groqModel,
+            messages: [
+              { role: "system", content: systemPrompt },
+              ...historyMessages,
+              { role: "user", content: text },
+            ],
+            temperature: 0.3,
+            max_tokens: 1024,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const content = data?.choices?.[0]?.message?.content;
+          if (content && content.trim()) {
+            setMessages((prev) => [
+              ...prev,
+              {
+                sender: "ai",
+                text: content.trim(),
+                time: new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
+              },
+            ]);
+            setIsThinking(false);
+            return;
+          }
+        }
+      }
+    } catch {
+      // Fallback to local QA/QC rules below if API is unreachable
+    }
 
     setTimeout(() => {
       let aiResponseText = "";
@@ -171,7 +228,7 @@ Jika Anda membutuhkan draf naratif atau checklist khusus, silakan klik salah sat
         },
       ]);
       setIsThinking(false);
-    }, 600);
+    }, 400);
   };
 
   return (

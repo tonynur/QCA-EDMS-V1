@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Search, RefreshCw, Plus } from "lucide-react";
+import { Search, RefreshCw, Plus, Send } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { TransmittalItem } from "../types";
-import { formatDate } from "@/lib/utils";
+import { formatDate, cn } from "@/lib/utils";
 
 interface TransmittalTableProps {
   transmittals: TransmittalItem[];
@@ -44,29 +45,35 @@ export function TransmittalTable({
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="bg-white p-4 sm:p-5 rounded-[8px] border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
+      {/* 1. Header Banner & Actions */}
+      <PageHeader
+        category="DOKUMEN MUTU // DISTRIBUSI TRANSMITTAL"
+        title="Document Transmittal (Distribusi Resmi)"
+        badge={`${filteredTransmittals.length} Transmittal`}
+        badgeVariant="primary"
+        description="Surat pengantar penyerahan dokumen QA/QC resmi ke Klien / Konsultan Pengawas"
+        icon={<Send className="w-4 h-4 text-[#163d78]" />}
+        actions={
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold tracking-tight text-slate-900">Document Transmittal</h1>
-            <span className="text-[11px] font-mono px-2 py-0.5 rounded-[3px] bg-slate-100 text-slate-600 font-semibold border border-slate-200">
-              {filteredTransmittals.length} Transmittal
-            </span>
+            <button
+              onClick={onRefresh}
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-[6px] text-xs font-semibold font-mono transition-colors cursor-pointer"
+            >
+              <RefreshCw className={cn("w-3.5 h-3.5", isLoading && "animate-spin")} />
+              <span>Refresh</span>
+            </button>
+            {onAddNew && (
+              <button
+                onClick={onAddNew}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-[6px] bg-[#163d78] hover:bg-[#102d59] text-white font-semibold text-xs tracking-wide shadow-sm transition-all cursor-pointer font-mono"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Buat Transmittal</span>
+              </button>
+            )}
           </div>
-          <p className="text-xs text-slate-500 font-mono mt-0.5">
-            Surat pengantar penyerahan dokumen QA/QC resmi ke Klien / Konsultan
-          </p>
-        </div>
-        {onAddNew && (
-          <button
-            onClick={onAddNew}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[6px] bg-[#ed2e35] hover:bg-[#c92026] text-white font-semibold text-xs tracking-wide shadow-sm transition-all cursor-pointer"
-          >
-            <Plus className="w-4 h-4" strokeWidth={2} />
-            <span>Buat Transmittal</span>
-          </button>
-        )}
-      </div>
+        }
+      />
 
       {/* Search & Action Bar — Light Theme */}
       <div className="bg-white p-3 rounded-[8px] border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">

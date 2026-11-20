@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Search, RefreshCw, Plus, QrCode, FileText, CheckCircle2, Clock, AlertTriangle, Download } from "lucide-react";
+import { Search, RefreshCw, Plus, QrCode, FileText, CheckCircle2, Clock, AlertTriangle, Download, BarChart2, PieChart } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { CalibrationTool, CalibrationSummary } from "../types";
-import { formatDate } from "@/lib/utils";
+import { formatDate, cn } from "@/lib/utils";
 
 interface CalibrationTableProps {
   tools: CalibrationTool[];
@@ -26,6 +27,44 @@ export function CalibrationTable({
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDiscipline, setSelectedDiscipline] = useState<string>("ALL");
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
+  const [showCharts, setShowCharts] = useState(true);
+
+  // Calibration Analytics for Bar and Donut Charts
+  const calStats = useMemo(() => {
+    const total = summary.totalTools || tools.length || 1;
+    const valid = summary.validCount ?? tools.filter((t) => t.status === "VALID" || t.status === "CALIBRATED").length;
+    const expiring = summary.expiringCount ?? 0;
+    const expired = summary.expiredCount ?? tools.filter((t) => t.status === "EXPIRED").length;
+
+    const validPct = Math.round((valid / total) * 100);
+    const expiringPct = Math.round((expiring / total) * 100);
+    const expiredPct = Math.round((expired / total) * 100);
+
+    const discCounts: Record<string, number> = {};
+    tools.forEach((t) => {
+      const d = t.discipline || "CIVIL";
+      discCounts[d] = (discCounts[d] || 0) + 1;
+    });
+
+    const C = 238.76;
+    const validLen = (valid / total) * C;
+    const expLen = (expiring / total) * C;
+    const expiredLen = (expired / total) * C;
+
+    const validOff = 0;
+    const expOff = -validLen;
+    const expiredOff = -(validLen + expLen);
+
+    return {
+      total,
+      valid, expiring, expired,
+      validPct, expiringPct, expiredPct,
+      discCounts,
+      C,
+      validLen, expLen, expiredLen,
+      validOff, expOff, expiredOff,
+    };
+  }, [tools, summary]);
 
   const filteredTools = useMemo(() => {
     return tools.filter((tool) => {
@@ -57,6 +96,41 @@ export function CalibrationTable({
 
   return (
     <div className="space-y-6">
+      {/* 1. Header Banner & Actions */}
+      <PageHeader
+        category="INSPEKSI & ALAT // KALIBRASI"
+        title="Monitoring & Kalibrasi Alat Ukur"
+        badge={`${summary.totalTools} Alat Terdaftar`}
+        badgeVariant="primary"
+        description="Pengendalian validitas sertifikat kalibrasi instrumen inspeksi teknis lapangan sesuai standar ISO 9001:2015 klausul 7.1.5"
+        icon={<FileText className="w-4 h-4 text-[#163d78]" />}
+        actions={
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowCharts(!showCharts)}
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-[6px] text-xs font-semibold font-mono transition-colors cursor-pointer"
+            >
+              <BarChart2 className="w-3.5 h-3.5 text-[#163d78]" />
+              <span>{showCharts ? "Tutup Grafik" : "Buka Grafik"}</span>
+            </button>
+            <button
+              onClick={onRefresh}
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-[6px] text-xs font-semibold font-mono transition-colors cursor-pointer"
+            >
+              <RefreshCw className={cn("w-3.5 h-3.5", isLoading && "animate-spin")} />
+              <span>Refresh</span>
+            </button>
+            <button
+              onClick={onAddNew}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[6px] bg-[#163d78] hover:bg-[#102d59] text-white font-semibold text-xs tracking-wide shadow-sm transition-all cursor-pointer font-mono"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Tambah Alat Baru</span>
+            </button>
+          </div>
+        }
+      />
+
       {/* Technical Metric Cards — Light Theme (Petrosea-inspired) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-[#163d78] petrosea-card cursor-default">
@@ -123,6 +197,124 @@ export function CalibrationTable({
           </div>
         </div>
       </div>
+
+      {/* 1B. Presentation Charts Deck: Grafik Batang & Donat Kalibrasi */}
+      {showCharts && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
+          {/* Chart 1: Bar Chart - Distribusi Alat Ukur per Disiplin */}
+          <div className="bg-white p-4 rounded-[8px] border border-slate-200/90 shadow-sm">
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-[4px] bg-[#163d78]/10 text-[#163d78] flex items-center justify-center">
+                  <BarChart2 className="w-3.5 h-3.5" />
+                </div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
+                  Distribusi Alat Ukur per Disiplin
+                </h3>
+              </div>
+              <span className="text-[11px] font-mono text-slate-500 tabular-nums">
+                {calStats.total} Total Alat
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              {Object.entries(calStats.discCounts).map(([disc, count]) => {
+                const pct = calStats.total > 0 ? Math.round((count / calStats.total) * 100) : 0;
+                return (
+                  <div key={disc} className="space-y-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-mono font-semibold text-slate-800">{disc}</span>
+                      <span className="font-mono text-slate-500 tabular-nums">{count} alat ({pct}%)</span>
+                    </div>
+                    <div className="h-2.5 w-full bg-slate-100 rounded-[2px] overflow-hidden">
+                      <div
+                        style={{ width: `${pct}%` }}
+                        className="bg-[#163d78] h-full transition-all duration-300"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Chart 2: Donut Chart - Kepatuhan Kalibrasi & Validitas Sertifikat */}
+          <div className="bg-white p-4 rounded-[8px] border border-slate-200/90 shadow-sm">
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-[4px] bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                  <PieChart className="w-3.5 h-3.5" />
+                </div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
+                  Validitas Sertifikat Kalibrasi
+                </h3>
+              </div>
+              <span className="text-[11px] font-mono text-emerald-700 font-semibold bg-emerald-50 px-1.5 py-0.5 rounded-[2px]">
+                {calStats.validPct}% Valid
+              </span>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-around gap-4 py-1">
+              {/* SVG Donut */}
+              <div className="relative w-32 h-32 flex items-center justify-center shrink-0">
+                <svg className="w-32 h-32 -rotate-90" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="38" fill="transparent" stroke="#f1f5f9" strokeWidth="12" />
+                  {calStats.valid > 0 && (
+                    <circle
+                      cx="50" cy="50" r="38" fill="transparent" stroke="#059669" strokeWidth="12"
+                      strokeDasharray={`${calStats.validLen} ${calStats.C}`}
+                      strokeDashoffset={calStats.validOff}
+                    />
+                  )}
+                  {calStats.expiring > 0 && (
+                    <circle
+                      cx="50" cy="50" r="38" fill="transparent" stroke="#d97706" strokeWidth="12"
+                      strokeDasharray={`${calStats.expLen} ${calStats.C}`}
+                      strokeDashoffset={calStats.expOff}
+                    />
+                  )}
+                  {calStats.expired > 0 && (
+                    <circle
+                      cx="50" cy="50" r="38" fill="transparent" stroke="#e11d48" strokeWidth="12"
+                      strokeDasharray={`${calStats.expiredLen} ${calStats.C}`}
+                      strokeDashoffset={calStats.expiredOff}
+                    />
+                  )}
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                  <span className="text-lg font-bold font-mono text-slate-900 tabular-nums">{calStats.validPct}%</span>
+                  <span className="text-[9px] font-mono text-emerald-700 font-bold uppercase">Valid</span>
+                </div>
+              </div>
+
+              {/* Legend & Count Details */}
+              <div className="space-y-2 text-xs font-mono w-full sm:w-auto">
+                <div className="flex items-center justify-between sm:justify-start gap-3">
+                  <span className="flex items-center gap-1.5 text-slate-700">
+                    <span className="w-2.5 h-2.5 rounded-[1px] bg-[#059669] shrink-0" />
+                    <span>Sertifikat Valid</span>
+                  </span>
+                  <span className="font-bold text-slate-900 tabular-nums">{calStats.valid} ({calStats.validPct}%)</span>
+                </div>
+                <div className="flex items-center justify-between sm:justify-start gap-3">
+                  <span className="flex items-center gap-1.5 text-slate-700">
+                    <span className="w-2.5 h-2.5 rounded-[1px] bg-[#d97706] shrink-0" />
+                    <span>Segera Berakhir (≤ 30 hr)</span>
+                  </span>
+                  <span className="font-bold text-slate-900 tabular-nums">{calStats.expiring} ({calStats.expiringPct}%)</span>
+                </div>
+                <div className="flex items-center justify-between sm:justify-start gap-3">
+                  <span className="flex items-center gap-1.5 text-slate-700">
+                    <span className="w-2.5 h-2.5 rounded-[1px] bg-[#e11d48] shrink-0" />
+                    <span>Sudah Kedaluwarsa</span>
+                  </span>
+                  <span className="font-bold text-slate-900 tabular-nums">{calStats.expired} ({calStats.expiredPct}%)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Filter & Action Row — Light Theme */}
       <div className="bg-white p-3 rounded-[8px] border border-slate-200/90 shadow-sm">
