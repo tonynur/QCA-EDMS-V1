@@ -224,7 +224,7 @@ export function CommandCenterView({
             <button
               onClick={() => setShowCharts(!showCharts)}
               className={cn(
-                "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] text-xs font-mono font-medium transition-all cursor-pointer",
+                "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] text-xs font-sans font-semibold transition-all cursor-pointer",
                 showCharts
                   ? "bg-[#38bdf8] text-[#0c1b40] font-bold shadow-sm"
                   : "bg-white/10 hover:bg-white/20 text-white border border-white/20"
@@ -236,7 +236,7 @@ export function CommandCenterView({
 
             <button
               onClick={handleExportCSV}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-200 rounded-[6px] text-xs font-mono font-medium transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-200 rounded-[6px] text-xs font-sans font-semibold transition-all cursor-pointer"
             >
               <Download className="w-3.5 h-3.5 text-emerald-300" />
               <span>Ekspor CSV</span>
@@ -245,7 +245,7 @@ export function CommandCenterView({
             <button
               onClick={handleSync}
               disabled={isSyncing}
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-[6px] bg-[#ed2e35] hover:bg-[#c92026] text-white font-mono font-semibold text-xs tracking-wider shadow-md transition-all cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-[6px] bg-[#ed2e35] hover:bg-[#c92026] text-white font-sans font-semibold text-xs tracking-wide shadow-md transition-all cursor-pointer disabled:opacity-50"
             >
               <RefreshCw className={cn("w-3.5 h-3.5", isSyncing && "animate-spin")} />
               <span>{isSyncing ? "Menyinkronkan..." : "Sync Master Hub"}</span>
@@ -299,14 +299,14 @@ export function CommandCenterView({
                 setSearchQuery("");
                 setSelectedDiscipline("ALL");
               }}
-              className="text-xs font-mono text-rose-600 hover:text-rose-800 underline px-1.5 cursor-pointer font-medium"
+              className="text-xs font-sans text-rose-600 hover:text-rose-800 underline px-1.5 cursor-pointer font-medium"
             >
               Reset Filter
             </button>
           )}
         </div>
 
-        <div className="text-[11px] font-mono text-slate-500 tabular-nums self-end md:self-auto flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-[4px] border border-slate-200">
+        <div className="text-xs font-sans text-slate-500 self-end md:self-auto flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-[4px] border border-slate-200">
           <Clock className="w-3.5 h-3.5 text-slate-400" />
           <span>{lastUpdate ? `Update: ${new Date(lastUpdate).toLocaleTimeString("id-ID")} WIB` : "Menunggu sinkronisasi..."}</span>
         </div>
@@ -323,51 +323,51 @@ export function CommandCenterView({
                   <div className="w-6 h-6 rounded-[4px] bg-[#163d78]/10 text-[#163d78] flex items-center justify-center">
                     <FileText className="w-3.5 h-3.5" />
                   </div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-sans">
                     Volume Dokumen Mutu
                   </h3>
                 </div>
-                <span className="text-[10px] font-mono text-[#163d78] bg-blue-50 px-1.5 py-0.5 rounded-[3px] border border-blue-200 font-semibold">
+                <span className="text-[10px] font-sans text-[#163d78] bg-blue-50 px-2 py-0.5 rounded-[3px] border border-blue-200 font-semibold tracking-wide">
                   TOTAL RECORD
                 </span>
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between p-2 rounded-[6px] bg-slate-50 border-l-2 border-[#163d78]">
-                  <span className="text-xs text-slate-700 flex items-center gap-1.5">
+                  <span className="text-xs text-slate-700 flex items-center gap-1.5 font-medium">
                     <FileText className="w-3.5 h-3.5 text-[#163d78]" />
                     NFI Unik
                   </span>
-                  <span className="text-sm font-bold font-mono text-slate-900 tabular-nums">
+                  <span className="text-sm font-bold font-sans text-slate-900 tabular-nums">
                     {(totals.totalNFI || 0).toLocaleString("id-ID")}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between p-2 rounded-[6px] bg-slate-50 border-l-2 border-slate-400">
-                  <span className="text-xs text-slate-700 flex items-center gap-1.5">
+                  <span className="text-xs text-slate-700 flex items-center gap-1.5 font-medium">
                     <ClipboardCheck className="w-3.5 h-3.5 text-slate-500" />
                     ITR Terverifikasi
                   </span>
-                  <span className="text-sm font-bold font-mono text-slate-900 tabular-nums">
+                  <span className="text-sm font-bold font-sans text-slate-900 tabular-nums">
                     {(totals.totalITR || 0).toLocaleString("id-ID")}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between p-2 rounded-[6px] bg-slate-50 border-l-2 border-amber-500">
-                  <span className="text-xs text-amber-800 flex items-center gap-1.5">
+                  <span className="text-xs text-amber-800 flex items-center gap-1.5 font-medium">
                     <PackageCheck className="w-3.5 h-3.5 text-amber-600" />
                     MRIR Material
                   </span>
-                  <span className="text-sm font-bold font-mono text-amber-700 tabular-nums">
+                  <span className="text-sm font-bold font-sans text-amber-700 tabular-nums">
                     {(totals.totalMRIR || 0).toLocaleString("id-ID")}
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
-              <span>Total: <strong className="text-slate-800 tabular-nums">{totals.total.toLocaleString("id-ID")}</strong> records</span>
-              <span><strong className="text-slate-800 tabular-nums">{totals.projectsActive}</strong> Proyek Aktif</span>
+            <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-sans text-slate-500">
+              <span>Total: <strong className="text-slate-800 tabular-nums font-semibold">{totals.total.toLocaleString("id-ID")}</strong> records</span>
+              <span><strong className="text-slate-800 tabular-nums font-semibold">{totals.projectsActive}</strong> Proyek Aktif</span>
             </div>
           </div>
 
@@ -379,11 +379,11 @@ export function CommandCenterView({
                   <div className="w-6 h-6 rounded-[4px] bg-sky-500/10 text-sky-700 flex items-center justify-center">
                     <ClipboardCheck className="w-3.5 h-3.5" />
                   </div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-sans">
                     Klasifikasi Disiplin
                   </h3>
                 </div>
-                <span className="text-[10px] font-mono text-sky-700 bg-sky-50 px-1.5 py-0.5 rounded-[3px] border border-sky-200 font-semibold">
+                <span className="text-[10px] font-sans text-sky-700 bg-sky-50 px-2 py-0.5 rounded-[3px] border border-sky-200 font-semibold tracking-wide">
                   ITR & MRIR
                 </span>
               </div>
@@ -402,8 +402,8 @@ export function CommandCenterView({
                           : "bg-slate-50 border-slate-200 text-slate-700 hover:border-slate-300"
                       )}
                     >
-                      <span className="text-[11px] truncate">{disc}</span>
-                      <span className="text-[11px] font-mono font-bold ml-1 tabular-nums">
+                      <span className="text-xs truncate font-medium">{disc}</span>
+                      <span className="text-xs font-sans font-bold ml-1 tabular-nums">
                         {count.toLocaleString("id-ID")}
                       </span>
                     </button>
@@ -419,20 +419,20 @@ export function CommandCenterView({
                       : "bg-amber-50 border-amber-300 text-amber-800 hover:bg-amber-100"
                   )}
                 >
-                  <span className="text-[11px] font-semibold flex items-center gap-1.5">
+                  <span className="text-xs font-semibold flex items-center gap-1.5">
                     <PackageCheck className="w-3.5 h-3.5" />
                     MRIR (Material Receiving)
                   </span>
-                  <span className="text-[11px] font-mono font-bold tabular-nums">
+                  <span className="text-xs font-sans font-bold tabular-nums">
                     {(totals.totalMRIR || 0).toLocaleString("id-ID")}
                   </span>
                 </button>
               </div>
             </div>
 
-            <div className="mt-3 pt-2 text-[10.5px] font-mono text-slate-500">
+            <div className="mt-3 pt-2 text-xs font-sans text-slate-500">
               {totals.itrEmpty > 0 ? (
-                <span className="text-[#ed2e35]">{totals.itrEmpty} data belum terklasifikasi</span>
+                <span className="text-[#ed2e35] font-medium">{totals.itrEmpty} data belum terklasifikasi</span>
               ) : (
                 "Seluruh data ITR terklasifikasi rapi."
               )}
@@ -447,31 +447,31 @@ export function CommandCenterView({
                   <div className="w-6 h-6 rounded-[4px] bg-emerald-500/10 text-emerald-700 flex items-center justify-center">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                   </div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-sans">
                     Status Pelaksanaan Global
                   </h3>
                 </div>
-                <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-[3px] border border-emerald-200 font-semibold">
+                <span className="text-[10px] font-sans text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-[3px] border border-emerald-200 font-semibold tracking-wide">
                   PORTOFOLIO
                 </span>
               </div>
 
               <div className="flex items-center gap-4 my-2">
                 <div className="w-16 h-16 rounded-[6px] bg-emerald-50 border border-emerald-200 flex flex-col items-center justify-center shrink-0">
-                  <span className="text-lg font-bold font-mono text-emerald-700 tabular-nums">
+                  <span className="text-lg font-bold font-sans text-emerald-700 tabular-nums">
                     {globalProgress}%
                   </span>
-                  <span className="text-[9px] uppercase font-mono text-emerald-600">Selesai</span>
+                  <span className="text-[10px] uppercase font-sans font-bold text-emerald-600 tracking-wider">Selesai</span>
                 </div>
 
-                <div className="space-y-0.5">
-                  <div className="text-sm font-bold font-mono text-emerald-700 tabular-nums">
+                <div className="space-y-0.5 font-sans">
+                  <div className="text-sm font-bold text-emerald-700 tabular-nums">
                     {totals.closed.toLocaleString("id-ID")} Closed
                   </div>
-                  <div className="text-xs font-bold font-mono text-rose-700 tabular-nums">
+                  <div className="text-xs font-bold text-rose-700 tabular-nums">
                     {totals.open.toLocaleString("id-ID")} Open Aktif
                   </div>
-                  <div className="text-[11px] font-mono text-slate-500 tabular-nums">
+                  <div className="text-xs text-slate-500 tabular-nums font-medium">
                     {(totals.canceled + totals.other).toLocaleString("id-ID")} Canceled / Lain
                   </div>
                 </div>
@@ -480,12 +480,12 @@ export function CommandCenterView({
 
             <div className="mt-3 pt-2 border-t border-slate-100">
               {maxAgingInfo.maxDays > 30 ? (
-                <div className="p-2 rounded-[4px] bg-rose-50 border border-rose-200 flex items-center gap-2 text-xs text-rose-800 font-mono">
+                <div className="p-2.5 rounded-[4px] bg-rose-50 border border-rose-200 flex items-center gap-2 text-xs text-rose-800 font-sans">
                   <AlertTriangle className="w-4 h-4 shrink-0 text-rose-600" />
-                  <span>Aging Terlama: <strong>{maxAgingInfo.maxDays} hari</strong> (Proyek {maxAgingInfo.projCode})</span>
+                  <span>Aging Terlama: <strong className="font-bold">{maxAgingInfo.maxDays} hari</strong> (Proyek <span className="font-mono font-semibold">{maxAgingInfo.projCode}</span>)</span>
                 </div>
               ) : (
-                <div className="p-2 rounded-[4px] bg-emerald-50 border border-emerald-200 flex items-center gap-2 text-xs text-emerald-800 font-mono">
+                <div className="p-2.5 rounded-[4px] bg-emerald-50 border border-emerald-200 flex items-center gap-2 text-xs text-emerald-800 font-sans">
                   <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
                   <span>Seluruh Proyek Berjalan Sesuai Jadwal</span>
                 </div>
@@ -503,11 +503,11 @@ export function CommandCenterView({
             <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <BarChart2 className="w-4 h-4 text-slate-600" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-sans">
                   Komparasi Status Dokumen per Proyek
                 </h3>
               </div>
-              <span className="text-[11px] font-mono text-slate-500 tabular-nums">
+              <span className="text-xs font-sans text-slate-500 tabular-nums">
                 {filteredProjects.length} Proyek
               </span>
             </div>
@@ -524,9 +524,9 @@ export function CommandCenterView({
                     <div className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
                         <span className="font-mono font-bold text-[#163d78]">{p.code}</span>
-                        <span className="text-slate-600 truncate max-w-[140px] hidden sm:inline">{p.name}</span>
+                        <span className="text-slate-600 truncate max-w-[140px] hidden sm:inline font-sans">{p.name}</span>
                       </div>
-                      <div className="flex items-center gap-3 text-[11px] font-mono tabular-nums">
+                      <div className="flex items-center gap-3 text-xs font-sans font-medium tabular-nums">
                         <span className="text-emerald-700">{p.closed} Cls</span>
                         <span className="text-rose-700">{p.open} Opn</span>
                         {mrirCount > 0 && <span className="text-amber-700">{mrirCount} MRIR</span>}
@@ -542,7 +542,7 @@ export function CommandCenterView({
               })}
             </div>
 
-            <div className="mt-4 pt-2 border-t border-slate-100 flex items-center justify-center gap-6 text-[11px] font-mono text-slate-500">
+            <div className="mt-4 pt-2 border-t border-slate-100 flex items-center justify-center gap-6 text-xs font-sans text-slate-600">
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-[1px] bg-emerald-600" />Closed</span>
               <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-[1px] bg-rose-600" />Open Aktif</span>
             </div>
@@ -554,11 +554,11 @@ export function CommandCenterView({
               <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
                 <div className="flex items-center gap-2">
                   <PieChart className="w-4 h-4 text-emerald-600" />
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-sans">
                     Status Pelaksanaan Global
                   </h3>
                 </div>
-                <span className="text-[11px] font-mono text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded-[2px]">
+                <span className="text-[11px] font-sans text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-[3px] border border-emerald-200">
                   {globalProgress}% Selesai
                 </span>
               </div>
@@ -591,12 +591,12 @@ export function CommandCenterView({
                       )}
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                      <span className="text-lg font-bold font-mono text-slate-900 tabular-nums">{globalProgress}%</span>
-                      <span className="text-[9px] font-mono text-emerald-700 font-bold uppercase">Selesai</span>
+                      <span className="text-xl font-bold font-sans text-slate-900 tabular-nums">{globalProgress}%</span>
+                      <span className="text-[10px] font-sans text-emerald-700 font-bold uppercase tracking-wider">Selesai</span>
                     </div>
                   </div>
 
-                  <div className="w-full space-y-1.5 text-xs font-mono">
+                  <div className="w-full space-y-1.5 text-xs font-sans">
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-1.5 text-slate-700">
                         <span className="w-2.5 h-2.5 rounded-[1px] bg-[#059669] shrink-0" />
@@ -624,7 +624,7 @@ export function CommandCenterView({
             </div>
 
             <div className="pt-2 border-t border-slate-100 text-center">
-              <span className="text-[10.5px] font-mono text-slate-500">Total: <strong className="text-slate-800">{totals?.total.toLocaleString("id-ID")}</strong> records</span>
+              <span className="text-xs font-sans text-slate-500">Total: <strong className="text-slate-800 tabular-nums">{totals?.total.toLocaleString("id-ID")}</strong> records</span>
             </div>
           </div>
 
@@ -633,11 +633,11 @@ export function CommandCenterView({
             <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <Target className="w-4 h-4 text-slate-600" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-sans">
                   Distribusi Disiplin Mutu Portofolio
                 </h3>
               </div>
-              <span className="text-[11px] font-mono text-slate-500">ITR & MRIR</span>
+              <span className="text-xs font-sans text-slate-500">ITR & MRIR</span>
             </div>
 
             {totals && (
@@ -646,9 +646,9 @@ export function CommandCenterView({
                   const pct = totals.totalITR > 0 ? Math.round((count / totals.totalITR) * 100) : 0;
                   return (
                     <div key={disc} className="space-y-1">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-slate-700 font-mono">{disc}</span>
-                        <span className="font-mono text-slate-500 tabular-nums">{count} dok ({pct}%)</span>
+                      <div className="flex items-center justify-between text-xs font-sans">
+                        <span className="text-slate-700 font-medium">{disc}</span>
+                        <span className="text-slate-500 tabular-nums">{count} dok ({pct}%)</span>
                       </div>
                       <div className="h-2 w-full bg-slate-100 rounded-[2px] overflow-hidden">
                         <div style={{ width: `${pct}%` }} className="bg-[#163d78] h-full" />
@@ -658,12 +658,12 @@ export function CommandCenterView({
                 })}
 
                 <div className="space-y-1 pt-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-amber-800 font-mono font-semibold flex items-center gap-1.5">
+                  <div className="flex items-center justify-between text-xs font-sans">
+                    <span className="text-amber-800 font-semibold flex items-center gap-1.5">
                       <PackageCheck className="w-3.5 h-3.5" />
                       Material Receiving (MRIR)
                     </span>
-                    <span className="font-mono text-amber-700 tabular-nums">{totals.totalMRIR || 0} dok</span>
+                    <span className="text-amber-700 tabular-nums font-medium">{totals.totalMRIR || 0} dok</span>
                   </div>
                   <div className="h-2 w-full bg-slate-100 rounded-[2px] overflow-hidden">
                     <div
@@ -685,14 +685,14 @@ export function CommandCenterView({
         <div className="flex items-center justify-between pb-2.5 border-b border-slate-200">
           <div className="flex items-center gap-2.5">
             <span className="w-1.5 h-4 bg-[#163d78] rounded-[1px]" />
-            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-900 font-mono">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-900 font-sans">
               Portofolio Proyek Aktif
             </h2>
-            <span className="text-[11px] font-mono px-2 py-0.5 rounded-[3px] bg-slate-100 text-slate-700 font-semibold border border-slate-200">
+            <span className="text-xs font-sans px-2 py-0.5 rounded-[3px] bg-slate-100 text-slate-700 font-semibold border border-slate-200">
               {filteredProjects.length} Proyek
             </span>
           </div>
-          <span className="text-xs font-mono text-slate-500 hidden sm:inline">
+          <span className="text-xs font-sans text-slate-500 hidden sm:inline">
             Standar Pengendalian Mutu Konstruksi & Fabrikasi
           </span>
         </div>
@@ -700,12 +700,12 @@ export function CommandCenterView({
         {isLoading ? (
           <div className="p-8 text-center bg-white border border-slate-200 rounded-[8px]">
             <RefreshCw className="w-6 h-6 animate-spin mx-auto text-slate-400 mb-2" />
-            <p className="text-xs text-slate-500 font-mono">Memuat portofolio proyek...</p>
+            <p className="text-xs text-slate-500 font-sans">Memuat portofolio proyek...</p>
           </div>
         ) : filteredProjects.length === 0 ? (
           <div className="p-8 text-center bg-white border border-slate-200 rounded-[8px]">
             <Search className="w-6 h-6 mx-auto text-slate-400 mb-2" />
-            <p className="text-xs text-slate-500 font-mono">Tidak ada proyek yang sesuai dengan kriteria filter.</p>
+            <p className="text-xs text-slate-500 font-sans">Tidak ada proyek yang sesuai dengan kriteria filter.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5">
@@ -733,45 +733,45 @@ export function CommandCenterView({
                         {p.code}
                       </span>
                       {p.health === "red" ? (
-                        <Badge variant="rejected" className="rounded-[3px] font-mono">Kritis</Badge>
+                        <Badge variant="rejected" className="rounded-[3px] font-sans font-semibold">Kritis</Badge>
                       ) : p.health === "yellow" ? (
-                        <Badge variant="pending" className="rounded-[3px] font-mono">Waspada</Badge>
+                        <Badge variant="pending" className="rounded-[3px] font-sans font-semibold">Waspada</Badge>
                       ) : (
-                        <Badge variant="approved" className="rounded-[3px] font-mono">Lancar</Badge>
+                        <Badge variant="approved" className="rounded-[3px] font-sans font-semibold">Lancar</Badge>
                       )}
                     </div>
 
-                    <h3 className="text-sm font-bold text-slate-900 line-clamp-1 mb-3" title={p.name}>
+                    <h3 className="text-sm font-bold text-slate-900 line-clamp-1 mb-3 font-sans" title={p.name}>
                       {p.name}
                     </h3>
 
                     {/* Mini Metric Grid */}
                     <div className="grid grid-cols-5 gap-1 text-center bg-slate-50 p-2 rounded-[6px] border border-slate-200 mb-3">
                       <div>
-                        <div className="text-xs font-mono font-bold text-slate-900 tabular-nums">{p.totalNFI || 0}</div>
-                        <div className="text-[9px] font-mono text-slate-500">NFI</div>
+                        <div className="text-xs font-sans font-bold text-slate-900 tabular-nums">{p.totalNFI || 0}</div>
+                        <div className="text-[10px] font-sans text-slate-500 font-medium">NFI</div>
                       </div>
                       <div>
-                        <div className="text-xs font-mono font-bold text-slate-900 tabular-nums">{p.totalITR || 0}</div>
-                        <div className="text-[9px] font-mono text-slate-500">ITR</div>
+                        <div className="text-xs font-sans font-bold text-slate-900 tabular-nums">{p.totalITR || 0}</div>
+                        <div className="text-[10px] font-sans text-slate-500 font-medium">ITR</div>
                       </div>
                       <div>
-                        <div className="text-xs font-mono font-bold text-amber-700 tabular-nums">{mrirCount}</div>
-                        <div className="text-[9px] font-mono text-amber-700">MRIR</div>
+                        <div className="text-xs font-sans font-bold text-amber-700 tabular-nums">{mrirCount}</div>
+                        <div className="text-[10px] font-sans text-amber-700 font-medium">MRIR</div>
                       </div>
                       <div>
-                        <div className="text-xs font-mono font-bold text-rose-700 tabular-nums">{p.open || 0}</div>
-                        <div className="text-[9px] font-mono text-rose-700">Open</div>
+                        <div className="text-xs font-sans font-bold text-rose-700 tabular-nums">{p.open || 0}</div>
+                        <div className="text-[10px] font-sans text-rose-700 font-medium">Open</div>
                       </div>
                       <div>
-                        <div className="text-xs font-mono font-bold text-emerald-700 tabular-nums">{p.closed || 0}</div>
-                        <div className="text-[9px] font-mono text-emerald-700">Clsd</div>
+                        <div className="text-xs font-sans font-bold text-emerald-700 tabular-nums">{p.closed || 0}</div>
+                        <div className="text-[10px] font-sans text-emerald-700 font-medium">Clsd</div>
                       </div>
                     </div>
 
                     {/* Progress Bar */}
                     <div className="space-y-1 mb-3">
-                      <div className="flex items-center justify-between text-[11px] font-mono text-slate-500">
+                      <div className="flex items-center justify-between text-xs font-sans text-slate-500">
                         <span>Penyelesaian Dokumen</span>
                         <span className="font-bold text-slate-800 tabular-nums">{pct}%</span>
                       </div>
@@ -783,7 +783,7 @@ export function CommandCenterView({
 
                   {/* Card Footer */}
                   <div>
-                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-mono">
+                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-sans">
                       <div className="flex items-center gap-1.5 truncate max-w-[180px]" title={`PIC: ${p.pic || "Belum ditentukan"}`}>
                         <User className="w-3.5 h-3.5 shrink-0 text-slate-400" />
                         <span className="truncate">{p.pic || "—"}</span>
@@ -795,7 +795,7 @@ export function CommandCenterView({
                           {p.oldestOpenDays} hari
                         </span>
                       ) : (
-                        <span className="text-emerald-700 flex items-center gap-1">
+                        <span className="text-emerald-700 flex items-center gap-1 font-medium">
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           On Schedule
                         </span>
@@ -805,7 +805,7 @@ export function CommandCenterView({
                     <div className="mt-3 flex items-center justify-between gap-2">
                       <button
                         onClick={() => toggleCard(p.code)}
-                        className="text-[11px] font-mono text-slate-500 hover:text-slate-800 flex items-center gap-1 cursor-pointer"
+                        className="text-xs font-sans text-slate-500 hover:text-slate-800 flex items-center gap-1 cursor-pointer font-medium"
                       >
                         <span>{isExpanded ? "Tutup Rincian" : "Lihat Rincian"}</span>
                         {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -814,7 +814,7 @@ export function CommandCenterView({
                       {onSelectProject && (
                         <button
                           onClick={() => onSelectProject(p.code)}
-                          className="text-[11px] font-mono text-[#163d78] hover:underline flex items-center gap-1 font-semibold cursor-pointer"
+                          className="text-xs font-sans text-[#163d78] hover:underline flex items-center gap-1 font-semibold cursor-pointer"
                         >
                           <span>Buka Dokumen</span>
                           <ExternalLink className="w-3 h-3" />
@@ -826,11 +826,11 @@ export function CommandCenterView({
                       <div className="mt-3 pt-3 border-t border-slate-100 space-y-2 text-xs">
                         {p.itrByDiscipline && Object.keys(p.itrByDiscipline).length > 0 && (
                           <div>
-                            <div className="text-[10px] font-mono uppercase text-slate-500 mb-1">ITR per Disiplin</div>
+                            <div className="text-[11px] font-sans uppercase text-slate-500 mb-1 font-semibold">ITR per Disiplin</div>
                             <div className="flex flex-wrap gap-1">
                               {Object.entries(p.itrByDiscipline).map(([d, c]) => (
-                                <span key={d} className="px-1.5 py-0.5 rounded-[3px] bg-slate-50 border border-slate-200 text-[10px] font-mono text-slate-700">
-                                  {d}: <strong className="text-slate-900">{c}</strong>
+                                <span key={d} className="px-2 py-0.5 rounded-[3px] bg-slate-50 border border-slate-200 text-xs font-sans text-slate-700">
+                                  {d}: <strong className="text-slate-900 tabular-nums font-semibold">{c}</strong>
                                 </span>
                               ))}
                             </div>
@@ -839,10 +839,10 @@ export function CommandCenterView({
 
                         {p.disciplines && p.disciplines.length > 0 && (
                           <div>
-                            <div className="text-[10px] font-mono uppercase text-slate-500 mb-1">Disiplin Teknis</div>
+                            <div className="text-[11px] font-sans uppercase text-slate-500 mb-1 font-semibold">Disiplin Teknis</div>
                             <div className="flex flex-wrap gap-1">
                               {p.disciplines.map((d) => (
-                                <span key={d} className="px-1.5 py-0.5 rounded-[3px] bg-blue-50 border border-blue-200 text-[10px] font-mono text-[#163d78]">
+                                <span key={d} className="px-2 py-0.5 rounded-[3px] bg-blue-50 border border-blue-200 text-xs font-sans text-[#163d78] font-medium">
                                   {d}
                                 </span>
                               ))}

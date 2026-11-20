@@ -38,11 +38,11 @@ export function PageHeader({
         <div className="space-y-1.5 z-10">
           {category && (
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-[#38bdf8] font-bold">
+              <span className="text-[11px] font-sans uppercase tracking-wider text-[#38bdf8] font-bold">
                 {category}
               </span>
               <span className="text-white/20">•</span>
-              <span className="text-[10px] font-mono text-slate-300">
+              <span className="text-xs font-sans text-slate-300 font-medium">
                 PT Asuka Engineering Indonesia
               </span>
             </div>
@@ -57,14 +57,14 @@ export function PageHeader({
               {title}
             </h1>
             {badge !== undefined && (
-              <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-[3px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 tabular-nums">
+              <span className="text-xs font-sans font-semibold px-2 py-0.5 rounded-[3px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 tabular-nums">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
                 <span>{badge}</span>
               </span>
             )}
           </div>
           {description && (
-            <p className="text-xs text-slate-200/90 font-mono max-w-3xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-200/90 font-sans max-w-3xl leading-relaxed">
               {description}
             </p>
           )}
@@ -89,7 +89,7 @@ export function PageHeader({
     >
       <div className="space-y-1 z-10">
         {category && (
-          <div className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider text-[#163d78] font-bold bg-blue-50/80 px-2 py-0.5 rounded-[3px] border border-blue-200/60 mb-0.5">
+          <div className="inline-flex items-center gap-1.5 text-[11px] font-sans uppercase tracking-wider text-[#163d78] font-bold bg-blue-50/80 px-2 py-0.5 rounded-[3px] border border-blue-200/60 mb-0.5">
             <span className="w-1.5 h-1.5 rounded-[1px] bg-[#163d78]" />
             <span>{category}</span>
           </div>
@@ -106,7 +106,7 @@ export function PageHeader({
           {badge !== undefined && (
             <span
               className={cn(
-                "text-[11px] font-mono font-bold px-2 py-0.5 rounded-[3px] border tabular-nums",
+                "text-[11px] font-sans font-semibold px-2 py-0.5 rounded-[3px] border tabular-nums",
                 badgeVariant === "primary" && "bg-blue-50 text-[#163d78] border-blue-200",
                 badgeVariant === "success" && "bg-emerald-50 text-emerald-700 border-emerald-200",
                 badgeVariant === "warning" && "bg-amber-50 text-amber-700 border-amber-200",
@@ -119,7 +119,7 @@ export function PageHeader({
           )}
         </div>
         {description && (
-          <p className="text-xs text-slate-500 font-mono mt-0.5 leading-relaxed">
+          <p className="text-xs sm:text-sm text-slate-600 font-sans mt-0.5 leading-relaxed">
             {description}
           </p>
         )}
