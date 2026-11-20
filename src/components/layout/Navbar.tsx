@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import {
   Search,
   LogOut,
-  User as UserIcon,
   QrCode,
   Bot,
   Target,
   Bell,
   RefreshCw,
+  ChevronDown,
 } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
 import { User } from "@/features/auth/types";
 
 interface NavbarProps {
@@ -23,6 +23,7 @@ interface NavbarProps {
   onOpenQRScanner?: () => void;
   onOpenAIChat?: () => void;
   unreadNotificationsCount?: number;
+  onOpenNotifications?: () => void;
 }
 
 export function Navbar({
@@ -33,8 +34,11 @@ export function Navbar({
   onOpenQRScanner,
   onOpenAIChat,
   unreadNotificationsCount = 22,
+  onOpenNotifications,
 }: NavbarProps) {
   const [timeStr, setTimeStr] = useState<string>("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const updateTime = () => {
@@ -52,6 +56,26 @@ export function Navbar({
     return () => clearInterval(interval);
   }, []);
 
+  // Close dropdown on outside click or escape
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour >= 4 && hour < 11) return "Selamat pagi";
@@ -61,99 +85,108 @@ export function Navbar({
   };
 
   const firstName = user?.name ? user.name.split(" ")[0] : "Ahmad";
+  const userInitial = user?.name ? user.name.trim().charAt(0).toUpperCase() : "U";
+
+  const formatRoleLabel = (role?: string) => {
+    if (!role) return "STAFF";
+    const normalized = role.replace(/_/g, " ").toUpperCase();
+    if (
+      normalized.includes("QAQC ENGINEER") ||
+      normalized.includes("QA/QC ENGINEER") ||
+      normalized.includes("QAQC")
+    ) {
+      return "QA/QC";
+    }
+    if (normalized.includes("INSPECTOR")) return "INSPEKTOR";
+    if (normalized.includes("MANAGER")) return "MANAGER";
+    if (normalized.includes("ADMIN")) return "ADMIN";
+    return normalized.length > 10 ? normalized.slice(0, 10) : normalized;
+  };
 
   return (
-    <header className="h-14 bg-[#0d2347] border-b border-[#1b3a6b] px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-md">
-      {/* Official Brand Logo & Dynamic Greeting */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center">
+    <header className="h-14 bg-[#0d2347] border-b border-[#1b3a6b] px-3 sm:px-4 lg:px-6 flex items-center justify-between sticky top-0 z-30 shadow-md w-full max-w-full select-none">
+      {/* ═══ LEFT ZONE: Brand Identity & Greeting ═══ */}
+      <div className="flex items-center gap-2.5 sm:gap-3 shrink min-w-0">
+        <div className="flex items-center shrink-0">
           <Image
             src="/icons/logo.png"
             alt="PT Asuka Engineering Indonesia"
             width={120}
             height={28}
-            className="h-7 max-w-[130px] w-auto object-contain"
+            className="h-7 max-w-[125px] w-auto object-contain"
             priority
           />
         </div>
-        <div className="border-l border-[#244785] pl-3">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-xs tracking-wider text-white uppercase">
-              PT Asuka Engineering Indonesia
+        <div className="border-l border-[#244785] pl-2.5 sm:pl-3 flex flex-col justify-center min-w-0">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="font-bold text-xs tracking-wider text-white uppercase whitespace-nowrap">
+              PT Asuka Engineering
             </span>
-            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-[2px] bg-[#163d78] text-[#38bdf8] border border-[#255bb5]">
+            <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-[3px] bg-[#163d78] text-[#38bdf8] border border-[#255bb5] shrink-0">
               CMS EDMS
             </span>
             {selectedProject && (
-              <span className="hidden xl:inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.2 rounded-[2px] bg-[#16a34a]/30 text-[#4ade80] border border-[#16a34a]/50">
+              <span className="hidden xl:inline-flex items-center gap-1 text-[9.5px] font-mono px-1.5 py-0.2 rounded-[3px] bg-[#16a34a]/30 text-[#4ade80] border border-[#16a34a]/50 shrink-0">
                 <Target className="w-2.5 h-2.5" />
                 <span>{selectedProject}</span>
               </span>
             )}
           </div>
-          <p className="text-[10.5px] text-slate-300 font-mono tracking-tight flex items-center gap-1">
+          <p className="text-[10px] text-slate-300 font-mono tracking-tight flex items-center gap-1 whitespace-nowrap hidden sm:flex">
             <span>{getGreeting()}, {firstName}</span>
           </p>
         </div>
       </div>
 
-      {/* Global Document Search */}
-      <div className="hidden md:flex items-center flex-1 max-w-sm mx-6">
+      {/* ═══ CENTER ZONE: Global Search Bar (Spacious) ═══ */}
+      <div className="hidden md:flex items-center flex-1 max-w-md mx-4 lg:mx-6 min-w-0">
         <div className="relative w-full">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400 pointer-events-none" strokeWidth={1.8} />
+          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" strokeWidth={1.8} />
           <input
             type="text"
             placeholder="Cari cepat dokumen, ITP, kalibrasi, atau proyek..."
             onChange={(e) => onGlobalSearch && onGlobalSearch(e.target.value)}
-            className="w-full h-8 pl-8 pr-3 text-xs bg-[#091830] text-slate-200 border border-[#244785] rounded-[6px] placeholder-slate-400 focus:outline-none focus:border-[#38bdf8]"
+            className="w-full h-8 pl-8 pr-7 text-xs bg-[#091830] text-slate-200 border border-[#244785] rounded-[6px] placeholder-slate-400 focus:outline-none focus:border-[#38bdf8] transition-all font-sans"
           />
+          <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] font-mono text-slate-400 bg-[#162f6b] border border-[#244785] px-1 py-0.5 rounded pointer-events-none">
+            /
+          </kbd>
         </div>
       </div>
 
-      {/* Quick Action Tools & Status Indicators */}
-      <div className="flex items-center gap-2 sm:gap-3">
-        {/* Sync Status Badge */}
-        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] bg-[#052e16]/80 border border-[#166534] text-[11px] font-mono text-[#4ade80]">
-          <span className="w-2 h-2 rounded-[2px] bg-[#22c55e] inline-block" />
-          <span>Tersinkronisasi</span>
-          <RefreshCw className="w-3 h-3 text-[#4ade80]" />
+      {/* ═══ RIGHT ZONE: Telemetry + Notification + User Dropdown ═══ */}
+      <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+        {/* Unified Live Telemetry Pill (Sync + Clock) */}
+        <div className="hidden sm:flex items-center gap-1.5 h-8 px-2.5 rounded-[4px] bg-[#091830] border border-[#244785] text-[11px] font-mono text-slate-200 whitespace-nowrap shrink-0">
+          <span className="w-2 h-2 rounded-[2px] bg-[#22c55e] inline-block shrink-0" />
+          <span className="text-[#4ade80] font-medium">Tersinkronisasi</span>
+          <RefreshCw className="w-2.5 h-2.5 text-slate-400 shrink-0" />
+          {timeStr && (
+            <>
+              <span className="text-slate-600 font-normal hidden lg:inline">|</span>
+              <span className="text-slate-300 tabular-nums font-mono text-[10.5px] hidden lg:inline">
+                {timeStr}
+              </span>
+            </>
+          )}
         </div>
 
-        {/* Tabular Clock */}
-        {timeStr && (
-          <div className="hidden xl:block font-mono text-[11px] text-slate-300 tabular-nums px-2 py-1 bg-[#091830] rounded-[4px] border border-[#244785]">
-            {timeStr}
-          </div>
-        )}
-
-        {/* Scan QR Button */}
-        {onOpenQRScanner && (
-          <button
-            onClick={onOpenQRScanner}
-            className="hidden lg:flex items-center gap-1.5 h-8 px-2.5 rounded-[6px] bg-[#163d78]/50 hover:bg-[#163d78] text-slate-200 hover:text-white border border-[#244785] text-xs font-mono transition-colors"
-            title="Pindai QR / Verifikasi Dokumen"
-          >
-            <QrCode className="w-3.5 h-3.5 text-[#38bdf8]" />
-            <span>Scan QR</span>
-          </button>
-        )}
-
-        {/* Tanya AI QC Button */}
-        {onOpenAIChat && (
-          <button
-            onClick={onOpenAIChat}
-            className="hidden lg:flex items-center gap-1.5 h-8 px-2.5 rounded-[6px] bg-[#163d78]/70 hover:bg-[#163d78] text-[#38bdf8] hover:text-white border border-[#255bb5] text-xs font-mono font-semibold transition-colors"
-            title="Buka Tanya AI QC"
-          >
-            <Bot className="w-3.5 h-3.5" />
-            <span>Tanya AI QC</span>
-          </button>
-        )}
-
-        {/* Notification Bell with Badge */}
+        {/* Compact Notification Bell */}
         <button
-          className="relative p-1.5 rounded-[4px] bg-[#163d78]/50 hover:bg-[#163d78] border border-[#244785] text-slate-200 transition-colors"
-          title="Notifikasi Sistem"
+          type="button"
+          onClick={() => {
+            if (onOpenNotifications) {
+              onOpenNotifications();
+            } else {
+              setIsDropdownOpen((prev) => !prev);
+            }
+          }}
+          className="relative w-8 h-8 rounded-[6px] bg-[#091830] hover:bg-[#163d78] border border-[#244785] text-slate-200 hover:text-white flex items-center justify-center shrink-0 transition-colors cursor-pointer"
+          title={
+            unreadNotificationsCount > 0
+              ? `${unreadNotificationsCount} dokumen memerlukan tindakan`
+              : "Notifikasi Sistem"
+          }
         >
           <Bell className="w-4 h-4" strokeWidth={1.8} />
           {unreadNotificationsCount > 0 && (
@@ -163,33 +196,138 @@ export function Navbar({
           )}
         </button>
 
-        {/* User Badge */}
-        {user ? (
-          <div className="flex items-center gap-2 pl-2 border-l border-[#244785]">
-            <div className="flex items-center gap-2 px-2.5 py-1 rounded-[6px] bg-[#091830] border border-[#244785]">
-              <span className="text-xs font-semibold text-slate-100 hidden sm:inline">
-                {user.name}
+        {/* Vertical Separator */}
+        <div className="h-5 w-[1px] bg-white/15 shrink-0 hidden sm:block" />
+
+        {/* 👤 PROFIL PENGGUNA & DROPDOWN RAMPING (Ringkas & Rapi) */}
+        <div className="relative" ref={dropdownRef}>
+          <button
+            type="button"
+            onClick={() => setIsDropdownOpen((prev) => !prev)}
+            className="flex items-center gap-2 bg-[#091830] hover:bg-[#122550] border border-[#244785] hover:border-[#38bdf8]/40 rounded-[6px] px-2 sm:px-2.5 py-1 text-slate-100 transition-colors cursor-pointer select-none"
+            title="Menu Profil & Alat Mutu Cepat"
+          >
+            <div className="w-6 h-6 rounded-[3px] bg-[#163d78] text-[#38bdf8] border border-[#38bdf8]/30 flex items-center justify-center font-bold text-[11px] shrink-0 font-mono">
+              {userInitial}
+            </div>
+            <div className="hidden sm:flex flex-col text-left">
+              <span className="text-[11px] font-semibold text-slate-100 leading-none truncate max-w-[95px] lg:max-w-[130px]">
+                {user?.name || "QA/QC Engineer"}
               </span>
-              <span className="px-1.5 py-0.5 rounded-[3px] bg-[#ed2e35] text-white text-[10px] font-mono font-bold uppercase tracking-wider">
-                {user.role || "Admin"}
+              <span className="text-[9px] font-mono text-[#38bdf8] font-bold leading-tight mt-0.5">
+                {formatRoleLabel(user?.role)}
               </span>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onLogout}
-              className="h-8 px-2 text-slate-300 hover:text-white border-[#244785] bg-[#091830] hover:bg-[#163d78]"
-              title="Keluar dari Sistem"
-            >
-              <LogOut className="w-3.5 h-3.5" strokeWidth={1.8} />
-            </Button>
-          </div>
-        ) : (
-          <div className="flex items-center gap-1.5 text-xs text-slate-400 font-mono">
-            <UserIcon className="w-3.5 h-3.5" />
-            <span>Guest</span>
-          </div>
-        )}
+            <ChevronDown
+              className={cn(
+                "w-3.5 h-3.5 text-slate-400 transition-transform duration-150 shrink-0",
+                isDropdownOpen && "rotate-180 text-[#38bdf8]"
+              )}
+              strokeWidth={2}
+            />
+          </button>
+
+          {/* ═══ DROPDOWN POPUP MENU ═══ */}
+          {isDropdownOpen && (
+            <div className="absolute right-0 mt-2 w-72 bg-white border border-slate-200 rounded-[8px] shadow-2xl z-50 py-1.5 animate-in fade-in zoom-in-95 duration-100 select-none text-slate-900 font-sans">
+              {/* Dropdown User Header */}
+              <div className="px-3.5 py-2.5 border-b border-slate-100 bg-slate-50/70">
+                <div className="text-xs font-bold text-slate-900 truncate">
+                  {user?.name || "QA/QC Engineer"}
+                </div>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="text-[9.5px] font-mono font-bold px-1.5 py-0.2 rounded-[3px] bg-rose-50 text-[#ed2e35] border border-rose-200 uppercase">
+                    {user?.role || "QAQC_ENGINEER"}
+                  </span>
+                  <span className="text-[10px] text-slate-500 font-mono truncate">
+                    PT Asuka Engineering
+                  </span>
+                </div>
+              </div>
+
+              {/* Section: Aksi & Alat Mutu Cepat */}
+              <div className="py-1">
+                <div className="px-3.5 py-1 text-[9.5px] font-mono font-bold uppercase tracking-wider text-slate-400">
+                  Aksi & Alat Cepat
+                </div>
+
+                {onOpenQRScanner && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      onOpenQRScanner();
+                    }}
+                    className="w-full flex items-center justify-between px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors text-left cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <QrCode className="w-4 h-4 text-[#163d78] shrink-0" strokeWidth={1.8} />
+                      <span>Scan QR / Verifikasi Dokumen</span>
+                    </span>
+                    <span className="text-[9px] font-mono text-slate-400 bg-slate-100 px-1 py-0.5 rounded-[2px]">
+                      Kamera
+                    </span>
+                  </button>
+                )}
+
+                {onOpenAIChat && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      onOpenAIChat();
+                    }}
+                    className="w-full flex items-center justify-between px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors text-left cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <Bot className="w-4 h-4 text-[#163d78] shrink-0" strokeWidth={1.8} />
+                      <span>Tanya AI QC Copilot</span>
+                    </span>
+                    <span className="text-[9px] font-mono text-[#38bdf8] bg-blue-50 px-1 py-0.5 rounded-[2px] font-bold">
+                      Smart AI
+                    </span>
+                  </button>
+                )}
+
+                <div className="w-full flex items-center justify-between px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 transition-colors text-left">
+                  <span className="flex items-center gap-2.5">
+                    <Bell className="w-4 h-4 text-slate-500 shrink-0" strokeWidth={1.8} />
+                    <span>Dokumen Memerlukan Tindakan</span>
+                  </span>
+                  {unreadNotificationsCount > 0 && (
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-[3px] bg-rose-100 text-rose-700 border border-rose-200">
+                      {unreadNotificationsCount}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* System Info Strip */}
+              <div className="px-3.5 py-1.5 bg-slate-50/60 border-t border-b border-slate-100 flex items-center justify-between text-[9.5px] font-mono text-slate-500">
+                <span>QC-CMS EDMS v3.2.1</span>
+                <span className="text-emerald-600 font-semibold flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  Hub Connected
+                </span>
+              </div>
+
+              {/* Logout Action */}
+              <div className="p-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    onLogout();
+                  }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-[4px] transition-colors text-left cursor-pointer"
+                >
+                  <LogOut className="w-4 h-4 text-rose-600 shrink-0" strokeWidth={1.8} />
+                  <span>Keluar Akun (Logout)</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );
