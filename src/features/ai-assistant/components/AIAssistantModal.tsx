@@ -49,25 +49,25 @@ export function AIAssistantModal({
       label: "Audit ITP Pengecoran",
       prompt:
         "Apa saja checklist inspeksi hold point pada ITP Pekerjaan Beton Struktural (Structural Concrete Works) sesuai standar AEI?",
-      icon: <FileCheck2 className="w-3.5 h-3.5 text-[#38bdf8]" />,
+      icon: <FileCheck2 className="w-3.5 h-3.5 text-[#163d78]" />,
     },
     {
       label: "Format Penomoran Dokumen",
       prompt:
         "Jelaskan aturan penomoran resmi dokumen PT Asuka Engineering Indonesia (Kode Proyek, Disiplin, Tipe, Nomor Urut, dan Revisi).",
-      icon: <FileText className="w-3.5 h-3.5 text-[#4ade80]" />,
+      icon: <FileText className="w-3.5 h-3.5 text-emerald-700" />,
     },
     {
       label: "Tindak Lanjut NCR Mutu",
       prompt:
         "Bagaimana alur penyelesaian Non-Conformance Report (NCR) temuan honeycomb beton di lapangan hingga verifikasi close-out?",
-      icon: <AlertOctagon className="w-3.5 h-3.5 text-[#f87171]" />,
+      icon: <AlertOctagon className="w-3.5 h-3.5 text-[#ed2e35]" />,
     },
     {
       label: "Klausul ISO 9001:2015",
       prompt:
         "Sebutkan klausul ISO 9001:2015 yang mengatur tentang kalibrasi alat ukur dan pengendalian dokumen mutu.",
-      icon: <ShieldCheck className="w-3.5 h-3.5 text-[#facc15]" />,
+      icon: <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />,
     },
   ];
 
@@ -232,46 +232,46 @@ Jika Anda membutuhkan draf naratif atau checklist khusus, silakan klik salah sat
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="w-full max-w-2xl bg-[#0f172a] border border-[#1e293b] rounded-[8px] shadow-2xl flex flex-col h-[85vh] max-h-[720px] overflow-hidden">
-        {/* Header */}
-        <div className="px-4 py-3 bg-[#070b14] border-b border-[#1e293b] flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-2.5">
-            <span className="w-7 h-7 rounded-[4px] bg-[#163d78]/40 border border-[#163d78] flex items-center justify-center text-[#38bdf8]">
-              <Bot className="w-4 h-4" />
-            </span>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-150">
+      <div className="w-full max-w-2xl bg-white border border-slate-300 rounded-[8px] shadow-2xl flex flex-col h-[85vh] max-h-[720px] overflow-hidden">
+        {/* Header - Asuka Steel Navy */}
+        <div className="px-5 py-3.5 bg-[#163d78] text-white flex items-center justify-between shrink-0 border-b border-[#102d59]">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-[4px] bg-white/10 border border-white/20 flex items-center justify-center text-white">
+              <Bot className="w-4 h-4 text-white" />
+            </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-xs font-bold font-mono tracking-wider text-slate-100 uppercase">
+                <h3 className="text-sm font-bold tracking-wide text-white uppercase font-sans">
                   Tanya AI QC — Asisten Diagnostik Mutu
                 </h3>
-                <span className="text-[9px] font-mono font-bold bg-[#163d78] text-[#38bdf8] px-1.5 py-0.5 rounded-[2px] border border-[#163d78]">
+                <span className="text-[10px] font-sans font-bold bg-white/20 text-white px-2 py-0.5 rounded-[3px] border border-white/20 tracking-wider">
                   AEI ENGINE
                 </span>
               </div>
-              <p className="text-[10px] text-slate-400 font-mono">
+              <p className="text-xs text-blue-100 font-sans">
                 Konsultasi ITP, ISO 9001:2015, Spesifikasi Teknis & Kepatuhan PQP
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-[4px] text-slate-400 hover:text-white hover:bg-[#1e293b] transition-colors"
+            className="p-1 rounded-[4px] text-white/80 hover:text-white hover:bg-white/10 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Quick Audit Prompt Chips */}
-        <div className="p-2.5 bg-[#0a0f1d] border-b border-[#1e293b] flex items-center gap-1.5 overflow-x-auto shrink-0">
-          <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider shrink-0 pl-1">
+        <div className="p-2.5 bg-slate-50 border-b border-slate-200 flex items-center gap-1.5 overflow-x-auto shrink-0 font-sans">
+          <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider shrink-0 pl-1">
             Topik Cepat:
           </span>
           {quickPrompts.map((qp, idx) => (
             <button
               key={idx}
               onClick={() => handleSend(qp.prompt)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] bg-[#0f172a] hover:bg-[#1e293b] border border-[#1e293b] text-[11px] text-slate-300 hover:text-white whitespace-nowrap transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-[4px] bg-white hover:bg-slate-100 border border-slate-300 text-xs text-slate-700 hover:text-slate-900 whitespace-nowrap transition-colors shadow-2xs font-sans"
             >
               {qp.icon}
               <span>{qp.label}</span>
@@ -280,7 +280,7 @@ Jika Anda membutuhkan draf naratif atau checklist khusus, silakan klik salah sat
         </div>
 
         {/* Message Thread */}
-        <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-[#0a0f1d]">
+        <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-50/60 font-sans">
           {messages.map((msg, idx) => (
             <div
               key={idx}
@@ -289,16 +289,16 @@ Jika Anda membutuhkan draf naratif atau checklist khusus, silakan klik salah sat
               }`}
             >
               <div
-                className={`max-w-[88%] rounded-[6px] p-3 text-xs leading-relaxed ${
+                className={`max-w-[85%] rounded-[6px] p-3.5 text-xs leading-relaxed ${
                   msg.sender === "user"
-                    ? "bg-[#163d78] text-white border border-[#163d78]"
-                    : "bg-[#0f172a] text-slate-200 border border-[#1e293b]"
+                    ? "bg-[#163d78] text-white shadow-xs"
+                    : "bg-white text-slate-800 border border-slate-200 shadow-xs"
                 }`}
               >
                 <div className="whitespace-pre-wrap font-sans">{msg.text}</div>
                 <div
-                  className={`mt-1.5 text-[9px] font-mono ${
-                    msg.sender === "user" ? "text-slate-300" : "text-slate-400"
+                  className={`mt-1.5 text-[10px] font-mono ${
+                    msg.sender === "user" ? "text-blue-100" : "text-slate-400"
                   }`}
                 >
                   {msg.time}
@@ -308,15 +308,15 @@ Jika Anda membutuhkan draf naratif atau checklist khusus, silakan klik salah sat
           ))}
 
           {isThinking && (
-            <div className="flex items-center gap-2 p-3 bg-[#0f172a] border border-[#1e293b] rounded-[6px] text-xs text-slate-400 max-w-xs font-mono">
-              <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#38bdf8]" />
+            <div className="flex items-center gap-2 p-3 bg-white border border-slate-200 rounded-[6px] text-xs text-slate-600 max-w-xs shadow-xs">
+              <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#163d78]" />
               <span>Menganalisis standar mutu & klausul teknis...</span>
             </div>
           )}
         </div>
 
         {/* Input Footer */}
-        <div className="p-3 bg-[#070b14] border-t border-[#1e293b] flex items-center gap-2 shrink-0">
+        <div className="p-3 bg-white border-t border-slate-200 flex items-center gap-2 shrink-0 font-sans">
           <input
             type="text"
             value={inputPrompt}
@@ -328,21 +328,20 @@ Jika Anda membutuhkan draf naratif atau checklist khusus, silakan klik salah sat
               }
             }}
             placeholder="Ketik pertanyaan teknis atau verifikasi klausul mutu..."
-            className="flex-1 bg-[#0f172a] border border-[#1e293b] rounded-[6px] px-3 py-2 text-xs text-slate-100 placeholder-slate-500 outline-none focus:border-[#163d78]"
+            className="flex-1 bg-slate-50 hover:bg-white text-slate-900 border border-slate-300 rounded-[6px] px-3.5 py-2 text-xs placeholder-slate-400 outline-none focus:bg-white focus:border-[#163d78] transition-colors"
           />
           <Button
             variant="primary"
             size="sm"
             onClick={() => handleSend()}
             disabled={!inputPrompt.trim() || isThinking}
-            className="h-8 px-3 font-mono text-xs gap-1.5 bg-[#163d78] hover:bg-[#1a4a91]"
+            className="h-9 px-4 font-sans text-xs gap-1.5 bg-[#163d78] hover:bg-[#113162]"
           >
             <span>Kirim</span>
-            <Send className="w-3 h-3" />
+            <Send className="w-3.5 h-3.5" />
           </Button>
         </div>
       </div>
     </div>
   );
 }
-

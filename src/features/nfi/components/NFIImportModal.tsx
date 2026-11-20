@@ -185,33 +185,35 @@ export function NFIImportModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150">
-      <div className="bg-[#0f172a] border border-[#1e293b] rounded-[6px] w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
-        {/* Header */}
-        <div className="h-14 bg-[#0a0f1d] border-b border-[#1e293b] px-4 sm:px-6 flex items-center justify-between flex-shrink-0">
+    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150">
+      <div className="bg-white border border-slate-300 rounded-[8px] w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+        {/* Header - Asuka Steel Navy */}
+        <div className="h-14 bg-[#163d78] border-b border-[#102d59] px-4 sm:px-6 flex items-center justify-between flex-shrink-0 text-white">
           <div className="flex items-center gap-3">
-            <FileSpreadsheet className="w-5 h-5 text-[#38bdf8]" strokeWidth={1.8} />
+            <div className="w-8 h-8 rounded-[4px] bg-white/10 border border-white/20 flex items-center justify-center text-white">
+              <FileSpreadsheet className="w-4 h-4 text-white" strokeWidth={1.8} />
+            </div>
             <div>
-              <div className="text-sm font-semibold text-slate-100 uppercase tracking-wide">
+              <div className="text-sm font-bold text-white uppercase tracking-wide font-sans">
                 Impor Batch NFI Mutu (Excel / CSV)
               </div>
-              <div className="text-[11px] font-mono text-slate-400">
+              <div className="text-xs text-blue-100 font-sans">
                 Pencatatan massal temuan ketidaksesuaian lapangan Notice of Finding
               </div>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-[4px] hover:bg-[#450a0a] text-slate-400 hover:text-[#f87171] transition-colors"
+            className="p-1.5 rounded-[4px] hover:bg-white/10 text-white/80 hover:text-white transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-white font-sans text-xs">
           {errorMessage && (
-            <div className="p-3 rounded-[4px] bg-[#450a0a]/50 border border-[#ed2e35]/40 text-[#f87171] text-xs font-mono flex items-center gap-2">
+            <div className="p-3 rounded-[6px] bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 flex-shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -221,13 +223,13 @@ export function NFIImportModal({
             <div className="space-y-5">
               {/* Project Selection */}
               <div>
-                <label className="block text-xs font-mono uppercase text-slate-300 mb-1.5 font-semibold">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5 font-sans">
                   1. Pilih Proyek Tujuan <span className="text-[#ed2e35]">*</span>
                 </label>
                 <select
                   value={selectedProject}
                   onChange={(e) => setSelectedProject(e.target.value)}
-                  className="w-full bg-[#0a0f1d] border border-[#1e293b] rounded-[6px] px-3 py-2 text-xs font-mono text-slate-200 outline-none focus:border-[#163d78]"
+                  className="w-full bg-slate-50 hover:bg-white text-slate-900 border border-slate-300 rounded-[6px] px-3 py-2 text-xs font-sans outline-none focus:bg-white focus:border-[#163d78] transition-colors"
                 >
                   <option value="">— Pilih Proyek Mutu —</option>
                   {projects.map((p) => (
@@ -245,12 +247,12 @@ export function NFIImportModal({
               </div>
 
               {/* Template Download Card */}
-              <div className="p-4 rounded-[6px] bg-[#0a0f1d] border border-[#1e293b] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="p-4 rounded-[6px] bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="space-y-1">
-                  <div className="text-xs font-semibold text-slate-200">
+                  <div className="text-xs font-bold text-slate-900">
                     Gunakan Format Template Resmi AEI
                   </div>
-                  <p className="text-[11px] font-mono text-slate-400">
+                  <p className="text-xs text-slate-600">
                     Template berisi kolom wajib penomoran NFI, disiplin, tanggal, dan status.
                   </p>
                 </div>
@@ -259,7 +261,7 @@ export function NFIImportModal({
                   variant="secondary"
                   size="sm"
                   onClick={downloadCSVTemplate}
-                  className="text-xs font-mono gap-1.5 text-[#38bdf8] border-[#38bdf8]/30 flex-shrink-0"
+                  className="text-xs font-sans gap-1.5 text-[#163d78] border-slate-300 hover:bg-white flex-shrink-0"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>Unduh Template CSV</span>
@@ -268,15 +270,15 @@ export function NFIImportModal({
 
               {/* File Dropzone */}
               <div>
-                <label className="block text-xs font-mono uppercase text-slate-300 mb-1.5 font-semibold">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5 font-sans">
                   2. Pilih File CSV / Spreadsheet Hasil Ekspor
                 </label>
-                <label className="border-2 border-dashed border-[#1e293b] hover:border-[#163d78] rounded-[6px] p-8 flex flex-col items-center justify-center cursor-pointer transition-colors bg-[#0a0f1d]/50">
+                <label className="border-2 border-dashed border-slate-300 hover:border-[#163d78] rounded-[6px] p-8 flex flex-col items-center justify-center cursor-pointer transition-colors bg-slate-50/70 hover:bg-slate-50">
                   <Upload className="w-8 h-8 text-slate-400 mb-2" strokeWidth={1.5} />
-                  <span className="text-xs font-semibold text-slate-300">
+                  <span className="text-xs font-semibold text-slate-800">
                     {fileName ? fileName : "Klik untuk memilih berkas .csv"}
                   </span>
-                  <span className="text-[11px] font-mono text-slate-500 mt-1">
+                  <span className="text-xs text-slate-500 mt-1">
                     Maksimal 15 MB per pengunggahan batch
                   </span>
                   <input
@@ -292,9 +294,9 @@ export function NFIImportModal({
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#4ade80]" />
-                  <span className="text-xs font-mono text-slate-200">
-                    Terdeteksi <span className="font-bold text-[#4ade80]">{parsedRows.length}</span> baris data NFI dari berkas <span className="text-slate-300">{fileName}</span>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span className="text-xs text-slate-800">
+                    Terdeteksi <strong className="text-emerald-700 font-bold">{parsedRows.length}</strong> baris data NFI dari berkas <span className="font-semibold">{fileName}</span>
                   </span>
                 </div>
                 <button
@@ -303,7 +305,7 @@ export function NFIImportModal({
                     setStep(1);
                     setParsedRows([]);
                   }}
-                  className="text-xs font-mono text-[#38bdf8] hover:underline flex items-center gap-1"
+                  className="text-xs font-medium text-[#163d78] hover:underline flex items-center gap-1"
                 >
                   <RotateCcw className="w-3 h-3" />
                   <span>Ganti File</span>
@@ -311,31 +313,31 @@ export function NFIImportModal({
               </div>
 
               {/* Preview Table */}
-              <div className="bg-[#0a0f1d] border border-[#1e293b] rounded-[6px] overflow-x-auto max-h-[350px]">
-                <table className="w-full text-left border-collapse text-[11px]">
-                  <thead className="sticky top-0 bg-[#0f172a] border-b border-[#1e293b] font-mono text-slate-400 uppercase">
+              <div className="bg-white border border-slate-200 rounded-[6px] overflow-x-auto max-h-[350px]">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead className="sticky top-0 bg-slate-100 border-b border-slate-200 font-mono text-slate-700 uppercase text-[11px]">
                     <tr>
-                      <th className="py-2 px-3">No NFI</th>
-                      <th className="py-2 px-3">Deskripsi Temuan</th>
-                      <th className="py-2 px-3">Disiplin</th>
-                      <th className="py-2 px-3">Area / Lokasi</th>
-                      <th className="py-2 px-3">Hasil</th>
-                      <th className="py-2 px-3">Status</th>
+                      <th className="py-2.5 px-3">No NFI</th>
+                      <th className="py-2.5 px-3">Deskripsi Temuan</th>
+                      <th className="py-2.5 px-3">Disiplin</th>
+                      <th className="py-2.5 px-3">Area / Lokasi</th>
+                      <th className="py-2.5 px-3">Hasil</th>
+                      <th className="py-2.5 px-3">Status</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#1e293b] font-mono">
+                  <tbody className="divide-y divide-slate-100 font-sans">
                     {parsedRows.slice(0, 50).map((row, i) => (
-                      <tr key={i} className="hover:bg-[#1e293b]/40">
-                        <td className="py-2 px-3 font-semibold text-[#38bdf8]">{row.noNfi}</td>
-                        <td className="py-2 px-3 text-slate-200 max-w-xs truncate">{row.subjectDescription}</td>
-                        <td className="py-2 px-3 text-slate-400">{row.discipline}</td>
-                        <td className="py-2 px-3 text-slate-400">{row.area}</td>
-                        <td className="py-2 px-3">
+                      <tr key={i} className="hover:bg-slate-50">
+                        <td className="py-2.5 px-3 font-mono font-bold text-[#163d78]">{row.noNfi}</td>
+                        <td className="py-2.5 px-3 text-slate-800 max-w-xs truncate">{row.subjectDescription}</td>
+                        <td className="py-2.5 px-3 text-slate-600">{row.discipline}</td>
+                        <td className="py-2.5 px-3 text-slate-600">{row.area}</td>
+                        <td className="py-2.5 px-3">
                           <Badge variant={row.result.toUpperCase() === "PASS" ? "approved" : "rejected"}>
                             {row.result}
                           </Badge>
                         </td>
-                        <td className="py-2 px-3">
+                        <td className="py-2.5 px-3">
                           <Badge variant={row.status.toUpperCase() === "CLOSED" ? "approved" : "pending"}>
                             {row.status}
                           </Badge>
@@ -346,7 +348,7 @@ export function NFIImportModal({
                 </table>
               </div>
               {parsedRows.length > 50 && (
-                <div className="text-[11px] font-mono text-slate-500 text-center">
+                <div className="text-xs text-slate-500 text-center font-sans">
                   Menampilkan 50 baris pertama dari {parsedRows.length} total baris data.
                 </div>
               )}
@@ -355,8 +357,8 @@ export function NFIImportModal({
         </div>
 
         {/* Footer */}
-        <div className="h-14 bg-[#0a0f1d] border-t border-[#1e293b] px-4 sm:px-6 flex items-center justify-between flex-shrink-0">
-          <Button variant="secondary" size="sm" onClick={onClose} className="text-xs font-mono">
+        <div className="h-14 bg-slate-50 border-t border-slate-200 px-4 sm:px-6 flex items-center justify-between flex-shrink-0">
+          <Button variant="secondary" size="sm" onClick={onClose} className="text-xs">
             Batal
           </Button>
 
@@ -366,7 +368,7 @@ export function NFIImportModal({
               size="sm"
               disabled={isSubmitting}
               onClick={handleSubmit}
-              className="text-xs font-mono gap-1.5 bg-[#163d78] hover:bg-[#1a4a91]"
+              className="text-xs gap-1.5 bg-[#163d78] hover:bg-[#113162]"
             >
               <Upload className="w-3.5 h-3.5" />
               <span>{isSubmitting ? "Mengimpor Data..." : `Impor ${parsedRows.length} Data NFI`}</span>
@@ -377,4 +379,3 @@ export function NFIImportModal({
     </div>
   );
 }
-

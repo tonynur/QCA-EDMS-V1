@@ -90,49 +90,51 @@ export function RevisionHistoryModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150">
-      <div className="bg-[#0f172a] border border-[#1e293b] rounded-[6px] w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
-        {/* Header */}
-        <div className="h-14 bg-[#0a0f1d] border-b border-[#1e293b] px-4 sm:px-6 flex items-center justify-between flex-shrink-0">
+    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150">
+      <div className="bg-white border border-slate-300 rounded-[8px] w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+        {/* Header - Asuka Steel Navy */}
+        <div className="h-14 bg-[#163d78] border-b border-[#102d59] px-4 sm:px-6 flex items-center justify-between flex-shrink-0 text-white">
           <div className="flex items-center gap-3">
-            <History className="w-5 h-5 text-[#38bdf8]" strokeWidth={1.8} />
+            <div className="w-8 h-8 rounded-[4px] bg-white/10 border border-white/20 flex items-center justify-center text-white">
+              <History className="w-4 h-4 text-white" strokeWidth={1.8} />
+            </div>
             <div>
-              <div className="text-sm font-semibold text-slate-100 flex items-center gap-2">
-                <span>Riwayat Revisi Dokumen</span>
-                <span className="font-mono text-xs text-[#38bdf8]">
+              <div className="text-sm font-bold text-white flex items-center gap-2 font-sans">
+                <span>Riwayat Silsilah Revisi</span>
+                <span className="font-mono text-xs text-blue-100">
                   {doc.documentCode || doc.documentNumber}
                 </span>
               </div>
-              <div className="text-[11px] font-mono text-slate-400">
+              <div className="text-xs text-blue-100 font-sans">
                 {doc.projectName} • {doc.discipline}
               </div>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-[4px] hover:bg-[#450a0a] text-slate-400 hover:text-[#f87171] transition-colors"
+            className="p-1.5 rounded-[4px] hover:bg-white/10 text-white/80 hover:text-white transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Content / Timeline */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-          <div className="text-xs text-slate-300 font-mono">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-white">
+          <div className="text-xs text-slate-800 font-semibold p-3 bg-slate-50 border border-slate-200 rounded-[6px]">
             {doc.title}
           </div>
 
           {isLoading ? (
-            <div className="py-12 text-center text-xs font-mono text-slate-400">
-              <div className="w-6 h-6 border-2 border-[#163d78] border-t-[#38bdf8] rounded-full animate-spin mx-auto mb-2" />
+            <div className="py-12 text-center text-xs text-slate-500">
+              <div className="w-6 h-6 border-2 border-[#163d78] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
               Memuat silsilah revisi dari Google Sheets...
             </div>
           ) : revisions.length === 0 ? (
-            <div className="py-8 text-center text-xs font-mono text-slate-400">
+            <div className="py-8 text-center text-xs text-slate-500">
               Belum ada riwayat revisi tambahan. Dokumen ini adalah revisi awal.
             </div>
           ) : (
-            <div className="relative pl-6 space-y-6 before:content-[''] before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-[#1e293b]">
+            <div className="relative pl-6 space-y-5 before:content-[''] before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
               {revisions.map((rev, idx) => {
                 const isCurrent = rev.docId === doc.docId || idx === 0;
                 const s = (rev.status || "").toUpperCase();
@@ -141,32 +143,32 @@ export function RevisionHistoryModal({
                   <div key={rev.docId} className="relative space-y-2">
                     {/* Timeline Node Dot */}
                     <div
-                      className={`absolute -left-6 top-1 w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                      className={`absolute -left-6 top-1.5 w-4 h-4 rounded-full border-2 flex items-center justify-center ${
                         isCurrent
-                          ? "bg-[#163d78] border-[#38bdf8]"
-                          : "bg-[#0f172a] border-[#334155]"
+                          ? "bg-[#163d78] border-[#163d78]"
+                          : "bg-white border-slate-300"
                       }`}
                     >
                       {isCurrent && (
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#38bdf8]" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-white" />
                       )}
                     </div>
 
                     {/* Revision Card */}
                     <div
-                      className={`p-3.5 rounded-[6px] border transition-colors ${
+                      className={`p-4 rounded-[6px] border transition-colors ${
                         isCurrent
-                          ? "bg-[#1e293b]/70 border-[#38bdf8]/40"
-                          : "bg-[#0a0f1d] border-[#1e293b]"
+                          ? "bg-blue-50/40 border-[#163d78]/30 shadow-xs"
+                          : "bg-slate-50 border-slate-200"
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs font-bold text-slate-100">
+                          <span className="font-mono text-xs font-bold text-slate-900">
                             Rev {rev.revision ?? 0}
                           </span>
                           {isCurrent && (
-                            <span className="text-[10px] font-mono uppercase bg-[#163d78] text-[#38bdf8] px-1.5 py-0.5 rounded-[2px] font-semibold">
+                            <span className="text-[10px] font-sans uppercase bg-[#163d78] text-white px-2 py-0.5 rounded-[3px] font-semibold">
                               Aktif Sekarang
                             </span>
                           )}
@@ -190,7 +192,7 @@ export function RevisionHistoryModal({
                             href={rev.fileUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="text-xs font-mono text-[#38bdf8] hover:underline flex items-center gap-1"
+                            className="text-xs font-medium text-[#163d78] hover:underline flex items-center gap-1"
                           >
                             <span>Berkas</span>
                             <ExternalLink className="w-3 h-3" />
@@ -198,27 +200,27 @@ export function RevisionHistoryModal({
                         )}
                       </div>
 
-                      <div className="text-xs text-slate-200 mt-2 font-medium">
+                      <div className="text-xs text-slate-900 mt-2 font-medium">
                         {rev.title}
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 pt-2 border-t border-[#1e293b] text-[11px] font-mono text-slate-400">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-200 text-xs text-slate-600 font-sans">
                         <div className="flex items-center gap-1.5">
-                          <User className="w-3.5 h-3.5 text-slate-500" />
+                          <User className="w-3.5 h-3.5 text-slate-400" />
                           <span>Pengunggah: {rev.uploaderName || "-"}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5 text-slate-500" />
+                          <Clock className="w-3.5 h-3.5 text-slate-400" />
                           <span>Diunggah: {formatDate(rev.timestamp)}</span>
                         </div>
                       </div>
 
                       {/* Approver Information */}
                       {rev.approverName && (
-                        <div className="mt-2 text-[11px] font-mono text-[#4ade80] flex items-center gap-1.5">
-                          <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                        <div className="mt-2 text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 p-2 rounded-[4px] flex items-center gap-1.5 font-sans">
+                          <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0 text-emerald-600" />
                           <span>
-                            Disetujui oleh {rev.approverName}{" "}
+                            Disetujui oleh <strong>{rev.approverName}</strong>{" "}
                             {rev.approvalDate ? `pada ${formatDate(rev.approvalDate)}` : ""}
                           </span>
                         </div>
@@ -226,21 +228,21 @@ export function RevisionHistoryModal({
 
                       {/* Comments */}
                       {rev.description && (
-                        <div className="mt-2 text-[11px] font-mono text-slate-400 bg-[#0a0f1d] p-2 rounded-[4px] border border-[#1e293b] flex items-start gap-1.5">
-                          <MessageSquare className="w-3.5 h-3.5 text-slate-500 mt-0.5 flex-shrink-0" />
+                        <div className="mt-2 text-xs text-slate-700 bg-white p-2.5 rounded-[4px] border border-slate-200 flex items-start gap-1.5 font-sans">
+                          <MessageSquare className="w-3.5 h-3.5 text-slate-400 mt-0.5 flex-shrink-0" />
                           <span>{rev.description}</span>
                         </div>
                       )}
 
                       {/* Rollback Action Button */}
                       {!isCurrent && s !== "DELETED" && (
-                        <div className="mt-3 pt-2 border-t border-[#1e293b] flex justify-end">
+                        <div className="mt-3 pt-2 border-t border-slate-200 flex justify-end">
                           <Button
                             variant="secondary"
                             size="sm"
                             disabled={actionInProgress === rev.docId}
                             onClick={() => handleRollback(rev.docId, rev.revision ?? 0)}
-                            className="text-xs font-mono gap-1 text-[#38bdf8] border-[#38bdf8]/30 hover:bg-[#38bdf8]/10"
+                            className="text-xs font-sans gap-1 text-[#163d78] border-slate-300 hover:bg-slate-100"
                           >
                             <RotateCcw className="w-3 h-3" />
                             <span>
@@ -260,9 +262,9 @@ export function RevisionHistoryModal({
         </div>
 
         {/* Footer */}
-        <div className="h-12 bg-[#0a0f1d] border-t border-[#1e293b] px-4 sm:px-6 flex items-center justify-between flex-shrink-0 text-[11px] font-mono text-slate-400">
-          <span>Total Revisi: {revisions.length} versi</span>
-          <Button variant="secondary" size="sm" onClick={onClose} className="text-xs font-mono">
+        <div className="h-12 bg-slate-50 border-t border-slate-200 px-4 sm:px-6 flex items-center justify-between flex-shrink-0 text-xs text-slate-600">
+          <span>Total Riwayat: {revisions.length} versi</span>
+          <Button variant="secondary" size="sm" onClick={onClose} className="text-xs">
             Tutup
           </Button>
         </div>
@@ -270,4 +272,3 @@ export function RevisionHistoryModal({
     </div>
   );
 }
-

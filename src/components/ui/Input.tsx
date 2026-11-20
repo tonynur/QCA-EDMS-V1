@@ -14,7 +14,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full space-y-1.5">
         {label && (
-          <label htmlFor={inputId} className="block text-xs font-medium text-slate-300 uppercase tracking-wider">
+          <label htmlFor={inputId} className="block text-xs font-semibold text-slate-700 uppercase tracking-wider font-sans">
             {label}
           </label>
         )}
@@ -25,7 +25,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             type={type}
             ref={ref}
             className={cn(
-              "w-full bg-white text-slate-900 placeholder-slate-400 border border-slate-300 rounded-[6px] text-sm focus:outline-none focus:border-[#163d78] focus:ring-1 focus:ring-[#163d78] h-9 px-3 transition-colors",
+              "w-full bg-slate-50 hover:bg-white text-slate-900 placeholder-slate-400 border border-slate-300 rounded-[6px] text-xs focus:bg-white focus:outline-none focus:border-[#163d78] focus:ring-1 focus:ring-[#163d78] h-9 px-3 transition-colors font-sans",
               icon && "pl-9",
               error && "border-[#ed2e35] focus:border-[#ed2e35] focus:ring-[#ed2e35]",
               type === "number" && "tabular-nums",

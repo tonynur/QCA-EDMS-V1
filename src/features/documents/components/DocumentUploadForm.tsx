@@ -109,26 +109,26 @@ export function DocumentUploadForm({ onSuccess, onCancel }: DocumentUploadFormPr
   };
 
   return (
-    <Card className="max-w-4xl mx-auto border-[#1e293b] bg-[#0f172a]">
-      <CardHeader className="flex items-center justify-between">
+    <Card className="max-w-4xl mx-auto border-slate-300 bg-white shadow-md">
+      <CardHeader className="flex items-center justify-between border-b border-slate-200 bg-slate-50/70 px-6 py-4">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={onCancel}>
-            <ArrowLeft className="w-4 h-4 mr-1" /> Kembali
+          <Button variant="secondary" size="sm" onClick={onCancel} className="gap-1.5 font-sans">
+            <ArrowLeft className="w-4 h-4" /> Kembali
           </Button>
           <div>
-            <CardTitle>Unggah Dokumen Mutu Baru / Revisi</CardTitle>
-            <p className="text-[11px] text-slate-400 font-mono mt-0.5">
+            <CardTitle className="text-slate-900 font-bold font-sans">Unggah Dokumen Mutu Baru / Revisi</CardTitle>
+            <p className="text-xs text-slate-500 font-sans mt-0.5">
               Registrasi dokumen ke master register & Google Drive QCA EDMS
             </p>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent className="pt-6">
-        <form onSubmit={handleSubmit} className="space-y-5">
+      <CardContent className="p-6">
+        <form onSubmit={handleSubmit} className="space-y-5 font-sans">
           {error && (
-            <div className="flex items-center gap-2.5 p-3 rounded-[4px] bg-[#450a0a] border border-[#991b1b] text-xs text-[#fca5a5]">
-              <AlertCircle className="w-4 h-4 shrink-0 text-[#f87171]" />
+            <div className="flex items-center gap-2.5 p-3 rounded-[6px] bg-red-50 border border-red-200 text-xs text-red-700">
+              <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
               <span>{error}</span>
             </div>
           )}
@@ -136,13 +136,13 @@ export function DocumentUploadForm({ onSuccess, onCancel }: DocumentUploadFormPr
           {/* Project & Discipline Select */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5 font-sans">
                 Proyek *
               </label>
               <select
                 value={projectCode}
                 onChange={(e) => setProjectCode(e.target.value)}
-                className="w-full h-9 bg-[#1e293b] text-slate-100 border border-[#334155] rounded-[6px] px-3 text-xs focus:outline-none focus:border-[#163d78]"
+                className="w-full h-9 bg-slate-50 hover:bg-white text-slate-900 border border-slate-300 rounded-[6px] px-3 text-xs font-sans focus:bg-white focus:outline-none focus:border-[#163d78] transition-colors"
               >
                 <option value="PRJ-CHI-01">CHI - Chiyoda Manyar Smelter</option>
                 <option value="PRJ-SML-02">SML - PT Smelting Expansion</option>
@@ -152,13 +152,13 @@ export function DocumentUploadForm({ onSuccess, onCancel }: DocumentUploadFormPr
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5 font-sans">
                 Disiplin Teknis *
               </label>
               <select
                 value={discipline}
                 onChange={(e) => setDiscipline(e.target.value)}
-                className="w-full h-9 bg-[#1e293b] text-slate-100 border border-[#334155] rounded-[6px] px-3 text-xs focus:outline-none focus:border-[#163d78]"
+                className="w-full h-9 bg-slate-50 hover:bg-white text-slate-900 border border-slate-300 rounded-[6px] px-3 text-xs font-sans focus:bg-white focus:outline-none focus:border-[#163d78] transition-colors"
               >
                 <option value="CIVIL">CIVIL & ARCHITECTURAL</option>
                 <option value="MECHANICAL">MECHANICAL & PIPING</option>
@@ -169,13 +169,13 @@ export function DocumentUploadForm({ onSuccess, onCancel }: DocumentUploadFormPr
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5 font-sans">
                 Jenis Dokumen *
               </label>
               <select
                 value={documentType}
                 onChange={(e) => setDocumentType(e.target.value)}
-                className="w-full h-9 bg-[#1e293b] text-slate-100 border border-[#334155] rounded-[6px] px-3 text-xs focus:outline-none focus:border-[#163d78]"
+                className="w-full h-9 bg-slate-50 hover:bg-white text-slate-900 border border-slate-300 rounded-[6px] px-3 text-xs font-sans focus:bg-white focus:outline-none focus:border-[#163d78] transition-colors"
               >
                 <option value="ITP">ITP - Inspection and Test Plan</option>
                 <option value="METHOD_STATEMENT">MS - Method Statement</option>
@@ -228,13 +228,13 @@ export function DocumentUploadForm({ onSuccess, onCancel }: DocumentUploadFormPr
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5 font-sans">
                 Kerahasiaan Dokumen
               </label>
               <select
                 value={confidentiality}
                 onChange={(e) => setConfidentiality(e.target.value as "Internal" | "Restricted" | "Public")}
-                className="w-full h-9 bg-[#1e293b] text-slate-100 border border-[#334155] rounded-[6px] px-3 text-xs focus:outline-none focus:border-[#163d78]"
+                className="w-full h-9 bg-slate-50 hover:bg-white text-slate-900 border border-slate-300 rounded-[6px] px-3 text-xs font-sans focus:bg-white focus:outline-none focus:border-[#163d78] transition-colors"
               >
                 <option value="Internal">Internal PT Asuka</option>
                 <option value="Restricted">Restricted / Rahasia Proyek</option>
@@ -253,15 +253,15 @@ export function DocumentUploadForm({ onSuccess, onCancel }: DocumentUploadFormPr
 
           {/* File Upload Zone */}
           <div className="space-y-2">
-            <label className="block text-xs font-medium text-slate-300 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider font-sans">
               Lampiran File Dokumen (PDF, XLSX, DOCX, DWG maks 15MB) *
             </label>
-            <div className="border-2 border-dashed border-[#334155] hover:border-[#163d78] rounded-[6px] p-6 text-center bg-[#1e293b]/30 transition-colors">
+            <div className="border-2 border-dashed border-slate-300 hover:border-[#163d78] rounded-[6px] p-6 text-center bg-slate-50 hover:bg-white transition-colors">
               <UploadCloud className="w-8 h-8 mx-auto text-slate-400 mb-2" strokeWidth={1.8} />
-              <div className="text-xs text-slate-300 font-medium">
+              <div className="text-xs text-slate-700 font-semibold font-sans">
                 Tarik file ke sini atau klik tombol di bawah
               </div>
-              <p className="text-[11px] text-slate-400 font-mono mt-1">
+              <p className="text-xs text-slate-500 font-sans mt-1">
                 Maksimal 15MB per file dokumen
               </p>
               <input
@@ -275,9 +275,10 @@ export function DocumentUploadForm({ onSuccess, onCancel }: DocumentUploadFormPr
               <div className="mt-3">
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="secondary"
                   size="sm"
                   onClick={() => document.getElementById("docFileInput")?.click()}
+                  className="font-sans text-xs"
                 >
                   Pilih File Dokumen
                 </Button>
@@ -287,19 +288,19 @@ export function DocumentUploadForm({ onSuccess, onCancel }: DocumentUploadFormPr
             {/* Uploaded File List */}
             {files.length > 0 && (
               <div className="space-y-1.5 mt-3">
-                <div className="text-[11px] font-mono uppercase text-slate-400">
+                <div className="text-xs font-semibold uppercase text-slate-600 font-sans">
                   File Siap Diunggah ({files.length}):
                 </div>
                 {files.map((file, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center justify-between p-2.5 rounded-[4px] bg-[#1e293b] border border-[#334155] text-xs"
+                    className="flex items-center justify-between p-2.5 rounded-[4px] bg-slate-50 border border-slate-200 text-xs"
                   >
                     <div className="flex items-center gap-2 truncate">
-                      <FileText className="w-4 h-4 text-[#38bdf8] shrink-0" strokeWidth={1.8} />
-                      <span className="text-slate-200 font-mono truncate">{file.fileName}</span>
+                      <FileText className="w-4 h-4 text-[#163d78] shrink-0" strokeWidth={1.8} />
+                      <span className="text-slate-800 font-mono truncate">{file.fileName}</span>
                       {file.sizeBytes && (
-                        <span className="text-[10px] text-slate-400 font-mono shrink-0">
+                        <span className="text-[10px] text-slate-500 font-mono shrink-0">
                           ({(file.sizeBytes / 1024 / 1024).toFixed(2)} MB)
                         </span>
                       )}
@@ -307,7 +308,7 @@ export function DocumentUploadForm({ onSuccess, onCancel }: DocumentUploadFormPr
                     <button
                       type="button"
                       onClick={() => removeFile(idx)}
-                      className="text-slate-400 hover:text-[#f87171] p-1 transition-colors"
+                      className="text-slate-400 hover:text-red-600 p-1 transition-colors"
                       title="Hapus File"
                     >
                       <X className="w-3.5 h-3.5" />
@@ -319,8 +320,8 @@ export function DocumentUploadForm({ onSuccess, onCancel }: DocumentUploadFormPr
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#1e293b]">
-            <Button type="button" variant="secondary" size="md" onClick={onCancel} disabled={isSubmitting}>
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+            <Button type="button" variant="secondary" size="md" onClick={onCancel} disabled={isSubmitting} className="font-sans">
               Batal
             </Button>
             <Button
@@ -329,6 +330,7 @@ export function DocumentUploadForm({ onSuccess, onCancel }: DocumentUploadFormPr
               size="md"
               isLoading={isSubmitting}
               icon={<CheckCircle2 className="w-4 h-4" strokeWidth={1.8} />}
+              className="bg-[#163d78] hover:bg-[#113162] font-sans"
             >
               Simpan & Unggah ke EDMS
             </Button>

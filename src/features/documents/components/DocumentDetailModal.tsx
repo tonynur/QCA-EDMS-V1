@@ -40,88 +40,88 @@ export function DocumentDetailModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs">
-      <div className="bg-[#0f172a] border border-[#1e293b] rounded-[6px] w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-        {/* Header */}
-        <div className="px-5 py-4 border-b border-[#1e293b] flex items-center justify-between">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-3 sm:p-4 backdrop-blur-md overflow-hidden animate-in fade-in duration-150">
+      <div className="bg-white border border-slate-300 rounded-[8px] w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        {/* Header - Asuka Steel Navy */}
+        <div className="px-5 py-3.5 bg-[#163d78] text-white flex items-center justify-between border-b border-[#102d59] shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-[4px] bg-[#163d78]/30 border border-[#163d78] flex items-center justify-center text-[#38bdf8]">
+            <div className="w-8 h-8 rounded-[4px] bg-white/10 border border-white/20 flex items-center justify-center text-white">
               <FileText className="w-4 h-4 text-white" strokeWidth={1.8} />
             </div>
             <div>
-              <h3 className="text-sm font-semibold tracking-wide text-slate-100 uppercase">
+              <h3 className="text-sm font-bold tracking-wide text-white uppercase font-sans">
                 Detail Dokumen EDMS
               </h3>
-              <p className="text-[11px] text-slate-400 font-mono">
+              <p className="text-xs text-blue-100 font-mono">
                 {document.documentNumber} ({document.revision})
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1 rounded-[4px] hover:bg-[#1e293b] transition-colors"
+            className="text-white/80 hover:text-white p-1 rounded-[4px] hover:bg-white/10 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-5 overflow-y-auto space-y-5 flex-1">
+        <div className="p-5 overflow-y-auto space-y-4 flex-1 bg-white font-sans text-xs">
           {/* Title & Status */}
-          <div className="flex items-start justify-between gap-4 p-4 rounded-[6px] bg-[#1e293b]/40 border border-[#334155]">
+          <div className="flex items-start justify-between gap-4 p-4 rounded-[6px] bg-slate-50 border border-slate-200">
             <div className="space-y-1">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-semibold">
                 Judul Dokumen Mutu
               </span>
-              <h4 className="text-sm font-semibold text-slate-100">{document.title}</h4>
-              <p className="text-xs text-[#38bdf8] font-mono mt-0.5">{document.projectName}</p>
+              <h4 className="text-sm font-bold text-slate-900">{document.title}</h4>
+              <p className="text-xs text-[#163d78] font-medium mt-0.5">{document.projectName}</p>
             </div>
             <div>{renderBadge(document.status)}</div>
           </div>
 
           {/* Grid Metadata */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs font-mono">
-            <div className="p-3 rounded-[4px] bg-[#1e293b]/30 border border-[#1e293b]">
-              <span className="text-slate-400 text-[10px] uppercase block mb-1">Tipe Dokumen</span>
-              <span className="text-slate-200 font-semibold">{document.documentType}</span>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+            <div className="p-3 rounded-[6px] bg-slate-50 border border-slate-200">
+              <span className="text-slate-500 text-[10px] uppercase font-semibold block mb-1">Tipe Dokumen</span>
+              <span className="text-slate-800 font-medium">{document.documentType}</span>
             </div>
 
-            <div className="p-3 rounded-[4px] bg-[#1e293b]/30 border border-[#1e293b]">
-              <span className="text-slate-400 text-[10px] uppercase block mb-1">Disiplin</span>
-              <span className="text-slate-200 font-semibold">{document.discipline}</span>
+            <div className="p-3 rounded-[6px] bg-slate-50 border border-slate-200">
+              <span className="text-slate-500 text-[10px] uppercase font-semibold block mb-1">Disiplin</span>
+              <span className="text-slate-800 font-medium">{document.discipline}</span>
             </div>
 
-            <div className="p-3 rounded-[4px] bg-[#1e293b]/30 border border-[#1e293b]">
-              <span className="text-slate-400 text-[10px] uppercase block mb-1">Revisi</span>
-              <span className="text-slate-200 font-semibold">{document.revision}</span>
+            <div className="p-3 rounded-[6px] bg-slate-50 border border-slate-200">
+              <span className="text-slate-500 text-[10px] uppercase font-semibold block mb-1">Revisi</span>
+              <span className="text-slate-800 font-mono font-medium">{document.revision}</span>
             </div>
 
-            <div className="p-3 rounded-[4px] bg-[#1e293b]/30 border border-[#1e293b]">
-              <span className="text-slate-400 text-[10px] uppercase block mb-1">Tanggal Submit</span>
-              <span className="text-slate-200">{formatDate(document.timestamp)}</span>
+            <div className="p-3 rounded-[6px] bg-slate-50 border border-slate-200">
+              <span className="text-slate-500 text-[10px] uppercase font-semibold block mb-1">Tanggal Submit</span>
+              <span className="text-slate-800 font-mono">{formatDate(document.timestamp)}</span>
             </div>
 
-            <div className="p-3 rounded-[4px] bg-[#1e293b]/30 border border-[#1e293b]">
-              <span className="text-slate-400 text-[10px] uppercase block mb-1">Submitter</span>
-              <span className="text-slate-200">{document.uploaderName}</span>
+            <div className="p-3 rounded-[6px] bg-slate-50 border border-slate-200">
+              <span className="text-slate-500 text-[10px] uppercase font-semibold block mb-1">Submitter</span>
+              <span className="text-slate-800 font-medium">{document.uploaderName}</span>
             </div>
 
-            <div className="p-3 rounded-[4px] bg-[#1e293b]/30 border border-[#1e293b]">
-              <span className="text-slate-400 text-[10px] uppercase block mb-1">Referensi Standar</span>
-              <span className="text-slate-200 truncate block">{document.standardRef || "-"}</span>
+            <div className="p-3 rounded-[6px] bg-slate-50 border border-slate-200">
+              <span className="text-slate-500 text-[10px] uppercase font-semibold block mb-1">Referensi Standar</span>
+              <span className="text-slate-800 truncate block font-medium">{document.standardRef || "-"}</span>
             </div>
           </div>
 
           {/* File Attachment */}
           <div className="space-y-2">
-            <span className="text-xs font-medium text-slate-300 uppercase tracking-wider block">
+            <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider block">
               Berkas Lampiran Resmi
             </span>
             {document.fileUrl ? (
-              <div className="flex items-center justify-between p-3 rounded-[4px] bg-[#1e293b] border border-[#334155]">
+              <div className="flex items-center justify-between p-3.5 rounded-[6px] bg-slate-50 border border-slate-200">
                 <div className="flex items-center gap-2 truncate">
-                  <FileText className="w-4 h-4 text-[#38bdf8] shrink-0" strokeWidth={1.8} />
-                  <span className="text-xs font-mono text-slate-200 truncate">
+                  <FileText className="w-4 h-4 text-[#163d78] shrink-0" strokeWidth={1.8} />
+                  <span className="text-xs font-mono text-slate-800 truncate">
                     {document.fileName || document.documentNumber + ".pdf"}
                   </span>
                 </div>
@@ -129,14 +129,14 @@ export function DocumentDetailModal({
                   href={document.fileUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] bg-[#163d78] hover:bg-[#113162] text-white text-xs font-medium transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] bg-[#163d78] hover:bg-[#113162] text-white text-xs font-medium transition-colors shrink-0"
                 >
                   <ExternalLink className="w-3.5 h-3.5" strokeWidth={1.8} />
                   <span>Buka di Google Drive</span>
                 </a>
               </div>
             ) : (
-              <div className="text-xs text-slate-400 font-mono p-3 bg-[#1e293b]/20 border border-[#1e293b] rounded-[4px]">
+              <div className="text-xs text-slate-500 p-3 bg-slate-50 border border-slate-200 rounded-[6px]">
                 Tidak ada URL berkas Drive yang terlampir.
               </div>
             )}
@@ -144,7 +144,7 @@ export function DocumentDetailModal({
         </div>
 
         {/* Footer Actions */}
-        <div className="px-5 py-3 border-t border-[#1e293b] flex items-center justify-between bg-[#0a0f1d]">
+        <div className="px-5 py-3.5 border-t border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
           <Button variant="secondary" size="sm" onClick={onClose}>
             Tutup
           </Button>
