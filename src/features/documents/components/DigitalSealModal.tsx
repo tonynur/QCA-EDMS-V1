@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   ShieldCheck,
   X,
@@ -40,9 +41,23 @@ export function DigitalSealModal({
   onClose,
   document: doc,
 }: DigitalSealModalProps) {
+  const [mounted, setMounted] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  if (!isOpen || !doc) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add("modal-open-for-print");
+      return () => {
+        document.body.classList.remove("modal-open-for-print");
+      };
+    }
+  }, [isOpen]);
+
+  if (!isOpen || !doc || !mounted) return null;
 
   const verificationHash = generateVerificationHash(doc);
   const docIdentifier = doc.documentCode || doc.documentNumber || doc.docId;
@@ -57,10 +72,13 @@ export function DigitalSealModal({
   };
 
   const handlePrint = () => {
-    window.print();
+    document.body.classList.add("modal-open-for-print");
+    setTimeout(() => {
+      window.print();
+    }, 120);
   };
 
-  return (
+  const modalNode = (
     <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
       <div className="bg-white rounded-[8px] border border-slate-300 shadow-2xl max-w-2xl w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
@@ -285,4 +303,12 @@ export function DigitalSealModal({
       </div>
     </div>
   );
+
+  const portalTarget =
+    typeof document !== "undefined"
+      ? document.getElementById("print-portal-root") || document.body
+      : null;
+
+  if (!portalTarget) return null;
+  return createPortal(modalNode, portalTarget);
 }

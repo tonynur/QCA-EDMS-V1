@@ -132,10 +132,10 @@ export function Navbar({
               </span>
             )}
           </div>
-          <p className="text-[10px] text-slate-300 font-mono tracking-tight flex items-center gap-1 whitespace-nowrap">
+          <p className="text-[10.5px] text-slate-300 font-sans font-medium tracking-tight flex items-center gap-1.5 whitespace-nowrap">
             <span>{getGreeting()}, {firstName}</span>
             <span className="text-white/20 hidden sm:inline">•</span>
-            <span className="text-slate-400 hidden sm:inline">Quality Assurance & Quality Control EDMS</span>
+            <span className="text-slate-400 hidden sm:inline font-normal">Quality Assurance & Quality Control EDMS</span>
           </p>
         </div>
       </div>
@@ -205,14 +205,14 @@ export function Navbar({
             className="flex items-center gap-2 bg-[#091830] hover:bg-[#122550] border border-[#244785] hover:border-[#38bdf8]/40 rounded-[6px] px-2 sm:px-2.5 py-1 text-slate-100 transition-colors cursor-pointer select-none"
             title="Menu Profil & Alat Mutu Cepat"
           >
-            <div className="w-6 h-6 rounded-[3px] bg-[#163d78] text-[#38bdf8] border border-[#38bdf8]/30 flex items-center justify-center font-bold text-[11px] shrink-0 font-mono">
+            <div className="w-6 h-6 rounded-[3px] bg-[#163d78] text-[#38bdf8] border border-[#38bdf8]/30 flex items-center justify-center font-bold text-[11px] shrink-0 font-sans">
               {userInitial}
             </div>
             <div className="hidden sm:flex flex-col text-left">
-              <span className="text-[11px] font-semibold text-slate-100 leading-none truncate max-w-[95px] lg:max-w-[130px]">
+              <span className="text-[11px] font-semibold text-slate-100 leading-none truncate max-w-[95px] lg:max-w-[130px] font-sans">
                 {user?.name || "QA/QC Engineer"}
               </span>
-              <span className="text-[9px] font-mono text-[#38bdf8] font-bold leading-tight mt-0.5">
+              <span className="text-[9.5px] font-sans text-[#38bdf8] font-bold leading-tight mt-0.5 tracking-wide">
                 {formatRoleLabel(user?.role)}
               </span>
             </div>

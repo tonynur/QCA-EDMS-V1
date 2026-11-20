@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import {
   Send,
@@ -39,7 +40,21 @@ export function TransmittalGeneratorModal({
   onSave,
 }: TransmittalGeneratorModalProps) {
   const today = new Date().toISOString().slice(0, 10);
+  const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<"preview" | "form">("preview");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add("modal-open-for-print");
+      return () => {
+        document.body.classList.remove("modal-open-for-print");
+      };
+    }
+  }, [isOpen]);
 
   const [transmittalNo, setTransmittalNo] = useState(`TR-0137-CVL-${new Date().getFullYear()}-001`);
   const [project, setProject] = useState("0137 - CSA & ME Bread Crumb - Nippon");
@@ -82,7 +97,7 @@ export function TransmittalGeneratorModal({
     },
   ]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const handleAddDoc = () => {
     setDocs((prev) => [
@@ -135,7 +150,7 @@ export function TransmittalGeneratorModal({
     onClose();
   };
 
-  return (
+  const modalNode = (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-2 sm:p-4 overflow-hidden">
       <div className="bg-white border border-slate-300 rounded-[8px] w-full max-w-4xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
         {/* Modal Topbar Header (No Print) */}
@@ -198,10 +213,10 @@ export function TransmittalGeneratorModal({
           <div className={activeTab === "preview" ? "block" : "hidden print:block"}>
             <div
               id="printable-transmittal-sheet"
-              className="max-w-[794px] mx-auto bg-white p-6 sm:p-8 rounded-[4px] border border-slate-300 shadow-md text-slate-900 space-y-5 print:border-none print:shadow-none print:p-0 print:m-0 print:max-w-none print:w-full"
+              className="max-w-[794px] mx-auto bg-white p-5 sm:p-6 rounded-[4px] border border-slate-300 shadow-md text-slate-900 space-y-3.5 print:border-none print:shadow-none print:p-4 print:space-y-2.5 print:m-0 print:max-w-none print:w-full"
             >
               {/* Kop Surat Resmi PT Asuka Engineering Indonesia */}
-              <div className="border-b-2 border-[#163d78] pb-4 flex items-center justify-between gap-4">
+              <div className="border-b-2 border-[#163d78] pb-2.5 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3.5">
                   <Image
                     src="/icons/logo.png"
@@ -324,9 +339,9 @@ export function TransmittalGeneratorModal({
               </div>
 
               {/* Formal Signatures Box */}
-              <div className="grid grid-cols-2 gap-4 border border-slate-300 rounded-[3px] p-4 text-xs">
+              <div className="grid grid-cols-2 gap-4 border border-slate-300 rounded-[3px] p-3 text-xs">
                 {/* Issued By */}
-                <div className="space-y-14">
+                <div className="space-y-10">
                   <div>
                     <span className="text-[10.5px] font-bold uppercase tracking-wider text-slate-700 block">
                       Diserahkan Oleh (Issued By):
@@ -342,7 +357,7 @@ export function TransmittalGeneratorModal({
                 </div>
 
                 {/* Received By */}
-                <div className="space-y-14 border-l border-slate-300 pl-4">
+                <div className="space-y-10 border-l border-slate-300 pl-4">
                   <div>
                     <span className="text-[10.5px] font-bold uppercase tracking-wider text-slate-700 block">
                       Diterima Oleh (Received By):
@@ -569,4 +584,12 @@ export function TransmittalGeneratorModal({
       </div>
     </div>
   );
+
+  const portalTarget =
+    typeof document !== "undefined"
+      ? document.getElementById("print-portal-root") || document.body
+      : null;
+
+  if (!portalTarget) return null;
+  return createPortal(modalNode, portalTarget);
 }

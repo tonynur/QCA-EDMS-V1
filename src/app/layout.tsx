@@ -33,7 +33,10 @@ export default function RootLayout({
   return (
     <html lang="id" className={`${plusJakartaSans.variable} ${jetbrainsMono.variable} overflow-x-hidden max-w-full`}>
       <body className="font-sans antialiased min-h-screen bg-[#f8fafc] text-slate-900 selection:bg-[#163d78] selection:text-white overflow-x-hidden max-w-full w-full">
-        {children}
+        <div id="app-root">
+          {children}
+        </div>
+        <div id="print-portal-root"></div>
       </body>
     </html>
   );

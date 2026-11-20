@@ -213,7 +213,7 @@ export function Sidebar({
     <aside className="w-64 bg-white border-r border-slate-200 flex flex-col h-[calc(100vh-3.5rem)] shrink-0 select-none shadow-[1px_0_3px_rgba(0,0,0,0.03)]">
       {/* 🎯 GLOBAL PROJECT FOCUS (Top of Sidebar) */}
       <div className="p-3 border-b border-slate-200 bg-slate-50/70 space-y-1.5">
-        <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 uppercase tracking-wider">
+        <div className="flex items-center justify-between text-[10px] font-sans text-slate-500 uppercase tracking-wider">
           <span className="flex items-center gap-1.5 text-slate-700 font-semibold">
             <Target className="w-3.5 h-3.5 text-[#163d78]" strokeWidth={2} />
             <span>Fokus Proyek</span>
@@ -343,14 +343,14 @@ export function Sidebar({
         <div className="p-2 rounded-[6px] bg-white border border-slate-200/90 shadow-2xs space-y-1.5">
           <div className="flex items-center justify-between">
             <div className="flex flex-col">
-              <span className="text-[8.5px] font-mono font-bold tracking-wider text-slate-600 uppercase">
+              <span className="text-[9px] font-sans font-bold tracking-wider text-slate-500 uppercase">
                 LEAD SYSTEM DEVELOPER
               </span>
               <span className="text-xs font-bold text-slate-800">
                 Ahmad Nur Fatony
               </span>
             </div>
-            <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-[3px] bg-[#163d78] text-white font-mono">
+            <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-[3px] bg-[#163d78] text-white font-sans">
               PRO
             </span>
           </div>

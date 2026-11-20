@@ -108,21 +108,21 @@ export function CalibrationTable({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowCharts(!showCharts)}
-              className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-[6px] text-xs font-semibold font-mono transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-[6px] text-xs font-semibold font-sans transition-colors cursor-pointer"
             >
               <BarChart2 className="w-3.5 h-3.5 text-[#163d78]" />
               <span>{showCharts ? "Tutup Grafik" : "Buka Grafik"}</span>
             </button>
             <button
               onClick={onRefresh}
-              className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-[6px] text-xs font-semibold font-mono transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-[6px] text-xs font-semibold font-sans transition-colors cursor-pointer"
             >
               <RefreshCw className={cn("w-3.5 h-3.5", isLoading && "animate-spin")} />
               <span>Refresh</span>
             </button>
             <button
               onClick={onAddNew}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[6px] bg-[#163d78] hover:bg-[#102d59] text-white font-semibold text-xs tracking-wide shadow-sm transition-all cursor-pointer font-mono"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[6px] bg-[#163d78] hover:bg-[#102d59] text-white font-semibold text-xs tracking-wide shadow-sm transition-all cursor-pointer font-sans"
             >
               <Plus className="w-4 h-4" />
               <span>Tambah Alat Baru</span>
@@ -136,14 +136,14 @@ export function CalibrationTable({
         <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-[#163d78] petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">Total Alat Ukur</p>
-              <p className="text-2xl font-bold text-slate-900 tabular-nums mt-0.5">{summary.totalTools}</p>
+              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-sans">Total Alat Ukur</p>
+              <p className="text-2xl font-bold font-sans text-slate-900 tabular-nums mt-0.5">{summary.totalTools}</p>
             </div>
             <div className="p-2 bg-slate-100 rounded-[6px]">
               <FileText className="w-5 h-5 text-[#163d78]" strokeWidth={1.8} />
             </div>
           </div>
-          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-sans text-slate-500">
             <span>Master Kalibrasi</span>
             <span className="font-semibold text-slate-700">100%</span>
           </div>
@@ -152,14 +152,14 @@ export function CalibrationTable({
         <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-emerald-600 petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">Sertifikat Valid</p>
-              <p className="text-2xl font-bold text-emerald-700 tabular-nums mt-0.5">{summary.validCount}</p>
+              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-sans">Sertifikat Valid</p>
+              <p className="text-2xl font-bold font-sans text-emerald-700 tabular-nums mt-0.5">{summary.validCount}</p>
             </div>
             <div className="p-2 bg-emerald-50 rounded-[6px]">
               <CheckCircle2 className="w-5 h-5 text-emerald-600" strokeWidth={1.8} />
             </div>
           </div>
-          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-sans text-slate-500">
             <span>Status Aktif</span>
             <span className="font-semibold text-emerald-700">{summary.totalTools > 0 ? Math.round((summary.validCount / summary.totalTools) * 100) : 0}%</span>
           </div>
@@ -168,14 +168,14 @@ export function CalibrationTable({
         <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-amber-500 petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">Segera Berakhir</p>
-              <p className="text-2xl font-bold text-amber-700 tabular-nums mt-0.5">{summary.expiringCount}</p>
+              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-sans">Segera Berakhir</p>
+              <p className="text-2xl font-bold font-sans text-amber-700 tabular-nums mt-0.5">{summary.expiringCount}</p>
             </div>
             <div className="p-2 bg-amber-50 rounded-[6px]">
               <Clock className="w-5 h-5 text-amber-600" strokeWidth={1.8} />
             </div>
           </div>
-          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-sans text-slate-500">
             <span>≤ 30 hari</span>
             <span className="font-semibold text-amber-700">{summary.totalTools > 0 ? Math.round((summary.expiringCount / summary.totalTools) * 100) : 0}%</span>
           </div>
@@ -184,14 +184,14 @@ export function CalibrationTable({
         <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-rose-600 petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">Sudah Kedaluwarsa</p>
-              <p className="text-2xl font-bold text-rose-700 tabular-nums mt-0.5">{summary.expiredCount}</p>
+              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-sans">Sudah Kedaluwarsa</p>
+              <p className="text-2xl font-bold font-sans text-rose-700 tabular-nums mt-0.5">{summary.expiredCount}</p>
             </div>
             <div className="p-2 bg-rose-50 rounded-[6px]">
               <AlertTriangle className="w-5 h-5 text-rose-600" strokeWidth={1.8} />
             </div>
           </div>
-          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-sans text-slate-500">
             <span>Perlu Re-kalibrasi</span>
             <span className="font-semibold text-rose-700">{summary.totalTools > 0 ? Math.round((summary.expiredCount / summary.totalTools) * 100) : 0}%</span>
           </div>
@@ -208,11 +208,11 @@ export function CalibrationTable({
                 <div className="w-6 h-6 rounded-[4px] bg-[#163d78]/10 text-[#163d78] flex items-center justify-center">
                   <BarChart2 className="w-3.5 h-3.5" />
                 </div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-sans">
                   Distribusi Alat Ukur per Disiplin
                 </h3>
               </div>
-              <span className="text-[11px] font-mono text-slate-500 tabular-nums">
+              <span className="text-[11px] font-sans text-slate-500 tabular-nums">
                 {calStats.total} Total Alat
               </span>
             </div>
@@ -449,7 +449,7 @@ export function CalibrationTable({
                         </div>
                       )}
                     </td>
-                    <td className="py-2.5 px-3 font-mono text-xs text-slate-700">{tool.discipline}</td>
+                    <td className="py-2.5 px-3 font-sans font-semibold text-xs text-slate-700">{tool.discipline}</td>
                     <td className="py-2.5 px-3 text-center font-mono text-xs text-slate-600 tabular-nums">{formatDate(tool.lastCalDate)}</td>
                     <td className="py-2.5 px-3 text-center font-mono text-xs text-slate-600 tabular-nums">{formatDate(tool.nextCalDate)}</td>
                     <td className="py-2.5 px-3 text-center">{getStatusBadge(tool.status)}</td>
@@ -461,7 +461,7 @@ export function CalibrationTable({
             </tbody>
           </table>
         </div>
-        <div className="px-4 py-2.5 bg-slate-50/80 border-t border-slate-200 text-slate-500 font-mono text-[11px] flex items-center justify-between">
+        <div className="px-4 py-2.5 bg-slate-50/80 border-t border-slate-200 text-slate-500 font-sans text-[11px] flex items-center justify-between">
           <span>Menampilkan {filteredTools.length} dari {tools.length} alat ukur</span>
           <span>PT Asuka Engineering Indonesia — Kalibrasi & Metrologi</span>
         </div>

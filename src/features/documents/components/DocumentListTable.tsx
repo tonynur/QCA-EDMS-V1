@@ -249,14 +249,14 @@ export function DocumentListTable({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowCharts(!showCharts)}
-              className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-[6px] text-xs font-semibold transition-colors cursor-pointer font-mono"
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-[6px] text-xs font-semibold transition-colors cursor-pointer font-sans"
             >
               <BarChart2 className="w-3.5 h-3.5 text-[#163d78]" />
               <span>{showCharts ? "Tutup Grafik" : "Buka Grafik"}</span>
             </button>
             <button
               onClick={handleExportCSV}
-              className="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 rounded-[6px] text-xs font-semibold transition-colors cursor-pointer font-mono"
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 rounded-[6px] text-xs font-semibold transition-colors cursor-pointer font-sans"
             >
               <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
               <span>Ekspor CSV</span>
@@ -264,7 +264,7 @@ export function DocumentListTable({
             {onAddNew && (
               <button
                 onClick={onAddNew}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-[6px] bg-[#ed2e35] hover:bg-[#c92026] text-white font-semibold text-xs tracking-wide shadow-sm hover:shadow transition-all cursor-pointer font-mono"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-[6px] bg-[#ed2e35] hover:bg-[#c92026] text-white font-semibold text-xs tracking-wide shadow-sm hover:shadow transition-all cursor-pointer font-sans"
               >
                 <UploadCloud className="w-4 h-4" strokeWidth={2} />
                 <span>Unggah Dokumen</span>
@@ -280,10 +280,10 @@ export function DocumentListTable({
         <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-[#163d78] petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">
+              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-sans">
                 Total Dokumen
               </p>
-              <p className="text-2xl font-bold text-slate-900 tabular-nums mt-0.5">
+              <p className="text-2xl font-bold font-sans text-slate-900 tabular-nums mt-0.5">
                 {stats.total}
               </p>
             </div>
@@ -291,7 +291,7 @@ export function DocumentListTable({
               <FileBox className="w-5 h-5 text-[#163d78]" />
             </div>
           </div>
-          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-sans text-slate-500">
             <span>Portfolio Aktif</span>
             <span className="font-semibold text-slate-700">100%</span>
           </div>
@@ -301,10 +301,10 @@ export function DocumentListTable({
         <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-amber-500 petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">
+              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-sans">
                 Menunggu Review
               </p>
-              <p className="text-2xl font-bold text-amber-700 tabular-nums mt-0.5">
+              <p className="text-2xl font-bold font-sans text-amber-700 tabular-nums mt-0.5">
                 {stats.pending}
               </p>
             </div>
@@ -312,7 +312,7 @@ export function DocumentListTable({
               <Clock className="w-5 h-5 text-amber-600" />
             </div>
           </div>
-          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-sans text-slate-500">
             <span>Antrean Approval</span>
             <span className="font-semibold text-amber-700">{stats.pctPending}%</span>
           </div>
@@ -322,10 +322,10 @@ export function DocumentListTable({
         <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-emerald-600 petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">
+              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-sans">
                 Disetujui (Approved)
               </p>
-              <p className="text-2xl font-bold text-emerald-700 tabular-nums mt-0.5">
+              <p className="text-2xl font-bold font-sans text-emerald-700 tabular-nums mt-0.5">
                 {stats.approved}
               </p>
             </div>
@@ -333,7 +333,7 @@ export function DocumentListTable({
               <CheckCircle2 className="w-5 h-5 text-emerald-600" />
             </div>
           </div>
-          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-sans text-slate-500">
             <span>Tingkat Kepatuhan</span>
             <span className="font-semibold text-emerald-700">{stats.pctApproved}%</span>
           </div>
@@ -343,10 +343,10 @@ export function DocumentListTable({
         <div className="bg-white p-3.5 rounded-[8px] border border-slate-200/90 shadow-sm border-l-4 border-l-rose-600 petrosea-card cursor-default">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-mono">
+              <p className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase font-sans">
                 Ditolak / Perlu Revisi
               </p>
-              <p className="text-2xl font-bold text-rose-700 tabular-nums mt-0.5">
+              <p className="text-2xl font-bold font-sans text-rose-700 tabular-nums mt-0.5">
                 {stats.rejected}
               </p>
             </div>
@@ -354,7 +354,7 @@ export function DocumentListTable({
               <AlertCircle className="w-5 h-5 text-rose-600" />
             </div>
           </div>
-          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
+          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-sans text-slate-500">
             <span>Tingkat Deviasi</span>
             <span className="font-semibold text-rose-700">{stats.pctRejected}%</span>
           </div>
@@ -371,11 +371,11 @@ export function DocumentListTable({
                 <div className="w-6 h-6 rounded-[4px] bg-[#163d78]/10 text-[#163d78] flex items-center justify-center">
                   <BarChart2 className="w-3.5 h-3.5" />
                 </div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-sans">
                   Distribusi Dokumen per Disiplin
                 </h3>
               </div>
-              <span className="text-[11px] font-mono text-slate-500 tabular-nums">
+              <span className="text-[11px] font-sans text-slate-500 tabular-nums">
                 {documents.length} Dokumen Total
               </span>
             </div>
@@ -385,9 +385,9 @@ export function DocumentListTable({
                 const pct = stats.total > 0 ? Math.round((count / stats.total) * 100) : 0;
                 return (
                   <div key={disc} className="space-y-1">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-mono font-semibold text-slate-800">{disc}</span>
-                      <span className="font-mono text-slate-500 tabular-nums">{count} dok ({pct}%)</span>
+                    <div className="flex items-center justify-between text-xs font-sans">
+                      <span className="font-semibold text-slate-800">{disc}</span>
+                      <span className="text-slate-500 tabular-nums">{count} dok ({pct}%)</span>
                     </div>
                     <div className="h-2.5 w-full bg-slate-100 rounded-[2px] overflow-hidden">
                       <div
@@ -408,11 +408,11 @@ export function DocumentListTable({
                 <div className="w-6 h-6 rounded-[4px] bg-emerald-50 text-emerald-700 flex items-center justify-center">
                   <PieChart className="w-3.5 h-3.5" />
                 </div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-sans">
                   Proporsi Status Dokumen Mutu
                 </h3>
               </div>
-              <span className="text-[11px] font-mono text-emerald-700 font-semibold bg-emerald-50 px-1.5 py-0.5 rounded-[2px]">
+              <span className="text-[11px] font-sans text-emerald-700 font-semibold bg-emerald-50 px-1.5 py-0.5 rounded-[2px]">
                 {stats.pctApproved}% Disetujui
               </span>
             </div>
@@ -452,13 +452,13 @@ export function DocumentListTable({
                   )}
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-lg font-bold font-mono text-slate-900 tabular-nums">{stats.pctApproved}%</span>
-                  <span className="text-[9px] font-mono text-emerald-700 font-bold uppercase">Approved</span>
+                  <span className="text-lg font-bold font-sans text-slate-900 tabular-nums">{stats.pctApproved}%</span>
+                  <span className="text-[9.5px] font-sans text-emerald-700 font-bold uppercase">Approved</span>
                 </div>
               </div>
 
               {/* Legend & Count Details */}
-              <div className="space-y-2 text-xs font-mono w-full sm:w-auto">
+              <div className="space-y-2 text-xs font-sans w-full sm:w-auto">
                 <div className="flex items-center justify-between sm:justify-start gap-3">
                   <span className="flex items-center gap-1.5 text-slate-700">
                     <span className="w-2.5 h-2.5 rounded-[1px] bg-[#059669] shrink-0" />
@@ -652,24 +652,24 @@ export function DocumentListTable({
                     </td>
 
                     <td className="py-2.5 px-3">
-                      <div className="font-semibold text-slate-900 text-xs line-clamp-1">
+                      <div className="font-semibold text-slate-900 text-xs line-clamp-1 font-sans">
                         {doc.title}
                       </div>
-                      <div className="text-[11px] text-slate-500 font-mono mt-0.5 line-clamp-1">
+                      <div className="text-[11px] text-slate-500 font-sans mt-0.5 line-clamp-1">
                         {doc.projectName || "-"}
                       </div>
                     </td>
 
                     <td className="py-2.5 px-3">
-                      <span className="text-xs font-semibold text-slate-800">
+                      <span className="text-xs font-semibold text-slate-800 font-sans">
                         {doc.documentType}
                       </span>
-                      <div className="text-[10.5px] text-slate-500 font-mono mt-0.5">
+                      <div className="text-[10.5px] text-slate-500 font-sans mt-0.5 font-medium">
                         {doc.discipline}
                       </div>
                     </td>
 
-                    <td className="py-2.5 px-3 text-center font-mono text-xs text-slate-600 tabular-nums">
+                    <td className="py-2.5 px-3 text-center font-sans text-xs text-slate-600 tabular-nums">
                       {formatDate(doc.timestamp)}
                     </td>
 
@@ -737,7 +737,7 @@ export function DocumentListTable({
         </div>
 
         {/* Footer Info */}
-        <div className="px-4 py-2.5 bg-slate-50/80 border-t border-slate-200 text-slate-500 font-mono text-[11px] flex items-center justify-between">
+        <div className="px-4 py-2.5 bg-slate-50/80 border-t border-slate-200 text-slate-500 font-sans text-[11px] flex items-center justify-between">
           <span>Menampilkan {filteredDocs.length} dari {documents.length} total dokumen</span>
           <span>PT Asuka Engineering Indonesia — QA/QC Division</span>
         </div>

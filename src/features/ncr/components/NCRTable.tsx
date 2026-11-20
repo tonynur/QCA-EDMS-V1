@@ -145,21 +145,21 @@ export function NCRTable({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowCharts(!showCharts)}
-              className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-[6px] text-xs font-semibold font-mono transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-[6px] text-xs font-semibold font-sans transition-colors cursor-pointer"
             >
               <BarChart2 className="w-3.5 h-3.5 text-[#163d78]" />
               <span>{showCharts ? "Tutup Grafik" : "Buka Grafik"}</span>
             </button>
             <button
               onClick={onRefresh}
-              className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-[6px] text-xs font-semibold font-mono transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-[6px] text-xs font-semibold font-sans transition-colors cursor-pointer"
             >
               <RefreshCw className={cn("w-3.5 h-3.5", isLoading && "animate-spin")} />
               <span>Refresh</span>
             </button>
             <button
               onClick={onOpenCreateModal}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[6px] bg-[#ed2e35] hover:bg-[#c92026] text-white font-semibold text-xs tracking-wide shadow-sm transition-all cursor-pointer font-mono"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[6px] bg-[#ed2e35] hover:bg-[#c92026] text-white font-semibold text-xs tracking-wide shadow-sm transition-all cursor-pointer font-sans"
             >
               <Plus className="w-4 h-4" />
               <span>Terbitkan NCR Baru</span>
@@ -235,11 +235,11 @@ export function NCRTable({
                 <div className="w-6 h-6 rounded-[4px] bg-[#163d78]/10 text-[#163d78] flex items-center justify-center">
                   <BarChart2 className="w-3.5 h-3.5" />
                 </div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-sans">
                   Distribusi Temuan NCR per Disiplin
                 </h3>
               </div>
-              <span className="text-[11px] font-mono text-slate-500 tabular-nums">
+              <span className="text-[11px] font-sans text-slate-500 tabular-nums">
                 {ncrStats.total} Total Kasus
               </span>
             </div>
@@ -249,9 +249,9 @@ export function NCRTable({
                 const pct = ncrStats.total > 0 ? Math.round((count / ncrStats.total) * 100) : 0;
                 return (
                   <div key={disc} className="space-y-1">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-mono font-semibold text-slate-800">{disc}</span>
-                      <span className="font-mono text-slate-500 tabular-nums">{count} kasus ({pct}%)</span>
+                    <div className="flex items-center justify-between text-xs font-sans">
+                      <span className="font-semibold text-slate-800">{disc}</span>
+                      <span className="text-slate-500 tabular-nums">{count} kasus ({pct}%)</span>
                     </div>
                     <div className="h-2.5 w-full bg-slate-100 rounded-[2px] overflow-hidden">
                       <div
@@ -272,11 +272,11 @@ export function NCRTable({
                 <div className="w-6 h-6 rounded-[4px] bg-emerald-50 text-emerald-700 flex items-center justify-center">
                   <PieChart className="w-3.5 h-3.5" />
                 </div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-mono">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 font-sans">
                   Status Penyelesaian NCR (Closure Rate)
                 </h3>
               </div>
-              <span className="text-[11px] font-mono text-emerald-700 font-semibold bg-emerald-50 px-1.5 py-0.5 rounded-[2px]">
+              <span className="text-[11px] font-sans text-emerald-700 font-semibold bg-emerald-50 px-1.5 py-0.5 rounded-[2px]">
                 {ncrStats.closedPct}% Selesai
               </span>
             </div>
@@ -309,13 +309,13 @@ export function NCRTable({
                   )}
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-lg font-bold font-mono text-slate-900 tabular-nums">{ncrStats.closedPct}%</span>
-                  <span className="text-[9px] font-mono text-emerald-700 font-bold uppercase">Closed</span>
+                  <span className="text-lg font-bold font-sans text-slate-900 tabular-nums">{ncrStats.closedPct}%</span>
+                  <span className="text-[9.5px] font-sans text-emerald-700 font-bold uppercase">Closed</span>
                 </div>
               </div>
 
               {/* Legend & Count Details */}
-              <div className="space-y-2 text-xs font-mono w-full sm:w-auto">
+              <div className="space-y-2 text-xs font-sans w-full sm:w-auto">
                 <div className="flex items-center justify-between sm:justify-start gap-3">
                   <span className="flex items-center gap-1.5 text-slate-700">
                     <span className="w-2.5 h-2.5 rounded-[1px] bg-[#059669] shrink-0" />

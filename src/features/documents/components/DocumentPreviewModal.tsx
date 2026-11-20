@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import {
   X,
@@ -37,10 +38,24 @@ export function DocumentPreviewModal({
   isOpen,
   onClose,
 }: DocumentPreviewModalProps) {
+  const [mounted, setMounted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [activeView, setActiveView] = useState<"sheet" | "drive">("sheet");
   const [iframeError, setIframeError] = useState(false);
   const [showSealModal, setShowSealModal] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add("modal-open-for-print");
+      return () => {
+        document.body.classList.remove("modal-open-for-print");
+      };
+    }
+  }, [isOpen]);
 
   // Extract Drive ID or construct preview URL
   const { fileId, previewUrl, downloadUrl, hasValidFile } = useMemo(() => {
@@ -85,15 +100,19 @@ export function DocumentPreviewModal({
     return { fileId: null, previewUrl: null, downloadUrl: null, hasValidFile: false };
   }, [doc]);
 
-  if (!isOpen || !doc) return null;
+  if (!isOpen || !doc || !mounted) return null;
 
   const handlePrint = () => {
-    window.print();
+    setActiveView("sheet");
+    document.body.classList.add("modal-open-for-print");
+    setTimeout(() => {
+      window.print();
+    }, 120);
   };
 
   const statusUpper = (doc.status || "DRAFT").toUpperCase();
 
-  return (
+  const modalNode = (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-150">
       <div
         className={`bg-slate-900 border border-slate-700 rounded-[8px] flex flex-col shadow-2xl transition-all duration-200 overflow-hidden ${
@@ -103,7 +122,7 @@ export function DocumentPreviewModal({
         }`}
       >
         {/* ═══ MODAL HEADER ═══ */}
-        <div className="h-14 bg-[#0a1428] border-b border-slate-800 px-4 sm:px-6 flex items-center justify-between gap-4 shrink-0 select-none">
+        <div className="h-14 bg-[#0a1428] border-b border-slate-800 px-4 sm:px-6 flex items-center justify-between gap-4 shrink-0 select-none no-print">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-8 h-8 rounded-[4px] bg-[#163d78]/40 border border-[#244785] flex items-center justify-center text-[#38bdf8] shrink-0">
               <FileCheck2 className="w-4 h-4" strokeWidth={1.8} />
@@ -117,7 +136,7 @@ export function DocumentPreviewModal({
                   Rev {doc.revision ?? 0}
                 </span>
                 <span
-                  className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-[2px] border ${
+                  className={`text-[10px] font-sans font-bold px-1.5 py-0.5 rounded-[2px] border ${
                     statusUpper === "APPROVED"
                       ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
                       : statusUpper === "REJECTED"
@@ -137,13 +156,13 @@ export function DocumentPreviewModal({
           {/* Action Toolbar */}
           <div className="flex items-center gap-2 shrink-0">
             {/* View Mode Switcher */}
-            <div className="flex items-center bg-slate-800/90 border border-slate-700 rounded-[6px] p-0.5 text-xs font-mono">
+            <div className="flex items-center bg-slate-800/90 border border-slate-700 rounded-[6px] p-0.5 text-xs font-sans">
               <button
                 type="button"
                 onClick={() => setActiveView("sheet")}
-                className={`px-2.5 py-1 rounded-[4px] font-medium transition-all ${
+                className={`px-2.5 py-1 rounded-[4px] font-semibold transition-all cursor-pointer ${
                   activeView === "sheet"
-                    ? "bg-[#163d78] text-white font-bold shadow-xs"
+                    ? "bg-[#163d78] text-white shadow-xs"
                     : "text-slate-400 hover:text-white"
                 }`}
               >
@@ -152,9 +171,9 @@ export function DocumentPreviewModal({
               <button
                 type="button"
                 onClick={() => setActiveView("drive")}
-                className={`px-2.5 py-1 rounded-[4px] font-medium transition-all ${
+                className={`px-2.5 py-1 rounded-[4px] font-semibold transition-all cursor-pointer ${
                   activeView === "drive"
-                    ? "bg-[#163d78] text-white font-bold shadow-xs"
+                    ? "bg-[#163d78] text-white shadow-xs"
                     : "text-slate-400 hover:text-white"
                 }`}
               >
@@ -176,7 +195,7 @@ export function DocumentPreviewModal({
               type="button"
               onClick={handlePrint}
               className="p-1.5 rounded-[4px] bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
-              title="Cetak Lembar Dokumen"
+              title="Cetak Lembar Dokumen Resmi"
             >
               <Printer className="w-4 h-4" strokeWidth={1.8} />
             </button>
@@ -187,7 +206,7 @@ export function DocumentPreviewModal({
                 target="_blank"
                 rel="noreferrer"
                 download
-                className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-[4px] bg-emerald-600/30 hover:bg-emerald-600/40 border border-emerald-500/40 text-emerald-300 text-xs font-mono transition-colors"
+                className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-[4px] bg-emerald-600/30 hover:bg-emerald-600/40 border border-emerald-500/40 text-emerald-300 text-xs font-sans font-semibold transition-colors"
                 title="Unduh Berkas"
               >
                 <Download className="w-3.5 h-3.5" strokeWidth={1.8} />
@@ -200,7 +219,7 @@ export function DocumentPreviewModal({
                 href={doc.fileUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-[4px] bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white text-xs font-mono transition-colors"
+                className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-[4px] bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white text-xs font-sans font-semibold transition-colors"
                 title="Buka Langsung di Google Drive"
               >
                 <ExternalLink className="w-3.5 h-3.5" strokeWidth={1.8} />
@@ -211,7 +230,7 @@ export function DocumentPreviewModal({
             <button
               type="button"
               onClick={() => setIsFullscreen(!isFullscreen)}
-              className="p-1.5 rounded-[4px] bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition-colors"
+              className="p-1.5 rounded-[4px] bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
               title={isFullscreen ? "Kecilkan Tampilan" : "Layar Penuh"}
             >
               {isFullscreen ? (
@@ -235,12 +254,15 @@ export function DocumentPreviewModal({
         {/* ═══ MODAL BODY ═══ */}
         <div className="flex-1 bg-slate-950 relative overflow-y-auto">
           {/* TAB 1: LEMBAR MUTU RESMI IN-APP (Default & Selalu Berfungsi 100%) */}
-          {activeView === "sheet" && (
-            <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto space-y-5 animate-in fade-in duration-100">
+          <div className={activeView === "sheet" ? "block" : "hidden print:block"}>
+            <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto space-y-5 animate-in fade-in duration-100 print:p-0 print:m-0 print:max-w-none">
               {/* Paper Card */}
-              <div className="bg-white text-slate-900 rounded-[6px] border border-slate-300 shadow-xl p-6 sm:p-8 space-y-6">
+              <div
+                id="printable-document-sheet"
+                className="bg-white text-slate-900 rounded-[6px] border border-slate-300 shadow-xl p-6 sm:p-8 space-y-6 print:border-none print:shadow-none print:p-4 print:space-y-4"
+              >
                 {/* Official Title Block Header */}
-                <div className="border-b-2 border-[#163d78] pb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="border-b-2 border-[#163d78] pb-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <Image
                       src="/icons/logo.png"
@@ -251,20 +273,20 @@ export function DocumentPreviewModal({
                       priority
                     />
                     <div className="border-l-2 border-slate-300 pl-3">
-                      <h2 className="text-xs font-bold font-mono tracking-wider text-[#163d78] uppercase">
+                      <h2 className="text-xs font-bold font-sans tracking-wider text-[#163d78] uppercase">
                         PT ASUKA ENGINEERING INDONESIA
                       </h2>
-                      <p className="text-[10px] text-slate-500 font-mono">
+                      <p className="text-[10px] text-slate-500 font-sans font-semibold">
                         QUALITY ASSURANCE & QUALITY CONTROL DEPARTMENT
                       </p>
                     </div>
                   </div>
 
                   <div className="text-right sm:text-right w-full sm:w-auto">
-                    <div className="text-[10px] font-mono text-slate-500 uppercase">
+                    <div className="text-[10px] font-sans text-slate-500 uppercase font-semibold">
                       STANDAR SISTEM MANAJEMEN MUTU
                     </div>
-                    <div className="text-xs font-mono font-bold text-slate-800">
+                    <div className="text-xs font-sans font-bold text-slate-800">
                       ISO 9001:2015 KLAUSUL 7.5
                     </div>
                   </div>
@@ -272,48 +294,48 @@ export function DocumentPreviewModal({
 
                 {/* Document Main Title Block */}
                 <div className="text-center py-2 space-y-1">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#163d78] font-bold bg-blue-50 px-2 py-0.5 rounded-[2px] border border-blue-200">
+                  <span className="text-[10px] font-sans uppercase tracking-widest text-[#163d78] font-bold bg-blue-50 px-2 py-0.5 rounded-[2px] border border-blue-200 inline-block">
                     {doc.documentType || "INSPECTION & TEST PLAN (ITP)"}
                   </span>
-                  <h1 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
+                  <h1 className="text-lg sm:text-xl font-bold font-sans text-slate-900 tracking-tight">
                     {doc.title}
                   </h1>
-                  <p className="text-xs font-mono text-slate-500">
-                    Nomor Registrasi: <strong className="text-slate-800">{doc.documentNumber}</strong>
+                  <p className="text-xs font-sans text-slate-500">
+                    Nomor Registrasi: <strong className="font-mono font-bold text-slate-900">{doc.documentNumber}</strong>
                   </p>
                 </div>
 
                 {/* Technical Metadata Table */}
-                <div className="border border-slate-300 rounded-[4px] overflow-hidden text-xs font-mono">
+                <div className="border border-slate-300 rounded-[4px] overflow-hidden text-xs font-sans">
                   <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 bg-slate-50/50">
                     <div className="p-3 space-y-2">
                       <div className="flex justify-between py-1 border-b border-slate-200/60">
-                        <span className="text-slate-500">Kode Dokumen</span>
-                        <span className="font-bold text-slate-900">{doc.documentCode || doc.documentNumber}</span>
+                        <span className="text-slate-500 font-medium">Kode Dokumen</span>
+                        <span className="font-mono font-bold text-slate-900">{doc.documentCode || doc.documentNumber}</span>
                       </div>
                       <div className="flex justify-between py-1 border-b border-slate-200/60">
-                        <span className="text-slate-500">Tingkat Revisi</span>
-                        <span className="font-bold text-slate-900">Rev {doc.revision ?? 0}</span>
+                        <span className="text-slate-500 font-medium">Tingkat Revisi</span>
+                        <span className="font-mono font-bold text-slate-900">Rev {doc.revision ?? 0}</span>
                       </div>
                       <div className="flex justify-between py-1 border-b border-slate-200/60">
-                        <span className="text-slate-500">Disiplin Pekerjaan</span>
+                        <span className="text-slate-500 font-medium">Disiplin Pekerjaan</span>
                         <span className="font-bold text-[#163d78]">{doc.discipline || "CIVIL"}</span>
                       </div>
                       <div className="flex justify-between py-1">
-                        <span className="text-slate-500">Standar Acuan</span>
-                        <span className="font-medium text-slate-800">{doc.standardRef || "Spesifikasi Proyek / SNI / ASTM"}</span>
+                        <span className="text-slate-500 font-medium">Standar Acuan</span>
+                        <span className="font-semibold text-slate-800">{doc.standardRef || "Spesifikasi Proyek / SNI / ASTM"}</span>
                       </div>
                     </div>
 
                     <div className="p-3 space-y-2">
                       <div className="flex justify-between py-1 border-b border-slate-200/60">
-                        <span className="text-slate-500">Proyek Konstruksi</span>
-                        <span className="font-bold text-slate-900 truncate max-w-[200px]" title={doc.projectName}>
+                        <span className="text-slate-500 font-medium">Proyek Konstruksi</span>
+                        <span className="font-semibold text-slate-900 truncate max-w-[200px]" title={doc.projectName}>
                           {doc.projectName || "Chiyoda Manyar Smelter Project"}
                         </span>
                       </div>
                       <div className="flex justify-between py-1 border-b border-slate-200/60">
-                        <span className="text-slate-500">Status Validasi</span>
+                        <span className="text-slate-500 font-medium">Status Validasi</span>
                         <span
                           className={`font-bold px-1.5 py-0.2 rounded-[2px] ${
                             statusUpper === "APPROVED"
@@ -327,12 +349,12 @@ export function DocumentPreviewModal({
                         </span>
                       </div>
                       <div className="flex justify-between py-1 border-b border-slate-200/60">
-                        <span className="text-slate-500">Petugas QA/QC (Uploader)</span>
-                        <span className="font-medium text-slate-800">{doc.uploaderName || "Ahmad Nur Fatony"}</span>
+                        <span className="text-slate-500 font-medium">Petugas QA/QC (Uploader)</span>
+                        <span className="font-semibold text-slate-800">{doc.uploaderName || "Ahmad Nur Fatony"}</span>
                       </div>
                       <div className="flex justify-between py-1">
-                        <span className="text-slate-500">Tanggal Catat</span>
-                        <span className="text-slate-700">{formatDate(doc.timestamp)}</span>
+                        <span className="text-slate-500 font-medium">Tanggal Catat</span>
+                        <span className="text-slate-700 tabular-nums">{formatDate(doc.timestamp)}</span>
                       </div>
                     </div>
                   </div>
@@ -341,25 +363,25 @@ export function DocumentPreviewModal({
                 {/* Official QA/QC Verification Stamp */}
                 <div className="border border-dashed border-slate-300 rounded-[4px] p-4 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/30">
                   <div className="space-y-1 text-center sm:text-left">
-                    <div className="text-[11px] font-bold text-slate-700 uppercase font-mono">
+                    <div className="text-[11px] font-bold text-slate-700 uppercase font-sans tracking-wide">
                       Verifikasi Integritas Data Digital QCA EDMS
                     </div>
-                    <p className="text-[10px] text-slate-500 font-mono">
+                    <p className="text-[10px] text-slate-500 font-sans leading-relaxed">
                       Dokumen ini terdaftar dalam Master Sheet Cloud PT Asuka Engineering Indonesia dan sah untuk pelaksanaan inspeksi lapangan.
                     </p>
                   </div>
 
                   {/* Stamp Badge */}
-                  <div className="border-2 border-[#163d78] text-[#163d78] px-3 py-1.5 rounded-[4px] text-center font-mono shrink-0 select-none">
+                  <div className="border-2 border-[#163d78] text-[#163d78] px-3 py-1.5 rounded-[4px] text-center font-sans shrink-0 select-none">
                     <div className="text-[9px] font-bold tracking-widest uppercase">QA/QC APPROVED</div>
-                    <div className="text-[11px] font-black tracking-wider">PT ASUKA ENG. INDONESIA</div>
-                    <div className="text-[8px] text-slate-600">EDMS VERIFIED DIGITAL RECORD</div>
+                    <div className="text-[11px] font-extrabold tracking-wider">PT ASUKA ENG. INDONESIA</div>
+                    <div className="text-[8px] text-slate-600 font-medium">EDMS VERIFIED DIGITAL RECORD</div>
                   </div>
                 </div>
 
                 {/* Actions inside Sheet */}
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-200">
-                  <div className="text-[11px] font-mono text-slate-500">
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-200 no-print">
+                  <div className="text-[11px] font-sans text-slate-500">
                     Mode Tampilan: Lembar Kontrol Teknis (Offline & Online Compatible)
                   </div>
                   <div className="flex items-center gap-2">
@@ -367,7 +389,7 @@ export function DocumentPreviewModal({
                       <button
                         type="button"
                         onClick={() => setActiveView("drive")}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] bg-[#163d78] hover:bg-[#1a4a91] text-white text-xs font-mono font-semibold transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] bg-[#163d78] hover:bg-[#1a4a91] text-white text-xs font-sans font-semibold transition-colors cursor-pointer"
                       >
                         <FileText className="w-3.5 h-3.5" />
                         <span>Buka Viewer PDF / Google Drive</span>
@@ -378,7 +400,7 @@ export function DocumentPreviewModal({
                         href={doc.fileUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-mono font-semibold transition-colors"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-sans font-semibold transition-colors"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
                         <span>Buka Link Berkas</span>
@@ -388,56 +410,73 @@ export function DocumentPreviewModal({
                 </div>
               </div>
             </div>
-          )}
+          </div>
 
           {/* TAB 2: GOOGLE DRIVE / PDF VIEWER (Jika ada fileUrl asli) */}
-          {activeView === "drive" && (
-            <div className="w-full h-full flex flex-col">
-              {previewUrl && !iframeError ? (
-                <iframe
-                  src={previewUrl}
-                  className="w-full h-full border-0 flex-1 min-h-[500px]"
-                  title={doc.title}
-                  allow="autoplay"
-                  onError={() => setIframeError(true)}
-                />
-              ) : (
-                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-4">
-                  <div className="w-14 h-14 rounded-[8px] bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400">
-                    <FileText className="w-7 h-7" strokeWidth={1.5} />
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="text-sm font-bold text-slate-200 font-mono">
-                      Pratinjau Langsung Berkas Terhalang Izin Google
-                    </h3>
-                    <p className="text-xs text-slate-400 max-w-md font-mono leading-relaxed">
-                      Google Drive memerlukan akun Google resmi yang memiliki akses izin ke berkas ini. Anda dapat membuka langsung di tab baru atau kembali ke Lembar Mutu In-App.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2.5 pt-2">
-                    <button
-                      type="button"
-                      onClick={() => setActiveView("sheet")}
-                      className="px-4 py-2 rounded-[6px] bg-[#163d78] hover:bg-[#1a4a91] text-xs font-mono font-semibold text-white transition-colors"
+          <div className={activeView === "drive" ? "w-full h-full flex flex-col bg-slate-900" : "hidden"}>
+            {previewUrl && !iframeError ? (
+              <div className="w-full h-full flex flex-col flex-1 relative">
+                <div className="bg-[#0b172d] px-4 py-2 border-b border-slate-800 flex items-center justify-between text-xs font-sans text-slate-300 shrink-0 no-print">
+                  <span className="flex items-center gap-1.5">
+                    <FileText className="w-3.5 h-3.5 text-[#38bdf8]" />
+                    <span>Viewer PDF Digital & Berkas Master Drive</span>
+                  </span>
+                  <div className="flex items-center gap-3">
+                    <a
+                      href={doc.fileUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 text-[11px] text-[#38bdf8] hover:underline"
                     >
-                      Buka Lembar Mutu Resmi
-                    </button>
-                    {doc.fileUrl && (
-                      <a
-                        href={doc.fileUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[6px] bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-mono font-semibold text-slate-200 transition-colors"
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                        <span>Buka di Google Drive</span>
-                      </a>
-                    )}
+                      <ExternalLink className="w-3 h-3" />
+                      <span>Buka di Tab Baru</span>
+                    </a>
                   </div>
                 </div>
-              )}
-            </div>
-          )}
+                <iframe
+                  src={previewUrl}
+                  className="w-full h-full border-0 flex-1 min-h-[550px] bg-slate-900"
+                  title={doc.title}
+                  allow="autoplay; encrypted-media"
+                  onError={() => setIframeError(true)}
+                />
+              </div>
+            ) : (
+              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-4">
+                <div className="w-14 h-14 rounded-[8px] bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400">
+                  <FileText className="w-7 h-7" strokeWidth={1.5} />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-sm font-bold text-slate-200 font-sans">
+                    Pratinjau Langsung Berkas Terhalang Izin Google
+                  </h3>
+                  <p className="text-xs text-slate-400 max-w-md font-sans leading-relaxed">
+                    Google Drive memerlukan akun Google resmi yang memiliki akses izin ke berkas ini. Anda dapat membuka langsung di tab baru atau kembali ke Lembar Mutu In-App.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2.5 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setActiveView("sheet")}
+                    className="px-4 py-2 rounded-[6px] bg-[#163d78] hover:bg-[#1a4a91] text-xs font-sans font-semibold text-white transition-colors cursor-pointer"
+                  >
+                    Buka Lembar Mutu Resmi
+                  </button>
+                  {doc.fileUrl && (
+                    <a
+                      href={doc.fileUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[6px] bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-sans font-semibold text-slate-200 transition-colors"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      <span>Buka di Google Drive</span>
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -448,4 +487,12 @@ export function DocumentPreviewModal({
       />
     </div>
   );
+
+  const portalTarget =
+    typeof document !== "undefined"
+      ? document.getElementById("print-portal-root") || document.body
+      : null;
+
+  if (!portalTarget) return null;
+  return createPortal(modalNode, portalTarget);
 }

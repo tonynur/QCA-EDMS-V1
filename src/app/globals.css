@@ -182,6 +182,21 @@ button:active:not(:disabled) {
     display: none !important;
   }
 
+  /* When printing from an active modal (Transmittal, Digital Seal, Document Preview),
+     completely hide the main application root so the page content never overlaps! */
+  body.modal-open-for-print #app-root,
+  body.printing-modal #app-root {
+    display: none !important;
+  }
+
+  #print-portal-root {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
   /* Reset modal containers so they don't clip or darken the printed page */
   .fixed, .fixed.inset-0 {
     position: static !important;

@@ -59,7 +59,7 @@ export function TransmittalTable({
           <div className="flex items-center gap-2">
             <button
               onClick={onRefresh}
-              className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-[6px] text-xs font-semibold font-mono transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-[6px] text-xs font-semibold font-sans transition-colors cursor-pointer"
             >
               <RefreshCw className={cn("w-3.5 h-3.5", isLoading && "animate-spin")} />
               <span>Refresh</span>
@@ -131,9 +131,9 @@ export function TransmittalTable({
                       <div className="text-xs text-slate-900 truncate max-w-[320px]">
                         {item.documentListSnippet || `${item.totalDocuments} Dokumen Mutu`}
                       </div>
-                      <div className="text-[10px] text-slate-500 font-mono mt-0.5">Total: {item.totalDocuments} berkas</div>
+                      <div className="text-[10.5px] text-slate-500 font-sans mt-0.5">Total: {item.totalDocuments} berkas</div>
                     </td>
-                    <td className="py-2.5 px-3 font-mono text-xs text-slate-700">{item.purpose.replace(/_/g, " ")}</td>
+                    <td className="py-2.5 px-3 font-sans font-semibold text-xs text-slate-700">{item.purpose.replace(/_/g, " ")}</td>
                     <td className="py-2.5 px-3 text-center">{renderStatusBadge(item.status)}</td>
                   </tr>
                 ))
@@ -141,7 +141,7 @@ export function TransmittalTable({
             </tbody>
           </table>
         </div>
-        <div className="px-4 py-2.5 bg-slate-50/80 border-t border-slate-200 text-slate-500 font-mono text-[11px] flex items-center justify-between">
+        <div className="px-4 py-2.5 bg-slate-50/80 border-t border-slate-200 text-slate-500 font-sans text-[11px] flex items-center justify-between">
           <span>Menampilkan {filteredTransmittals.length} dari {transmittals.length} transmittal</span>
           <span>PT Asuka Engineering Indonesia — QA/QC Division</span>
         </div>
