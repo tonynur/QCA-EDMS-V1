@@ -138,8 +138,8 @@ export function Navbar({
         </div>
       </div>
 
-      {/* ═══ CENTER ZONE: Global Search Bar (Spacious) ═══ */}
-      <div className="hidden md:flex items-center flex-1 max-w-md mx-4 lg:mx-6 min-w-0">
+      {/* ═══ CENTER ZONE: Global Search Bar (Spacious & Clean) ═══ */}
+      <div className="hidden md:flex items-center flex-1 max-w-lg mx-4 lg:mx-8 min-w-0">
         <div className="relative w-full">
           <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" strokeWidth={1.8} />
           <input
@@ -154,23 +154,8 @@ export function Navbar({
         </div>
       </div>
 
-      {/* ═══ RIGHT ZONE: Telemetry + Notification + User Dropdown ═══ */}
-      <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-        {/* Unified Live Telemetry Pill (Sync + Clock) */}
-        <div className="hidden sm:flex items-center gap-1.5 h-8 px-2.5 rounded-[4px] bg-[#091830] border border-[#244785] text-[11px] font-mono text-slate-200 whitespace-nowrap shrink-0">
-          <span className="w-2 h-2 rounded-[2px] bg-[#22c55e] inline-block shrink-0" />
-          <span className="text-[#4ade80] font-medium">Tersinkronisasi</span>
-          <RefreshCw className="w-2.5 h-2.5 text-slate-400 shrink-0" />
-          {timeStr && (
-            <>
-              <span className="text-slate-600 font-normal hidden lg:inline">|</span>
-              <span className="text-slate-300 tabular-nums font-mono text-[10.5px] hidden lg:inline">
-                {timeStr}
-              </span>
-            </>
-          )}
-        </div>
-
+      {/* ═══ RIGHT ZONE: Notification + User Dropdown (Zero Clutter) ═══ */}
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         {/* Compact Notification Bell */}
         <button
           type="button"
@@ -195,9 +180,6 @@ export function Navbar({
             </span>
           )}
         </button>
-
-        {/* Vertical Separator */}
-        <div className="h-5 w-[1px] bg-white/15 shrink-0 hidden sm:block" />
 
         {/* 👤 PROFIL PENGGUNA & DROPDOWN RAMPING (Ringkas & Rapi) */}
         <div className="relative" ref={dropdownRef}>
@@ -302,12 +284,15 @@ export function Navbar({
                 </div>
               </div>
 
-              {/* System Info Strip */}
-              <div className="px-3.5 py-1.5 bg-slate-50/60 border-t border-b border-slate-100 flex items-center justify-between text-[9.5px] font-mono text-slate-500">
-                <span>QC-CMS EDMS v3.2.1</span>
-                <span className="text-emerald-600 font-semibold flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  Hub Connected
+              {/* Telemetry & System Status Strip (Dipindahkan ke dalam dropdown) */}
+              <div className="px-3.5 py-2 bg-slate-50 border-t border-b border-slate-100 flex items-center justify-between text-[10px] font-mono">
+                <span className="flex items-center gap-1.5 text-emerald-700 font-semibold">
+                  <span className="w-2 h-2 rounded-[2px] bg-emerald-500 inline-block shrink-0" />
+                  <span>Tersinkronisasi</span>
+                  <RefreshCw className="w-2.5 h-2.5 text-slate-400 shrink-0" />
+                </span>
+                <span className="text-slate-500 tabular-nums font-medium">
+                  {timeStr}
                 </span>
               </div>
 
