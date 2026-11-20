@@ -572,6 +572,7 @@ export default function HomePage() {
           {activeTab === "approval" && (
             <ApprovalQueueView
               documents={documents}
+              onPreviewDoc={(doc) => setPreviewDoc(doc)}
               onApprove={async (docId, comments) => {
                 try {
                   const res = await documentService.approveDocument(docId, comments);
@@ -777,6 +778,7 @@ export default function HomePage() {
         onClose={() => setSelectedDocForDetail(null)}
         onApprove={handleApproveDoc}
         onReject={handleRejectDoc}
+        onPreviewDoc={(doc) => setPreviewDoc(doc)}
       />
 
       <CalibrationFormModal
@@ -828,6 +830,7 @@ export default function HomePage() {
           setIsQRScannerOpen(false);
           setSelectedDocForDetail(doc);
         }}
+        onPreviewDoc={(doc) => setPreviewDoc(doc)}
       />
 
       {/* In-App Document Viewer & Preview Modal */}

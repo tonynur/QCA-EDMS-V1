@@ -8,6 +8,7 @@ import {
   CheckCircle2,
   ExternalLink,
   ShieldCheck,
+  Eye,
 } from "lucide-react";
 import { DocumentItem } from "@/features/documents/types";
 import { Button } from "@/components/ui/Button";
@@ -19,6 +20,7 @@ interface QRScannerModalProps {
   onClose: () => void;
   documents: DocumentItem[];
   onOpenDocument?: (doc: DocumentItem) => void;
+  onPreviewDoc?: (doc: DocumentItem) => void;
 }
 
 export function QRScannerModal({
@@ -26,6 +28,7 @@ export function QRScannerModal({
   onClose,
   documents,
   onOpenDocument,
+  onPreviewDoc,
 }: QRScannerModalProps) {
   const [inputCode, setInputCode] = useState("");
   const [searchedDoc, setSearchedDoc] = useState<DocumentItem | null>(null);
@@ -160,9 +163,21 @@ export function QRScannerModal({
                       {onOpenDocument && (
                         <button
                           onClick={() => onOpenDocument(searchedDoc)}
-                          className="text-xs font-semibold text-[#163d78] hover:underline"
+                          className="text-xs font-semibold text-[#163d78] hover:underline cursor-pointer"
                         >
                           Detail EDMS
+                        </button>
+                      )}
+                      {onPreviewDoc && (
+                        <button
+                          onClick={() => {
+                            onClose();
+                            onPreviewDoc(searchedDoc);
+                          }}
+                          className="text-xs font-semibold text-[#163d78] hover:underline flex items-center gap-1 cursor-pointer"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>Pratinjau Dokumen</span>
                         </button>
                       )}
                       {searchedDoc.fileUrl && (

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { X, ExternalLink, Check, FileText } from "lucide-react";
+import { X, ExternalLink, Check, FileText, Eye } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { DocumentItem } from "../types";
@@ -13,6 +13,7 @@ interface DocumentDetailModalProps {
   onClose: () => void;
   onApprove?: (docId: string) => void;
   onReject?: (docId: string) => void;
+  onPreviewDoc?: (doc: DocumentItem) => void;
 }
 
 export function DocumentDetailModal({
@@ -21,6 +22,7 @@ export function DocumentDetailModal({
   onClose,
   onApprove,
   onReject,
+  onPreviewDoc,
 }: DocumentDetailModalProps) {
   if (!isOpen || !document) return null;
 
@@ -115,39 +117,64 @@ export function DocumentDetailModal({
           {/* File Attachment */}
           <div className="space-y-2">
             <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider block">
-              Berkas Lampiran Resmi
+              Berkas Lampiran Resmi & Pratinjau
             </span>
-            {document.fileUrl ? (
-              <div className="flex items-center justify-between p-3.5 rounded-[6px] bg-slate-50 border border-slate-200">
-                <div className="flex items-center gap-2 truncate">
-                  <FileText className="w-4 h-4 text-[#163d78] shrink-0" strokeWidth={1.8} />
-                  <span className="text-xs font-mono text-slate-800 truncate">
-                    {document.fileName || document.documentNumber + ".pdf"}
-                  </span>
-                </div>
-                <a
-                  href={document.fileUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] bg-[#163d78] hover:bg-[#113162] text-white text-xs font-medium transition-colors shrink-0"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" strokeWidth={1.8} />
-                  <span>Buka di Google Drive</span>
-                </a>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-3.5 rounded-[6px] bg-slate-50 border border-slate-200 gap-3">
+              <div className="flex items-center gap-2 truncate">
+                <FileText className="w-4 h-4 text-[#163d78] shrink-0" strokeWidth={1.8} />
+                <span className="text-xs font-mono text-slate-800 truncate">
+                  {document.fileName || document.documentNumber + ".pdf"}
+                </span>
               </div>
-            ) : (
-              <div className="text-xs text-slate-500 p-3 bg-slate-50 border border-slate-200 rounded-[6px]">
-                Tidak ada URL berkas Drive yang terlampir.
+              <div className="flex items-center gap-2 shrink-0">
+                {onPreviewDoc && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onPreviewDoc(document);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] bg-[#163d78] hover:bg-[#113162] text-white text-xs font-semibold transition-colors cursor-pointer shadow-xs"
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>Pratinjau Lembar Dokumen</span>
+                  </button>
+                )}
+                {document.fileUrl && (
+                  <a
+                    href={document.fileUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-medium transition-colors"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" strokeWidth={1.8} />
+                    <span>Buka di Drive</span>
+                  </a>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </div>
 
         {/* Footer Actions */}
         <div className="px-5 py-3.5 border-t border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
-          <Button variant="secondary" size="sm" onClick={onClose}>
-            Tutup
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="secondary" size="sm" onClick={onClose}>
+              Tutup
+            </Button>
+            {onPreviewDoc && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  onPreviewDoc(document);
+                }}
+                icon={<Eye className="w-4 h-4 text-[#163d78]" />}
+                className="text-xs text-[#163d78] border-slate-300 hover:bg-slate-100"
+              >
+                Pratinjau Dokumen
+              </Button>
+            )}
+          </div>
 
           <div className="flex items-center gap-2">
             {document.status === "PENDING" && onReject && (

@@ -9,6 +9,7 @@ import {
   AlertTriangle,
   Search,
   RefreshCw,
+  Eye,
 } from "lucide-react";
 import { DocumentItem } from "@/features/documents/types";
 import { Card } from "@/components/ui/Card";
@@ -22,6 +23,7 @@ interface ApprovalQueueViewProps {
   onReject: (docId: string, comments: string) => Promise<void>;
   onRefresh: () => void;
   isLoading?: boolean;
+  onPreviewDoc?: (doc: DocumentItem) => void;
 }
 
 export function ApprovalQueueView({
@@ -30,6 +32,7 @@ export function ApprovalQueueView({
   onReject,
   onRefresh,
   isLoading,
+  onPreviewDoc,
 }: ApprovalQueueViewProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDoc, setSelectedDoc] = useState<DocumentItem | null>(null);
@@ -226,6 +229,17 @@ export function ApprovalQueueView({
 
                     <td className="py-3 px-3">
                       <div className="flex items-center justify-center gap-1.5">
+                        {onPreviewDoc && (
+                          <button
+                            type="button"
+                            onClick={() => onPreviewDoc(doc)}
+                            className="p-1.5 rounded-[4px] bg-blue-50 hover:bg-blue-100 text-[#163d78] border border-blue-200 transition-colors cursor-pointer"
+                            title="Pratinjau Lembar Mutu & Dokumen PDF"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+
                         {doc.fileUrl && (
                           <a
                             href={doc.fileUrl}
@@ -288,8 +302,20 @@ export function ApprovalQueueView({
 
             <div className="space-y-1 text-xs">
               <div className="text-slate-500 font-mono">Kode Dokumen:</div>
-              <div className="font-mono font-bold text-[#163d78]">
-                {selectedDoc.documentCode || selectedDoc.documentNumber} Rev {selectedDoc.revision ?? 0}
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-mono font-bold text-[#163d78]">
+                  {selectedDoc.documentCode || selectedDoc.documentNumber} Rev {selectedDoc.revision ?? 0}
+                </span>
+                {onPreviewDoc && (
+                  <button
+                    type="button"
+                    onClick={() => onPreviewDoc(selectedDoc)}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-[4px] bg-blue-50 text-[#163d78] border border-blue-200 text-xs font-semibold hover:bg-blue-100 transition-colors cursor-pointer"
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>Pratinjau Dokumen</span>
+                  </button>
+                )}
               </div>
               <div className="text-slate-800 font-medium mt-1">{selectedDoc.title}</div>
             </div>
